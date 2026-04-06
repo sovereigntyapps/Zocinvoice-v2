@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@media print {
+  body {
+    background-color: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  /* Hide everything except the print area */
+  body > * {
+    display: none !important;
+  }
+  
+  #root {
+    display: block !important;
+  }
+  
+  /* Hide sidebar and other non-print elements */
+  aside, button {
+    display: none !important;
+  }
+  
+  main {
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+}
+

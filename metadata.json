@@ -1,0 +1,5 @@
+{
+  "name": "ZOC Invoice Generator",
+  "description": "A local-first invoice generator using ZOC 3.0 architecture with PGlite and GitHub sync.",
+  "requestFramePermissions": []
+}
