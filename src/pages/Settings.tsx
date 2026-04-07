@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../db';
 import { backupToGithub, restoreFromGithub } from '../lib/github';
-import { Github, Save, Download, Upload, AlertCircle, Percent, Building2, Image as ImageIcon, Coins } from 'lucide-react';
+import { Github, Save, Download, Upload, AlertCircle, Percent, Building2, Image as ImageIcon, Heart } from 'lucide-react';
 
 export default function Settings() {
   const [githubToken, setGithubToken] = useState('');
@@ -13,7 +13,6 @@ export default function Settings() {
   const [companyEmail, setCompanyEmail] = useState('');
   const [companyAddress, setCompanyAddress] = useState('');
   const [companyLogo, setCompanyLogo] = useState('');
-  const [monetizationEnabled, setMonetizationEnabled] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info', message: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [restoreModalOpen, setRestoreModalOpen] = useState(false);
@@ -35,7 +34,6 @@ export default function Settings() {
       setCompanyEmail(settings.company_email || '');
       setCompanyAddress(settings.company_address || '');
       setCompanyLogo(settings.company_logo || '');
-      setMonetizationEnabled(settings.monetization_enabled === 'true');
     }
     loadSettings();
   }, []);
@@ -65,7 +63,6 @@ export default function Settings() {
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['company_email', companyEmail]);
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['company_address', companyAddress]);
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['company_logo', companyLogo]);
-    await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['monetization_enabled', monetizationEnabled.toString()]);
     setStatus({ type: 'success', message: 'Settings saved successfully' });
     setTimeout(() => setStatus(null), 3000);
   };
@@ -188,6 +185,31 @@ export default function Settings() {
         </div>
       </div>
 
+      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+          <div className="p-2 bg-pink-50 text-pink-600 rounded-lg shrink-0">
+            <Heart className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Support the Developer</h2>
+            <p className="text-sm text-gray-500">Keep this tool free and private for everyone.</p>
+          </div>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+          <p className="text-sm text-gray-600 flex-1">
+            This invoicing app uses a Zero-Operating-Cost architecture, meaning your data stays completely private on your device. If this tool saves your business time and money, consider supporting its continued development!
+          </p>
+          <a
+            href="https://buymeacoffee.com/YOUR_USERNAME_HERE"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 flex items-center gap-2 px-6 py-2.5 bg-[#FFDD00] text-gray-900 font-bold rounded-lg hover:bg-[#FFD000] transition-colors shadow-sm"
+          >
+            ☕ Buy me a coffee
+          </a>
+        </div>
+      </div>
+
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
         <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
           <div className="p-2 bg-gray-100 rounded-lg text-gray-900">
@@ -278,35 +300,6 @@ export default function Settings() {
             className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
           >
             <Save className="w-4 h-4" /> Save Settings
-          </button>
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 pr-4">
-            <div className="p-2 bg-gray-100 text-gray-900 rounded-lg shrink-0">
-              <Coins className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-medium text-gray-900">Enable Bandwidth Sharing</h3>
-              <p className="text-sm text-gray-500">
-                Securely share unused bandwidth to help keep this app free for everyone.
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setMonetizationEnabled(!monetizationEnabled)}
-            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-              monetizationEnabled ? 'bg-blue-600' : 'bg-gray-200'
-            }`}
-          >
-            <span
-              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                monetizationEnabled ? 'translate-x-5' : 'translate-x-0'
-              }`}
-            />
           </button>
         </div>
       </div>

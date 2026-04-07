@@ -5,7 +5,6 @@
 
 import { useState, useEffect } from 'react';
 import { initDb } from './db';
-import { useMonetization } from './lib/useMonetization';
 import Layout from './lib/components/Layout';
 import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
@@ -18,9 +17,6 @@ export default function App() {
   const [isDbReady, setIsDbReady] = useState(false);
   const [currentRoute, setCurrentRoute] = useState('dashboard');
   const [routeParams, setRouteParams] = useState<any>({});
-
-  // Initialize passive monetization based on settings
-  useMonetization();
 
   useEffect(() => {
     initDb().then(() => setIsDbReady(true)).catch(console.error);

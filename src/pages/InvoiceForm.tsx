@@ -8,6 +8,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
   const [formData, setFormData] = useState({
     client_id: '',
     invoice_number: `INV-${Math.floor(1000 + Math.random() * 9000)}`,
+    po_number: '',
     date: new Date().toISOString().split('T')[0],
     due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     status: 'draft',
@@ -29,6 +30,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
           setFormData({
             client_id: inv.client_id as string,
             invoice_number: inv.invoice_number as string,
+            po_number: inv.po_number as string || '',
             date: new Date(inv.date as string).toISOString().split('T')[0],
             due_date: inv.due_date ? new Date(inv.due_date as string).toISOString().split('T')[0] : '',
             status: inv.status as string,
@@ -105,14 +107,14 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
 
     if (invoiceId) {
       await db.query(
-        'UPDATE invoices SET client_id = $1, invoice_number = $2, date = $3, due_date = $4, status = $5, subtotal = $6, tax_name = $7, tax_rate = $8, tax_amount = $9, total = $10, notes = $11 WHERE id = $12',
-        [formData.client_id, formData.invoice_number, formData.date, formData.due_date, formData.status, subtotal, formData.tax_name, formData.tax_rate, taxAmount, total, formData.notes, id]
+        'UPDATE invoices SET client_id = $1, invoice_number = $2, date = $3, due_date = $4, status = $5, subtotal = $6, tax_name = $7, tax_rate = $8, tax_amount = $9, total = $10, notes = $11, po_number = $13 WHERE id = $12',
+        [formData.client_id, formData.invoice_number, formData.date, formData.due_date, formData.status, subtotal, formData.tax_name, formData.tax_rate, taxAmount, total, formData.notes, id, formData.po_number]
       );
       await db.query('DELETE FROM invoice_items WHERE invoice_id = $1', [id]);
     } else {
       await db.query(
-        'INSERT INTO invoices (id, client_id, invoice_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)',
-        [id, formData.client_id, formData.invoice_number, formData.date, formData.due_date, formData.status, subtotal, formData.tax_name, formData.tax_rate, taxAmount, total, formData.notes]
+        'INSERT INTO invoices (id, client_id, invoice_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes, po_number) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
+        [id, formData.client_id, formData.invoice_number, formData.date, formData.due_date, formData.status, subtotal, formData.tax_name, formData.tax_rate, taxAmount, total, formData.notes, formData.po_number]
       );
     }
 
@@ -161,6 +163,16 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
                 required
                 value={formData.invoice_number}
                 onChange={e => setFormData({ ...formData, invoice_number: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">PO Number</label>
+              <input
+                type="text"
+                value={formData.po_number}
+                onChange={e => setFormData({ ...formData, po_number: e.target.value })}
+                placeholder="Optional"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>

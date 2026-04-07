@@ -17,6 +17,7 @@ export async function initDb() {
       id UUID PRIMARY KEY,
       client_id UUID REFERENCES clients(id),
       invoice_number TEXT NOT NULL,
+      po_number TEXT,
       date TIMESTAMP NOT NULL,
       due_date TIMESTAMP,
       status TEXT DEFAULT 'draft',
@@ -60,6 +61,10 @@ export async function initDb() {
       
       BEGIN
         ALTER TABLE invoices ADD COLUMN tax_amount DECIMAL(10, 2) DEFAULT 0;
+      EXCEPTION WHEN duplicate_column THEN END;
+      
+      BEGIN
+        ALTER TABLE invoices ADD COLUMN po_number TEXT;
       EXCEPTION WHEN duplicate_column THEN END;
     END $$;
   `);

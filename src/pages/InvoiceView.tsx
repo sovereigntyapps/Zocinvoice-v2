@@ -183,6 +183,13 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
                     <div className="font-medium text-gray-900">{format(new Date(invoice.due_date as string), 'MMM d, yyyy')}</div>
                   </>
                 )}
+                
+                {invoice.po_number && (
+                  <>
+                    <div className="text-gray-500">PO Number:</div>
+                    <div className="font-medium text-gray-900">{invoice.po_number}</div>
+                  </>
+                )}
               </div>
             </div>
           </div>
