@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../db';
+import { triggerAutoBackup } from '../lib/gdrive';
 import { Plus, Eye, Edit2, Trash2, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -33,6 +34,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
       setDeleteModalOpen(false);
       setInvoiceToDelete(null);
       loadInvoices();
+      triggerAutoBackup();
     }
   };
 

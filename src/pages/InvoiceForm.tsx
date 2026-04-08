@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../db';
+import { triggerAutoBackup } from '../lib/gdrive';
 import { v4 as uuidv4 } from 'uuid';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 
@@ -127,6 +128,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
       }
     }
 
+    triggerAutoBackup();
     navigate('invoices');
   };
 

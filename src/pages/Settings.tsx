@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../db';
-import { backupToGithub, restoreFromGithub } from '../lib/github';
-import { Github, Save, Download, Upload, AlertCircle, Percent, Building2, Image as ImageIcon, Heart } from 'lucide-react';
+import { backupToGDrive, restoreFromGDrive, triggerAutoBackup } from '../lib/gdrive';
+import { Save, Download, Upload, AlertCircle, Percent, Building2, Image as ImageIcon, Heart, HardDrive } from 'lucide-react';
 
 export default function Settings() {
-  const [githubToken, setGithubToken] = useState('');
-  const [repoOwner, setRepoOwner] = useState('');
-  const [repoName, setRepoName] = useState('');
+  const [gdriveToken, setGdriveToken] = useState('');
   const [taxName, setTaxName] = useState('Tax');
   const [taxRate, setTaxRate] = useState('0');
   const [companyName, setCompanyName] = useState('');
@@ -25,9 +23,7 @@ export default function Settings() {
         return acc;
       }, {});
       
-      setGithubToken(settings.github_token || '');
-      setRepoOwner(settings.repo_owner || '');
-      setRepoName(settings.repo_name || '');
+      setGdriveToken(settings.gdrive_token || '');
       setTaxName(settings.tax_name || 'Tax');
       setTaxRate(settings.tax_rate || '0');
       setCompanyName(settings.company_name || '');
@@ -54,9 +50,7 @@ export default function Settings() {
   };
 
   const saveSettings = async () => {
-    await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['github_token', githubToken]);
-    await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['repo_owner', repoOwner]);
-    await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['repo_name', repoName]);
+    await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['gdrive_token', gdriveToken]);
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['tax_name', taxName]);
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['tax_rate', taxRate]);
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['company_name', companyName]);
@@ -65,16 +59,46 @@ export default function Settings() {
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['company_logo', companyLogo]);
     setStatus({ type: 'success', message: 'Settings saved successfully' });
     setTimeout(() => setStatus(null), 3000);
+    triggerAutoBackup();
+  };
+
+  const handleConnectGDrive = () => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      setStatus({ type: 'error', message: 'Google Client ID is not configured. Please set VITE_GOOGLE_CLIENT_ID in your environment.' });
+      return;
+    }
+
+    try {
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/drive.appdata',
+        callback: async (response: any) => {
+          if (response.error !== undefined) {
+            setStatus({ type: 'error', message: `Google Auth Error: ${response.error}` });
+            return;
+          }
+          setGdriveToken(response.access_token);
+          await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['gdrive_token', response.access_token]);
+          setStatus({ type: 'success', message: 'Successfully connected to Google Drive!' });
+          setTimeout(() => setStatus(null), 3000);
+        },
+      });
+      client.requestAccessToken();
+    } catch (err) {
+      console.error(err);
+      setStatus({ type: 'error', message: 'Failed to initialize Google Auth. Is the script loaded?' });
+    }
   };
 
   const handleBackup = async () => {
-    if (!githubToken || !repoOwner || !repoName) {
-      setStatus({ type: 'error', message: 'Please fill in all GitHub settings first' });
+    if (!gdriveToken) {
+      setStatus({ type: 'error', message: 'Please connect to Google Drive first' });
       return;
     }
     setIsLoading(true);
-    setStatus({ type: 'info', message: 'Pushing backup to GitHub...' });
-    const res = await backupToGithub(githubToken, repoOwner, repoName);
+    setStatus({ type: 'info', message: 'Pushing backup to Google Drive...' });
+    const res = await backupToGDrive(gdriveToken);
     setIsLoading(false);
     if (res.success) {
       setStatus({ type: 'success', message: 'Backup successful!' });
@@ -84,8 +108,8 @@ export default function Settings() {
   };
 
   const handleRestoreClick = () => {
-    if (!githubToken || !repoOwner || !repoName) {
-      setStatus({ type: 'error', message: 'Please fill in all GitHub settings first' });
+    if (!gdriveToken) {
+      setStatus({ type: 'error', message: 'Please connect to Google Drive first' });
       return;
     }
     setRestoreModalOpen(true);
@@ -94,8 +118,8 @@ export default function Settings() {
   const handleRestoreConfirm = async () => {
     setRestoreModalOpen(false);
     setIsLoading(true);
-    setStatus({ type: 'info', message: 'Restoring from GitHub...' });
-    const res = await restoreFromGithub(githubToken, repoOwner, repoName);
+    setStatus({ type: 'info', message: 'Restoring from Google Drive...' });
+    const res = await restoreFromGDrive(gdriveToken);
     setIsLoading(false);
     if (res.success) {
       setStatus({ type: 'success', message: 'Restore successful! Refreshing...' });
@@ -249,49 +273,45 @@ export default function Settings() {
 
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
         <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-          <div className="p-2 bg-gray-100 rounded-lg text-gray-900">
-            <Github className="w-5 h-5" />
+          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+            <HardDrive className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">GitHub Sync</h2>
-            <p className="text-sm text-gray-500">Backup your local database to a private GitHub repository.</p>
+            <h2 className="text-lg font-bold text-gray-900">Google Drive Sync</h2>
+            <p className="text-sm text-gray-500">Securely backup your local database to your Google Drive.</p>
           </div>
         </div>
 
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Personal Access Token</label>
-            <input
-              type="password"
-              value={githubToken}
-              onChange={e => setGithubToken(e.target.value)}
-              placeholder="ghp_xxxxxxxxxxxx"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <p className="text-xs text-gray-500 mt-1">Needs 'repo' scope to read/write to your private repository.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Repository Owner</label>
-              <input
-                type="text"
-                value={repoOwner}
-                onChange={e => setRepoOwner(e.target.value)}
-                placeholder="username"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+          {gdriveToken ? (
+            <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-green-800">Connected to Google Drive</span>
+              </div>
+              <button
+                onClick={() => {
+                  setGdriveToken('');
+                  db.query('DELETE FROM settings WHERE key = $1', ['gdrive_token']);
+                }}
+                className="text-sm text-red-600 hover:text-red-700 font-medium"
+              >
+                Disconnect
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Repository Name</label>
-              <input
-                type="text"
-                value={repoName}
-                onChange={e => setRepoName(e.target.value)}
-                placeholder="invoice-backup"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+          ) : (
+            <div className="flex flex-col items-start gap-3">
+              <p className="text-sm text-gray-600">
+                Connect your Google Drive to enable one-click backups. Your data is stored in a hidden app-specific folder that only this app can access.
+              </p>
+              <button
+                onClick={handleConnectGDrive}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                <HardDrive className="w-4 h-4" /> Connect Google Drive
+              </button>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="pt-4 flex items-center justify-between">
@@ -306,7 +326,7 @@ export default function Settings() {
 
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
         <h2 className="text-lg font-bold text-gray-900">Manual Sync</h2>
-        <p className="text-sm text-gray-500">Push your current local data to GitHub, or pull the latest backup to overwrite local data.</p>
+        <p className="text-sm text-gray-500">Push your current local data to Google Drive, or pull the latest backup to overwrite local data.</p>
         
         {status && (
           <div className={`p-4 rounded-lg flex items-start gap-3 ${
