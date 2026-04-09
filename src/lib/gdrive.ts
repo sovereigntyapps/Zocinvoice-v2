@@ -56,22 +56,23 @@ export async function backupToGDrive(accessToken: string): Promise<{ success: bo
     const existingFile = searchData.files?.[0];
 
     // 3. Upload file
-    const metadata = {
-      name: FILE_NAME,
-      parents: ['appDataFolder']
-    };
-
-    const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-    form.append('file', file);
-
     let uploadUrl = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
     let method = 'POST';
+    
+    const metadata: any = {
+      name: FILE_NAME
+    };
 
     if (existingFile) {
       uploadUrl = `https://www.googleapis.com/upload/drive/v3/files/${existingFile.id}?uploadType=multipart`;
       method = 'PATCH';
+    } else {
+      metadata.parents = ['appDataFolder'];
     }
+
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+    form.append('file', file);
 
     const uploadRes = await fetch(uploadUrl, {
       method,
