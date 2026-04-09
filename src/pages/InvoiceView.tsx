@@ -143,7 +143,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
           {/* The actual invoice template to be exported */}
           <div 
             ref={invoiceRef} 
-            className="bg-white p-12 mx-auto shadow-sm print:shadow-none print:w-full print:min-h-0"
+            className="bg-white p-12 mx-auto shadow-sm print:shadow-none print:w-full print:min-h-0 flex flex-col"
             style={{ width: '800px', minHeight: '1131px' }}
           >
             <div className="flex justify-between items-start mb-12">
@@ -237,11 +237,15 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
           </div>
 
           {invoice.notes && (
-            <div className="border-t border-gray-200 pt-8">
+            <div className="border-t border-gray-200 pt-8 mb-8">
               <p className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Notes</p>
               <p className="text-gray-600 whitespace-pre-wrap">{invoice.notes}</p>
             </div>
           )}
+
+          <div className="mt-auto pt-8 border-t border-gray-100 text-center text-sm text-gray-400">
+            Free Invoice Generator by <span className="font-semibold text-gray-500">Sovereignty Apps</span>
+          </div>
         </div>
         </div>
       </div>

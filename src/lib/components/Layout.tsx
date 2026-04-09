@@ -18,7 +18,7 @@ export default function Layout({ children, currentRoute, navigate }: LayoutProps
           {children}
         </div>
         <footer className="mt-12 text-center text-sm text-gray-400">
-          Created for free by <span className="font-semibold text-gray-500">Sovereignty Apps</span>
+          Free Invoice Generator by <span className="font-semibold text-gray-500">Sovereignty Apps</span>
         </footer>
       </main>
       <BottomNav currentRoute={currentRoute} navigate={navigate} className="md:hidden" />
