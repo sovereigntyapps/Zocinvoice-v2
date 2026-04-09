@@ -325,8 +325,8 @@ export default function Settings() {
       </div>
 
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
-        <h2 className="text-lg font-bold text-gray-900">Manual Sync</h2>
-        <p className="text-sm text-gray-500">Push your current local data to Google Drive, or pull the latest backup to overwrite local data.</p>
+        <h2 className="text-lg font-bold text-gray-900">Data Recovery</h2>
+        <p className="text-sm text-gray-500">If you are logging in from a new device, or if you cleared your browser data, you can pull your latest auto-save from Google Drive to restore your invoices.</p>
         
         {status && (
           <div className={`p-4 rounded-lg flex items-start gap-3 ${
@@ -340,18 +340,11 @@ export default function Settings() {
 
         <div className="flex flex-col sm:flex-row gap-4">
           <button
-            onClick={handleBackup}
-            disabled={isLoading}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
-            <Upload className="w-4 h-4" /> Push Backup
-          </button>
-          <button
             onClick={handleRestoreClick}
             disabled={isLoading}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-red-600 border border-red-200 rounded-lg font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-lg font-medium hover:bg-blue-50 transition-colors disabled:opacity-50"
           >
-            <Download className="w-4 h-4" /> Pull & Overwrite
+            <Download className="w-4 h-4" /> Restore from Google Drive
           </button>
         </div>
       </div>

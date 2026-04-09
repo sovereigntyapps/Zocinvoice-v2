@@ -1,7 +1,7 @@
 import { PGlite } from '@electric-sql/pglite';
 
 // Initialize PGlite with IndexedDB persistence
-export const db = new PGlite('idb://invoice-generator-db');
+export const db = new PGlite('idb://invoice-generator-db-v2');
 
 export async function initDb() {
   await db.exec(`
