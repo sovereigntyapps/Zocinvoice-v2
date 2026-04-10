@@ -15,7 +15,7 @@ export async function triggerAutoBackup() {
     
     if (backupRes.success) {
       window.dispatchEvent(new CustomEvent('sync-success'));
-    } else {
+    } else if (!backupRes.isAuthError) {
       window.dispatchEvent(new CustomEvent('sync-error', { detail: backupRes.error }));
     }
   } catch (err) {
@@ -24,7 +24,7 @@ export async function triggerAutoBackup() {
   }
 }
 
-export async function backupToGDrive(accessToken: string): Promise<{ success: boolean; error?: string }> {
+export async function backupToGDrive(accessToken: string): Promise<{ success: boolean; error?: string; isAuthError?: boolean }> {
   try {
     // 1. Get all data from PGlite
     const tablesRes = await db.query(`
@@ -45,13 +45,22 @@ export async function backupToGDrive(accessToken: string): Promise<{ success: bo
     const file = new Blob([fileContent], { type: 'application/json' });
     
     // 2. Check if file already exists in appDataFolder
-    const searchRes = await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${FILE_NAME}'`, {
+    const query = encodeURIComponent(`name='${FILE_NAME}'`);
+    const searchRes = await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${query}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
     });
     
-    if (!searchRes.ok) throw new Error('Failed to search Drive');
+    if (searchRes.status === 401) {
+      window.dispatchEvent(new CustomEvent('gdrive-auth-required'));
+      return { success: false, isAuthError: true, error: 'Google Drive session expired.' };
+    }
+
+    if (!searchRes.ok) {
+      const errText = await searchRes.text();
+      throw new Error(`Failed to search Drive: ${errText}`);
+    }
     const searchData = await searchRes.json();
     const existingFile = searchData.files?.[0];
 
@@ -82,6 +91,11 @@ export async function backupToGDrive(accessToken: string): Promise<{ success: bo
       body: form
     });
 
+    if (uploadRes.status === 401) {
+      window.dispatchEvent(new CustomEvent('gdrive-auth-required'));
+      return { success: false, isAuthError: true, error: 'Google Drive session expired.' };
+    }
+
     if (!uploadRes.ok) {
       const err = await uploadRes.text();
       throw new Error(`Upload failed: ${err}`);
@@ -94,16 +108,25 @@ export async function backupToGDrive(accessToken: string): Promise<{ success: bo
   }
 }
 
-export async function restoreFromGDrive(accessToken: string): Promise<{ success: boolean; error?: string }> {
+export async function restoreFromGDrive(accessToken: string): Promise<{ success: boolean; error?: string; isAuthError?: boolean }> {
   try {
     // 1. Find the file
-    const searchRes = await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${FILE_NAME}'`, {
+    const query = encodeURIComponent(`name='${FILE_NAME}'`);
+    const searchRes = await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${query}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
     });
     
-    if (!searchRes.ok) throw new Error('Failed to search Drive');
+    if (searchRes.status === 401) {
+      window.dispatchEvent(new CustomEvent('gdrive-auth-required'));
+      return { success: false, isAuthError: true, error: 'Google Drive session expired.' };
+    }
+
+    if (!searchRes.ok) {
+      const errText = await searchRes.text();
+      throw new Error(`Failed to search Drive: ${errText}`);
+    }
     const searchData = await searchRes.json();
     const existingFile = searchData.files?.[0];
 
@@ -117,6 +140,11 @@ export async function restoreFromGDrive(accessToken: string): Promise<{ success:
         Authorization: `Bearer ${accessToken}`
       }
     });
+
+    if (downloadRes.status === 401) {
+      window.dispatchEvent(new CustomEvent('gdrive-auth-required'));
+      return { success: false, isAuthError: true, error: 'Google Drive session expired.' };
+    }
 
     if (!downloadRes.ok) throw new Error('Failed to download backup');
     const backupData = await downloadRes.json();

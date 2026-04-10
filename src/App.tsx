@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { initDb } from './db';
 import Layout from './lib/components/Layout';
+import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
 import Invoices from './pages/Invoices';
@@ -15,7 +16,7 @@ import InvoiceView from './pages/InvoiceView';
 
 export default function App() {
   const [isDbReady, setIsDbReady] = useState(false);
-  const [currentRoute, setCurrentRoute] = useState('dashboard');
+  const [currentRoute, setCurrentRoute] = useState('landing');
   const [routeParams, setRouteParams] = useState<any>({});
 
   useEffect(() => {
@@ -30,6 +31,10 @@ export default function App() {
     setCurrentRoute(route);
     setRouteParams(params);
   };
+
+  if (currentRoute === 'landing') {
+    return <Landing navigate={navigate} />;
+  }
 
   const renderRoute = () => {
     switch (currentRoute) {
