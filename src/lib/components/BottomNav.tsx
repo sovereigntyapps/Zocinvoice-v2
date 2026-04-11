@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, FileText, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Settings, BarChart3 } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export default function BottomNav({ currentRoute, navigate, className = '' }: any) {
@@ -7,6 +7,7 @@ export default function BottomNav({ currentRoute, navigate, className = '' }: an
     { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
     { id: 'invoices', label: 'Invoices', icon: FileText },
     { id: 'clients', label: 'Clients', icon: Users },
+    { id: 'reports', label: 'Reports', icon: BarChart3 },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 

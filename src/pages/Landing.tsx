@@ -99,6 +99,12 @@ export default function Landing({ navigate }: LandingProps) {
               </p>
             </div>
           </div>
+          
+          {/* Footer Links */}
+          <div className="absolute bottom-8 left-0 w-full flex justify-center gap-6 text-sm text-gray-500 z-20">
+            <button onClick={() => navigate('privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
+            <button onClick={() => navigate('terms')} className="hover:text-white transition-colors">Terms of Service</button>
+          </div>
         </div>
       </main>
     </div>

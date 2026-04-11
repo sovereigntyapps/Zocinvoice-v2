@@ -10,9 +10,12 @@ import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
 import Invoices from './pages/Invoices';
+import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import InvoiceForm from './pages/InvoiceForm';
 import InvoiceView from './pages/InvoiceView';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
 export default function App() {
   const [isDbReady, setIsDbReady] = useState(false);
@@ -35,12 +38,21 @@ export default function App() {
   if (currentRoute === 'landing') {
     return <Landing navigate={navigate} />;
   }
+  
+  if (currentRoute === 'privacy') {
+    return <Privacy navigate={navigate} />;
+  }
+  
+  if (currentRoute === 'terms') {
+    return <Terms navigate={navigate} />;
+  }
 
   const renderRoute = () => {
     switch (currentRoute) {
       case 'dashboard': return <Dashboard navigate={navigate} />;
       case 'clients': return <Clients navigate={navigate} />;
       case 'invoices': return <Invoices navigate={navigate} />;
+      case 'reports': return <Reports />;
       case 'invoice-new': return <InvoiceForm navigate={navigate} />;
       case 'invoice-edit': return <InvoiceForm navigate={navigate} invoiceId={routeParams.id} />;
       case 'invoice-view': return <InvoiceView navigate={navigate} invoiceId={routeParams.id} />;
