@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../db';
-import { triggerAutoBackup } from '../lib/gdrive';
 import { v4 as uuidv4 } from 'uuid';
 import { Plus, Edit2, Trash2, AlertTriangle } from 'lucide-react';
 
@@ -36,7 +35,6 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
     setIsFormOpen(false);
     setFormData({ id: '', name: '', email: '', company: '' });
     loadClients();
-    triggerAutoBackup();
   };
 
   const handleEdit = (client: any) => {
@@ -58,7 +56,6 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
         setDeleteModalOpen(false);
         setClientToDelete(null);
         loadClients();
-        triggerAutoBackup();
       } catch (error) {
         console.error('Failed to delete client:', error);
         alert('Failed to delete client. Please try again.');

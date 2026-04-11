@@ -32,7 +32,7 @@ export default function Terms({ navigate }: { navigate: (route: string) => void 
             <strong>CRITICAL:</strong> Because this application stores data locally in your web browser, <strong>you are solely responsible for backing up your data.</strong> 
           </p>
           <p>
-            If you clear your browser cache, uninstall your browser, or lose your device without having configured Google Drive Sync, your data will be permanently lost. Sovereignty Apps shall not be liable for any lost data, lost profits, or any special, incidental, or consequential damages arising out of or in connection with our site or services.
+            If you clear your browser cache, uninstall your browser, or lose your device, your data will be permanently lost. Sovereignty Apps shall not be liable for any lost data, lost profits, or any special, incidental, or consequential damages arising out of or in connection with our site or services.
           </p>
 
           <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">4. Acceptable Use</h2>

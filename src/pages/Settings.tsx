@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../db';
-import { backupToGDrive, restoreFromGDrive, triggerAutoBackup } from '../lib/gdrive';
 import { Save, Download, Upload, AlertCircle, Percent, Building2, Image as ImageIcon, Heart, HardDrive } from 'lucide-react';
 
 export default function Settings() {
-  const [gdriveToken, setGdriveToken] = useState('');
   const [taxName, setTaxName] = useState('Tax');
   const [taxRate, setTaxRate] = useState('0');
   const [companyName, setCompanyName] = useState('');
@@ -13,7 +11,7 @@ export default function Settings() {
   const [companyLogo, setCompanyLogo] = useState('');
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info', message: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [restoreModalOpen, setRestoreModalOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function loadSettings() {
@@ -23,7 +21,6 @@ export default function Settings() {
         return acc;
       }, {});
       
-      setGdriveToken(settings.gdrive_token || '');
       setTaxName(settings.tax_name || 'Tax');
       setTaxRate(settings.tax_rate || '0');
       setCompanyName(settings.company_name || '');
@@ -50,7 +47,6 @@ export default function Settings() {
   };
 
   const saveSettings = async () => {
-    await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['gdrive_token', gdriveToken]);
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['tax_name', taxName]);
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['tax_rate', taxRate]);
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['company_name', companyName]);
@@ -59,73 +55,113 @@ export default function Settings() {
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['company_logo', companyLogo]);
     setStatus({ type: 'success', message: 'Settings saved successfully' });
     setTimeout(() => setStatus(null), 3000);
-    triggerAutoBackup();
   };
 
-  const handleConnectGDrive = () => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    if (!clientId) {
-      setStatus({ type: 'error', message: 'Google Client ID is not configured. Please set VITE_GOOGLE_CLIENT_ID in your environment.' });
-      return;
-    }
-
+  const handleExportData = async () => {
     try {
-      const client = google.accounts.oauth2.initTokenClient({
-        client_id: clientId,
-        scope: 'https://www.googleapis.com/auth/drive.appdata',
-        callback: async (response: any) => {
-          if (response.error !== undefined) {
-            setStatus({ type: 'error', message: `Google Auth Error: ${response.error}` });
-            return;
-          }
-          setGdriveToken(response.access_token);
-          await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['gdrive_token', response.access_token]);
-          setStatus({ type: 'success', message: 'Successfully connected to Google Drive!' });
-          setTimeout(() => setStatus(null), 3000);
-        },
-      });
-      client.requestAccessToken();
-    } catch (err) {
-      console.error(err);
-      setStatus({ type: 'error', message: 'Failed to initialize Google Auth. Is the script loaded?' });
+      setIsLoading(true);
+      setStatus({ type: 'info', message: 'Preparing export...' });
+      
+      // Dump all tables
+      const clients = await db.query('SELECT * FROM clients');
+      const invoices = await db.query('SELECT * FROM invoices');
+      const items = await db.query('SELECT * FROM invoice_items');
+      const settings = await db.query('SELECT * FROM settings');
+      
+      const exportData = {
+        version: 1,
+        timestamp: new Date().toISOString(),
+        data: {
+          clients: clients.rows,
+          invoices: invoices.rows,
+          invoice_items: items.rows,
+          settings: settings.rows
+        }
+      };
+      
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sovereignty-invoices-backup-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      setStatus({ type: 'success', message: 'Data exported successfully!' });
+      setTimeout(() => setStatus(null), 3000);
+    } catch (error) {
+      console.error('Export failed:', error);
+      setStatus({ type: 'error', message: 'Failed to export data.' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleBackup = async () => {
-    if (!gdriveToken) {
-      setStatus({ type: 'error', message: 'Please connect to Google Drive first' });
-      return;
-    }
+  const handleImportData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
     setIsLoading(true);
-    setStatus({ type: 'info', message: 'Pushing backup to Google Drive...' });
-    const res = await backupToGDrive(gdriveToken);
-    setIsLoading(false);
-    if (res.success) {
-      setStatus({ type: 'success', message: 'Backup successful!' });
-    } else {
-      setStatus({ type: 'error', message: `Backup failed: ${res.error}` });
-    }
-  };
-
-  const handleRestoreClick = () => {
-    if (!gdriveToken) {
-      setStatus({ type: 'error', message: 'Please connect to Google Drive first' });
-      return;
-    }
-    setRestoreModalOpen(true);
-  };
-
-  const handleRestoreConfirm = async () => {
-    setRestoreModalOpen(false);
-    setIsLoading(true);
-    setStatus({ type: 'info', message: 'Restoring from Google Drive...' });
-    const res = await restoreFromGDrive(gdriveToken);
-    setIsLoading(false);
-    if (res.success) {
-      setStatus({ type: 'success', message: 'Restore successful! Refreshing...' });
-      setTimeout(() => window.location.reload(), 1500);
-    } else {
-      setStatus({ type: 'error', message: `Restore failed: ${res.error}` });
+    setStatus({ type: 'info', message: 'Importing data...' });
+    
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const content = event.target?.result as string;
+        const parsed = JSON.parse(content);
+        
+        if (!parsed.data || !parsed.data.clients) {
+          throw new Error('Invalid backup file format');
+        }
+        
+        // Clear existing data
+        await db.query('DELETE FROM invoice_items');
+        await db.query('DELETE FROM invoices');
+        await db.query('DELETE FROM clients');
+        await db.query('DELETE FROM settings');
+        
+        // Import Settings
+        for (const s of parsed.data.settings || []) {
+          await db.query('INSERT INTO settings (key, value) VALUES ($1, $2)', [s.key, s.value]);
+        }
+        
+        // Import Clients
+        for (const c of parsed.data.clients || []) {
+          await db.query('INSERT INTO clients (id, name, email, company, created_at) VALUES ($1, $2, $3, $4, $5)', 
+            [c.id, c.name, c.email, c.company, c.created_at]);
+        }
+        
+        // Import Invoices
+        for (const i of parsed.data.invoices || []) {
+          await db.query(`
+            INSERT INTO invoices (id, client_id, invoice_number, po_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes, created_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+          `, [i.id, i.client_id, i.invoice_number, i.po_number, i.date, i.due_date, i.status, i.subtotal, i.tax_name, i.tax_rate, i.tax_amount, i.total, i.notes, i.created_at]);
+        }
+        
+        // Import Items
+        for (const item of parsed.data.invoice_items || []) {
+          await db.query(`
+            INSERT INTO invoice_items (id, invoice_id, description, quantity, unit_price, amount)
+            VALUES ($1, $2, $3, $4, $5, $6)
+          `, [item.id, item.invoice_id, item.description, item.quantity, item.unit_price, item.amount]);
+        }
+        
+        setStatus({ type: 'success', message: 'Data imported successfully! Refreshing...' });
+        setTimeout(() => window.location.reload(), 1500);
+      } catch (error) {
+        console.error('Import failed:', error);
+        setStatus({ type: 'error', message: 'Failed to import data. Invalid file format.' });
+        setIsLoading(false);
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -269,52 +305,8 @@ export default function Settings() {
             />
           </div>
         </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-            <HardDrive className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-gray-900">Google Drive Sync</h2>
-            <p className="text-sm text-gray-500">Securely backup your local database to your Google Drive.</p>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          {gdriveToken ? (
-            <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-green-800">Connected to Google Drive</span>
-              </div>
-              <button
-                onClick={() => {
-                  setGdriveToken('');
-                  db.query('DELETE FROM settings WHERE key = $1', ['gdrive_token']);
-                }}
-                className="text-sm text-red-600 hover:text-red-700 font-medium"
-              >
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col items-start gap-3">
-              <p className="text-sm text-gray-600">
-                Connect your Google Drive to enable one-click backups. Your data is stored in a hidden app-specific folder that only this app can access.
-              </p>
-              <button
-                onClick={handleConnectGDrive}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-              >
-                <HardDrive className="w-4 h-4" /> Connect Google Drive
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="pt-4 flex items-center justify-between">
+        
+        <div className="pt-4 flex items-center justify-end">
           <button
             onClick={saveSettings}
             className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
@@ -325,8 +317,15 @@ export default function Settings() {
       </div>
 
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
-        <h2 className="text-lg font-bold text-gray-900">Data Recovery</h2>
-        <p className="text-sm text-gray-500">If you are logging in from a new device, or if you cleared your browser data, you can pull your latest auto-save from Google Drive to restore your invoices.</p>
+        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+            <HardDrive className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Data Management</h2>
+            <p className="text-sm text-gray-500">Export your data to a file, or restore from a previous backup.</p>
+          </div>
+        </div>
         
         {status && (
           <div className={`p-4 rounded-lg flex items-start gap-3 ${
@@ -340,45 +339,34 @@ export default function Settings() {
 
         <div className="flex flex-col sm:flex-row gap-4">
           <button
-            onClick={handleRestoreClick}
+            onClick={handleExportData}
             disabled={isLoading}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-lg font-medium hover:bg-blue-50 transition-colors disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
-            <Download className="w-4 h-4" /> Restore from Google Drive
+            <Download className="w-4 h-4" /> Export Backup
           </button>
-        </div>
-      </div>
-
-      {/* Restore Confirmation Modal */}
-      {restoreModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                <AlertCircle className="w-6 h-6 text-red-600" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">Restore Data</h3>
-                <p className="text-gray-500 text-sm mt-1">WARNING: Restoring will overwrite all local data. Are you sure you want to proceed?</p>
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setRestoreModalOpen(false)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleRestoreConfirm}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
-              >
-                Restore Data
-              </button>
-            </div>
+          
+          <div className="flex-1">
+            <input 
+              type="file" 
+              accept=".json" 
+              className="hidden" 
+              ref={fileInputRef}
+              onChange={handleImportData}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-lg font-medium hover:bg-blue-50 transition-colors disabled:opacity-50"
+            >
+              <Upload className="w-4 h-4" /> Restore Backup
+            </button>
           </div>
         </div>
-      )}
+        <p className="text-xs text-gray-500 mt-2">
+          <strong>Note:</strong> Restoring a backup will overwrite all current data on this device.
+        </p>
+      </div>
     </div>
   );
 }

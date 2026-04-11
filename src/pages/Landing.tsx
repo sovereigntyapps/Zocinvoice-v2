@@ -82,9 +82,9 @@ export default function Landing({ navigate }: LandingProps) {
               <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center mb-4">
                 <HardDrive className="w-5 h-5 text-white" />
               </div>
-              <h3 className="text-white font-semibold text-lg mb-2">Google Drive Sync</h3>
+              <h3 className="text-white font-semibold text-lg mb-2">Portable Backups</h3>
               <p className="text-gray-400 text-sm leading-relaxed">
-                Securely backup your database to a hidden app-specific folder in your own Google Drive. Restore anywhere.
+                Easily export your entire database as a single file. Keep your data on a USB drive, or restore it on any device.
               </p>
             </div>
 
