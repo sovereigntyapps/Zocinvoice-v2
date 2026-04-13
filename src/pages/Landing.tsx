@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Shield, Zap, HardDrive, FileText } from 'lucide-react';
+import { ArrowRight, Shield, Zap, HardDrive, Crown } from 'lucide-react';
 
 interface LandingProps {
   navigate: (route: string, params?: any) => void;
@@ -12,9 +12,9 @@ export default function Landing({ navigate }: LandingProps) {
       <header className="px-6 py-4 flex items-center justify-between border-b border-gray-200 bg-white/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-[#0a0a0a] rounded-lg flex items-center justify-center">
-            <FileText className="w-5 h-5 text-white" />
+            <Crown className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-lg tracking-tight">Sovereignty Apps</span>
+          <span className="font-bold text-lg tracking-tight">Sovereign Invoice</span>
         </div>
         <button
           onClick={() => navigate('dashboard')}

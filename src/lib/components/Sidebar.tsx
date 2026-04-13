@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, FileText, Settings, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Settings, BarChart3, Crown } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -23,9 +23,9 @@ export default function Sidebar({ currentRoute, navigate, className = '' }: Side
       <div className="p-6 border-b border-gray-100">
         <h1 className="text-xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-            Z
+            <Crown className="w-5 h-5 text-white" />
           </div>
-          ZOC Invoice
+          Sovereign Invoice
         </h1>
       </div>
       <nav className="flex-1 p-4 space-y-1">

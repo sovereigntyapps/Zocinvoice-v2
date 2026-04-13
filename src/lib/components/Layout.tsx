@@ -18,7 +18,7 @@ export default function Layout({ children, currentRoute, navigate }: LayoutProps
             {children}
           </div>
           <footer className="mt-12 text-center text-sm text-gray-400 print:hidden">
-            Free Invoice Generator by <span className="font-semibold text-gray-500">Sovereignty Apps</span>
+            Free Invoice Generator by <span className="font-semibold text-gray-500">Sovereign Invoice</span>
           </footer>
         </div>
       </main>
