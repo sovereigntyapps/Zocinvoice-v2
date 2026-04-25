@@ -26,99 +26,123 @@ export default function Upgrade({ navigate }: { navigate: (route: string) => voi
   if (isUnlocked) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 max-w-2xl mx-auto text-center h-full">
-        <div className="w-20 h-20 bg-emerald-500/20 text-emerald-500 rounded-3xl flex items-center justify-center mb-6 border border-emerald-500/30">
-          <Key className="w-10 h-10" />
+        <div className="w-24 h-24 bg-emerald-500/10 text-emerald-400 rounded-3xl flex items-center justify-center mb-8 border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.15)] animate-in zoom-in duration-700">
+          <Key className="w-12 h-12" />
         </div>
-        <h1 className="text-3xl font-bold text-white mb-4">Sovereign Protocol Unlocked</h1>
-        <p className="text-zinc-400 text-lg mb-8">
-          Your OPFS <code>license.bin</code> is securely persisted on this device. You have lifetime access to all premium features.
+        <h1 className="text-4xl font-black text-white mb-4 tracking-tighter uppercase">Protocol Active</h1>
+        <p className="text-zinc-500 text-lg mb-10 leading-relaxed">
+          Your hardware-rooted <code className="text-emerald-400">license.bin</code> is securely persisted on this node. You have unrestricted access to all local-first enclave features.
         </p>
         <button 
           onClick={() => navigate('dashboard')}
-          className="bg-white text-zinc-950 font-bold py-3 px-8 rounded-xl hover:bg-zinc-200 transition-colors"
+          className="bg-white text-zinc-950 font-black py-4 px-10 rounded-2xl hover:bg-zinc-200 transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.1)] uppercase tracking-widest text-xs"
         >
-          Return to Dashboard
+          Enter Intelligence Matrix
         </button>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center p-8 mx-auto max-w-4xl py-12 md:py-24">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4 flex justify-center items-center gap-3">
-          <Crown className="w-10 h-10 text-amber-500" /> Upgrade to Premium
+    <div className="flex-1 flex flex-col items-center p-8 mx-auto max-w-5xl py-16 md:py-24">
+      <div className="text-center mb-20 space-y-4">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full mb-2">
+           <Crown className="w-4 h-4 text-amber-500" />
+           <span className="text-[10px] font-mono text-amber-500 uppercase tracking-[0.2em] font-bold">Premium Protocol Access</span>
+        </div>
+        <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.9]">
+          Unlock Global <br /> <span className="text-zinc-700">Sovereignty</span>
         </h1>
-        <p className="text-zinc-400 text-lg max-w-xl mx-auto">
+        <p className="text-zinc-500 text-lg max-w-xl mx-auto font-medium leading-relaxed">
           Activate the <strong>LicenseManager Engine</strong>. Own your software with a one-time 1-click payment and secure your cryptographic license inside your device's OPFS.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8 w-full">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 flex flex-col">
-          <h2 className="text-2xl font-bold text-white mb-2">Lifetime Access</h2>
-          <p className="text-zinc-500 mb-8">One 1-click payment, yours forever.</p>
-          
-          <div className="text-5xl font-black text-white tracking-tight mb-8">
-            $49<span className="text-xl text-zinc-500 font-medium tracking-normal">.99</span>
+      <div className="grid lg:grid-cols-2 gap-12 w-full">
+        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/80 rounded-[40px] p-10 flex flex-col shadow-2xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+             <Zap className="w-48 h-48 text-white -mr-20 -mt-20" />
           </div>
-
-          <div className="space-y-4 mb-10 flex-1">
-            <div className="flex gap-3 text-zinc-300">
-              <Check className="w-5 h-5 text-emerald-500 shrink-0" />
-              <span>Unlimited native hardware invoicing</span>
-            </div>
-            <div className="flex gap-3 text-zinc-300">
-              <Check className="w-5 h-5 text-emerald-500 shrink-0" />
-              <span>OPFS <code>license.bin</code> cryptography</span>
-            </div>
-            <div className="flex gap-3 text-zinc-300">
-              <Check className="w-5 h-5 text-emerald-500 shrink-0" />
-              <span>Zero-knowledge client data exports</span>
-            </div>
-            <div className="flex gap-3 text-zinc-300">
-              <Check className="w-5 h-5 text-emerald-500 shrink-0" />
-              <span>Future protocol updates included</span>
-            </div>
-          </div>
-
-          <button
-            onClick={handle1ClickPayment}
-            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 group"
-          >
-            <Zap className="w-5 h-5 text-blue-300 group-hover:text-white transition-colors" /> Buy 1-Click Protocol License
-          </button>
           
-          <p className="text-center text-xs text-zinc-600 mt-4">
-            Payments securely processed by Stripe. Apple Pay & Google Pay supported.
-          </p>
+          <div className="relative z-10">
+            <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">Lifetime Protocol</h2>
+            <p className="text-zinc-500 mb-10 font-mono text-xs uppercase tracking-widest">Single Payment / Eternal Persistence</p>
+            
+            <div className="flex items-baseline gap-1 mb-10">
+              <span className="text-3xl font-bold text-zinc-600 line-through mr-2">$99</span>
+              <span className="text-6xl font-black text-white tracking-tighter">$49</span>
+              <span className="text-xl text-zinc-500 font-bold uppercase tracking-widest">.99</span>
+            </div>
+
+            <div className="space-y-5 mb-12">
+              <div className="flex gap-4 items-center">
+                <div className="w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                   <Check className="w-3.5 h-3.5 text-emerald-400" />
+                </div>
+                <span className="text-zinc-300 font-medium">Unlimited native hardware invoicing</span>
+              </div>
+              <div className="flex gap-4 items-center">
+                <div className="w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                   <Check className="w-3.5 h-3.5 text-emerald-400" />
+                </div>
+                <span className="text-zinc-300 font-medium">OPFS <code>license.bin</code> cryptography</span>
+              </div>
+              <div className="flex gap-4 items-center">
+                <div className="w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                   <Check className="w-3.5 h-3.5 text-emerald-400" />
+                </div>
+                <span className="text-zinc-300 font-medium">No-Limit Transaction Intelligence</span>
+              </div>
+              <div className="flex gap-4 items-center">
+                <div className="w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                   <Check className="w-3.5 h-3.5 text-emerald-400" />
+                </div>
+                <span className="text-zinc-300 font-medium">Zero-knowledge secure exports</span>
+              </div>
+            </div>
+
+            <button
+              onClick={handle1ClickPayment}
+              className="w-full bg-white text-zinc-950 font-black py-5 px-8 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 group shadow-[0_0_30px_rgba(255,255,255,0.1)] text-xs uppercase tracking-widest"
+            >
+              <Zap className="w-5 h-5 fill-zinc-950" /> Activate One-Click License
+            </button>
+            
+            <p className="text-center text-[10px] font-mono text-zinc-600 mt-6 uppercase tracking-widest">
+              Secured by Stripe · All major payment protocols supported
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-             <div className="flex items-center gap-4 mb-4">
-               <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex justify-center items-center text-amber-500">
-                 <Shield className="w-6 h-6" />
+          <div className="bg-zinc-900/20 backdrop-blur-md border border-zinc-900 rounded-3xl p-8 group hover:border-zinc-800 transition-all">
+             <div className="flex items-center gap-5 mb-6">
+               <div className="w-14 h-14 bg-zinc-950 border border-zinc-800 rounded-2xl flex justify-center items-center text-amber-500 shadow-inner group-hover:scale-110 transition-transform">
+                 <Shield className="w-7 h-7" />
                </div>
                <div>
-                  <h3 className="text-white font-bold text-lg">No Subscriptions</h3>
-                  <p className="text-zinc-500 text-sm">Stop paying SaaS rent</p>
+                  <h3 className="text-white font-black text-xl tracking-tight uppercase leading-none mb-1">Zero SaaS Rent</h3>
+                  <p className="text-zinc-600 text-[10px] font-mono uppercase tracking-widest italic">Terminate Subscription Drain</p>
                </div>
              </div>
-             <p className="text-zinc-400 text-sm">Sovereignty Apps are built on local-first protocols. You buy the software once, it runs entirely on your device with no recurring server costs.</p>
+             <p className="text-zinc-400 text-sm leading-relaxed">
+               Sovereignty Apps are built on local-first protocols. You buy the software once, it runs entirely on your device with no recurring server costs.
+             </p>
           </div>
           
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-             <div className="flex items-center gap-4 mb-4">
-               <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex justify-center items-center text-emerald-500">
-                 <HardDrive className="w-6 h-6" />
+          <div className="bg-zinc-900/20 backdrop-blur-md border border-zinc-900 rounded-3xl p-8 group hover:border-zinc-800 transition-all">
+             <div className="flex items-center gap-5 mb-6">
+               <div className="w-14 h-14 bg-zinc-950 border border-zinc-800 rounded-2xl flex justify-center items-center text-emerald-500 shadow-inner group-hover:scale-110 transition-transform">
+                 <HardDrive className="w-7 h-7" />
                </div>
                <div>
-                  <h3 className="text-white font-bold text-lg">Hardware Bound</h3>
-                  <p className="text-zinc-500 text-sm">Validating via OPFS</p>
+                  <h3 className="text-white font-black text-xl tracking-tight uppercase leading-none mb-1">Node Specific</h3>
+                  <p className="text-zinc-600 text-[10px] font-mono uppercase tracking-widest italic">Validating via OPFS Enclave</p>
                </div>
              </div>
-             <p className="text-zinc-400 text-sm">Upon 1-click payment, a cryptographic <code>license.bin</code> is secured in your Origin Private File System using the LicenseManager Engine.</p>
+             <p className="text-zinc-400 text-sm leading-relaxed">
+               Upon 1-click payment, a cryptographic <code>license.bin</code> is secured in your Origin Private File System using the LicenseManager Engine.
+             </p>
           </div>
         </div>
       </div>

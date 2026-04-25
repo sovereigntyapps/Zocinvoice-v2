@@ -64,67 +64,76 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-white tracking-tight uppercase">Clients</h1>
+          <p className="text-zinc-500 text-sm font-mono tracking-widest mt-1">Counterparty Directory</p>
+        </div>
         <button
           onClick={() => {
             setFormData({ id: '', name: '', email: '', company: '' });
             setIsFormOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-zinc-950 rounded-xl font-bold hover:bg-zinc-200 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]"
         >
-          <Plus className="w-4 h-4" /> Add Client
+          <Plus className="w-5 h-5" /> Register Client
         </button>
       </div>
 
       {isFormOpen && (
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6">
-          <h2 className="text-lg font-bold mb-4">{formData.id ? 'Edit Client' : 'New Client'}</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+        <div className="bg-zinc-900/40 backdrop-blur-xl p-8 rounded-3xl border border-zinc-800 shadow-2xl space-y-6 animate-in slide-in-from-top-4 duration-300">
+          <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
+             <h2 className="text-xl font-bold text-white tracking-tight">{formData.id ? 'Modify Identity' : 'New Identity Registration'}</h2>
+             <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Client Enclave</span>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Full Name</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-600 transition-all"
+                  placeholder="e.g. Satoshi Nakamoto"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Email Address</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-600 transition-all"
+                  placeholder="email@protocol.com"
                 />
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+              <div className="md:col-span-2 space-y-1.5">
+                <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Company / Organization</label>
                 <input
                   type="text"
                   value={formData.company}
                   onChange={e => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-600 transition-all"
+                  placeholder="The Genesis Block Ltd."
                 />
               </div>
             </div>
-            <div className="flex justify-end gap-3 mt-4">
+            <div className="flex justify-end gap-3 pt-4">
               <button
                 type="button"
                 onClick={() => setIsFormOpen(false)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+                className="px-6 py-2.5 text-zinc-500 hover:text-white font-medium transition-colors"
               >
-                Cancel
+                Abort
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="px-8 py-2.5 bg-zinc-100 text-zinc-950 rounded-xl font-bold hover:bg-white transition-all shadow-lg active:scale-95"
               >
-                Save Client
+                Commit Changes
               </button>
             </div>
           </form>
@@ -132,31 +141,32 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
       )}
 
       {/* Mobile Cards View */}
-      <div className="block md:hidden space-y-4">
+      <div className="block lg:hidden space-y-4">
         {clients.length === 0 ? (
-          <div className="bg-white p-8 text-center text-gray-500 rounded-xl border border-gray-200">
-            No clients found. Add one to get started.
+          <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800 p-12 text-center text-zinc-500 rounded-3xl">
+            No clients registered in current node.
           </div>
         ) : (
           clients.map(client => (
-            <div key={client.id} className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+            <div key={client.id} className="bg-zinc-900/40 backdrop-blur-xl p-5 rounded-2xl border border-zinc-800 shadow-sm space-y-4">
               <div className="flex justify-between items-start">
-                <div>
-                  <div className="font-bold text-gray-900">{client.name}</div>
-                  {client.company && <div className="text-sm text-gray-600">{client.company}</div>}
+                <div className="space-y-1">
+                  <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Protocol Name</div>
+                  <div className="font-bold text-white tracking-tight">{client.name}</div>
+                  {client.company && <div className="text-xs text-zinc-400 font-medium">{client.company}</div>}
                 </div>
-                <div className="flex gap-1">
-                  <button onClick={() => handleEdit(client)} className="p-2 text-gray-400 hover:text-blue-600 bg-gray-50 rounded-lg">
+                <div className="flex gap-2">
+                  <button onClick={() => handleEdit(client)} className="p-2.5 text-zinc-400 hover:text-white bg-zinc-800/40 rounded-xl transition-all border border-transparent hover:border-zinc-700">
                     <Edit2 className="w-4 h-4" />
                   </button>
-                  <button onClick={() => confirmDelete(client.id)} className="p-2 text-gray-400 hover:text-red-600 bg-gray-50 rounded-lg">
+                  <button onClick={() => confirmDelete(client.id)} className="p-2.5 text-zinc-400 hover:text-red-400 bg-zinc-800/40 rounded-xl transition-all border border-transparent hover:border-red-900/30">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
               {client.email && (
-                <div className="text-sm text-gray-500 flex items-center gap-2">
-                  <span className="truncate">{client.email}</span>
+                <div className="text-xs text-zinc-500 font-mono bg-zinc-950/30 p-2 rounded-lg truncate border border-zinc-800/50">
+                  {client.email}
                 </div>
               )}
             </div>
@@ -165,40 +175,52 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden md:block bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm text-gray-600">
-          <thead className="bg-gray-50 text-gray-900 font-medium border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-4">Name</th>
-              <th className="px-6 py-4">Company</th>
-              <th className="px-6 py-4">Email</th>
-              <th className="px-6 py-4 text-right">Actions</th>
+      <div className="hidden lg:block bg-zinc-900/40 backdrop-blur-xl rounded-2xl border border-zinc-800 shadow-2xl overflow-hidden group">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-zinc-800 bg-zinc-950/20">
+              <th className="px-6 py-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Counterparty Name</th>
+              <th className="px-6 py-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Organization</th>
+              <th className="px-6 py-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Communication Channel</th>
+              <th className="px-6 py-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-zinc-800/50">
             {clients.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                  No clients found. Add one to get started.
+                <td colSpan={4} className="px-6 py-24 text-center text-zinc-500 flex flex-col items-center gap-4">
+                  <Users className="w-8 h-8 opacity-20" />
+                  <span className="font-mono text-xs uppercase tracking-widest">Empty Identity Registry</span>
                 </td>
               </tr>
             ) : (
               clients.map(client => (
-                <tr key={client.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 font-medium text-gray-900">{client.name}</td>
-                  <td className="px-6 py-4">{client.company || '-'}</td>
-                  <td className="px-6 py-4">{client.email || '-'}</td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
+                <tr key={client.id} className="hover:bg-zinc-800/20 transition-colors group/row">
+                  <td className="px-6 py-5">
+                     <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-white font-mono text-xs">
+                           {client.name.charAt(0)}
+                        </div>
+                        <span className="font-bold text-white tracking-tight">{client.name}</span>
+                     </div>
+                  </td>
+                  <td className="px-6 py-5 text-zinc-300 font-medium">{client.company || 'Private Entity'}</td>
+                  <td className="px-6 py-5">
+                    <span className="text-zinc-500 font-mono text-xs underline decoration-zinc-800 underline-offset-4">{client.email || 'Air-gapped'}</span>
+                  </td>
+                  <td className="px-6 py-5 text-right">
+                    <div className="flex justify-end gap-1.5 translate-x-2 opacity-40 group-hover/row:opacity-100 group-hover/row:translate-x-0 transition-all duration-300">
                       <button
                         onClick={() => handleEdit(client)}
-                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                        className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-all border border-transparent hover:border-zinc-700"
+                        title="Edit Identity"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => confirmDelete(client.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                        className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all border border-transparent hover:border-red-900/30"
+                        title="Purge Identity"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -213,32 +235,34 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
 
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl max-w-md w-full p-8 animate-in fade-in zoom-in duration-300">
+            <div className="flex flex-col items-center text-center gap-6 mb-8">
+              <div className="w-20 h-20 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                <AlertTriangle className="w-10 h-10 text-red-500 animate-pulse" />
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">Delete Client</h3>
-                <p className="text-gray-500 text-sm mt-1">Are you sure you want to delete this client? This will also delete all invoices associated with this client. This action cannot be undone.</p>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-white tracking-tight uppercase">Purge Identity</h3>
+                <p className="text-zinc-500 text-sm leading-relaxed">
+                  Warning: Purging this identity will also delete all associated transactions from the ledger. This action is terminal and irreversible.
+                </p>
               </div>
             </div>
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleDelete}
+                className="w-full py-4 bg-red-600 text-white rounded-2xl font-bold hover:bg-red-500 transition-all shadow-xl shadow-red-900/20 active:scale-[0.98]"
+              >
+                Delete Client & Records
+              </button>
               <button
                 onClick={() => {
                   setDeleteModalOpen(false);
                   setClientToDelete(null);
                 }}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+                className="w-full py-3 text-zinc-500 hover:text-white font-medium transition-colors"
               >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
-              >
-                Delete Client
+                Cancel Purge
               </button>
             </div>
           </div>

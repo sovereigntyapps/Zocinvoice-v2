@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../db';
 import { v4 as uuidv4 } from 'uuid';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Calendar, FileText, User, Receipt, CreditCard, Save } from 'lucide-react';
 
 export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route: string) => void, invoiceId?: string }) {
   const [clients, setClients] = useState<any[]>([]);
@@ -26,7 +26,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
       if (invoiceId) {
         const invRes = await db.query('SELECT * FROM invoices WHERE id = $1', [invoiceId]);
         if (invRes.rows.length > 0) {
-          const inv = invRes.rows[0];
+          const inv: any = invRes.rows[0];
           setFormData({
             client_id: inv.client_id as string,
             invoice_number: inv.invoice_number as string,
@@ -41,7 +41,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
 
           const itemsRes = await db.query('SELECT * FROM invoice_items WHERE invoice_id = $1', [invoiceId]);
           if (itemsRes.rows.length > 0) {
-            setItems(itemsRes.rows.map(item => ({
+            setItems(itemsRes.rows.map((item: any) => ({
               id: item.id as string,
               description: item.description as string,
               quantity: parseFloat(item.quantity as string),
@@ -51,7 +51,6 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
           }
         }
       } else {
-        // Load default tax settings for new invoice
         const settingsRes = await db.query('SELECT * FROM settings WHERE key IN ($1, $2)', ['tax_name', 'tax_rate']);
         const settings = settingsRes.rows.reduce((acc: any, row: any) => {
           acc[row.key] = row.value;
@@ -131,204 +130,267 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <button onClick={() => navigate('invoices')} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h1 className="text-2xl font-bold text-gray-900">{invoiceId ? 'Edit Invoice' : 'Create Invoice'}</h1>
+    <div className="max-w-4xl mx-auto space-y-8 pb-24">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => navigate('invoices')} 
+            className="p-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-xl transition-all border border-transparent hover:border-zinc-700"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">
+              {invoiceId ? 'Edit Invoice' : 'Create Invoice'}
+            </h1>
+            <p className="text-sm text-zinc-500">Drafting a new transaction on the SWA Protocol</p>
+          </div>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Client</label>
-              <select
-                required
-                value={formData.client_id}
-                onChange={e => setFormData({ ...formData, client_id: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Select a client...</option>
-                {clients.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} {c.company ? `(${c.company})` : ''}</option>
-                ))}
-              </select>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Basic Details Card */}
+        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 rounded-2xl p-6 shadow-2xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+            <FileText size={80} />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">
+                  <User size={12} /> Client
+                </label>
+                <select
+                  required
+                  value={formData.client_id}
+                  onChange={e => setFormData({ ...formData, client_id: e.target.value })}
+                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all appearance-none cursor-pointer"
+                >
+                  <option value="" className="bg-zinc-900">Select a client...</option>
+                  {clients.map(c => (
+                    <option key={c.id} value={c.id} className="bg-zinc-900">
+                      {c.name} {c.company ? `(${c.company})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">
+                  <Receipt size={12} /> Invoice Number
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.invoice_number}
+                  onChange={e => setFormData({ ...formData, invoice_number: e.target.value })}
+                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                  placeholder="INV-XXXX"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">
+                  <CreditCard size={12} /> PO Number
+                </label>
+                <input
+                  type="text"
+                  value={formData.po_number}
+                  onChange={e => setFormData({ ...formData, po_number: e.target.value })}
+                  placeholder="Optional Purchase Order #"
+                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Invoice Number</label>
-              <input
-                type="text"
-                required
-                value={formData.invoice_number}
-                onChange={e => setFormData({ ...formData, invoice_number: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">PO Number</label>
-              <input
-                type="text"
-                value={formData.po_number}
-                onChange={e => setFormData({ ...formData, po_number: e.target.value })}
-                placeholder="Optional"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-              <input
-                type="date"
-                required
-                value={formData.date}
-                onChange={e => setFormData({ ...formData, date: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-              <input
-                type="date"
-                value={formData.due_date}
-                onChange={e => setFormData({ ...formData, due_date: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">
+                  <Calendar size={12} /> Issue Date
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={formData.date}
+                  onChange={e => setFormData({ ...formData, date: e.target.value })}
+                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all [color-scheme:dark]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">
+                  <Calendar size={12} /> Due Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.due_date}
+                  onChange={e => setFormData({ ...formData, due_date: e.target.value })}
+                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all [color-scheme:dark]"
+                />
+              </div>
+
+              <div className="p-4 bg-zinc-950/30 border border-zinc-800/50 rounded-xl mt-2">
+                <p className="text-xs text-zinc-500 mb-1 font-mono uppercase tracking-widest">Network Status</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"></div>
+                  <span className="text-sm text-zinc-300 font-medium">Drafting (Local Node)</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 md:p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h2 className="text-lg font-bold mb-4">Line Items</h2>
-          <div className="space-y-6 md:space-y-4">
-            <div className="hidden md:grid grid-cols-12 gap-4 text-sm font-medium text-gray-700 pb-2 border-b border-gray-200">
+        {/* Line Items Card */}
+        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="p-6 border-b border-zinc-800/50 flex justify-between items-center">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <Plus size={18} className="text-zinc-500" /> Line Items
+            </h2>
+          </div>
+          
+          <div className="p-6 space-y-4">
+            <div className="hidden md:grid grid-cols-12 gap-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest pb-2 border-b border-zinc-800">
               <div className="col-span-6">Description</div>
               <div className="col-span-2 text-right">Qty</div>
               <div className="col-span-2 text-right">Price</div>
-              <div className="col-span-2 text-right">Amount</div>
+              <div className="col-span-2 text-right px-2">Total</div>
             </div>
             
-            {items.map((item, index) => (
-              <div key={item.id} className="flex flex-col md:grid md:grid-cols-12 gap-4 md:items-center pb-4 border-b border-gray-100 md:border-0 md:pb-0">
-                <div className="md:col-span-6">
-                  <label className="block md:hidden text-xs font-medium text-gray-500 mb-1">Description</label>
-                  <input
-                    type="text"
-                    placeholder="Item description"
-                    value={item.description}
-                    onChange={e => handleItemChange(item.id, 'description', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4 md:col-span-4">
-                  <div>
-                    <label className="block md:hidden text-xs font-medium text-gray-500 mb-1">Qty</label>
+            <div className="space-y-4">
+              {items.map((item, index) => (
+                <div key={item.id} className="flex flex-col md:grid md:grid-cols-12 gap-4 items-start md:items-center p-4 md:p-0 bg-zinc-950/20 md:bg-transparent rounded-xl border border-zinc-800 md:border-0">
+                  <div className="md:col-span-6 w-full">
+                    <label className="block md:hidden text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">Description</label>
                     <input
-                      type="number"
-                      min="1"
-                      step="0.01"
-                      value={item.quantity}
-                      onChange={e => handleItemChange(item.id, 'quantity', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 md:text-right"
+                      type="text"
+                      placeholder="Service or product description..."
+                      value={item.description}
+                      onChange={e => handleItemChange(item.id, 'description', e.target.value)}
+                      className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-600 transition-colors"
                     />
                   </div>
-                  <div>
-                    <label className="block md:hidden text-xs font-medium text-gray-500 mb-1">Price</label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={item.unit_price}
-                      onChange={e => handleItemChange(item.id, 'unit_price', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 md:text-right"
-                    />
+                  <div className="grid grid-cols-2 md:contents gap-4 w-full">
+                    <div className="md:col-span-2">
+                      <label className="block md:hidden text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">Qty</label>
+                      <input
+                        type="number"
+                        min="1"
+                        step="0.01"
+                        value={item.quantity}
+                        onChange={e => handleItemChange(item.id, 'quantity', e.target.value)}
+                        className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-600 transition-colors md:text-right"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block md:hidden text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">Price</label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={item.unit_price}
+                        onChange={e => handleItemChange(item.id, 'unit_price', e.target.value)}
+                        className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-600 transition-colors md:text-right"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-2 mt-2 md:mt-0">
-                  <div className="md:hidden font-medium text-gray-500">Amount:</div>
-                  <div className="flex items-center gap-4">
-                    <span className="font-medium text-gray-900">${item.amount.toFixed(2)}</span>
+                  <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-3 w-full border-t border-zinc-800 md:border-0 pt-3 md:pt-0">
+                    <div className="md:hidden text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Amount:</div>
+                    <span className="font-mono text-sm text-white">${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     <button
                       type="button"
                       onClick={() => removeItem(item.id)}
-                      className="p-2 text-gray-400 hover:text-red-600 bg-gray-50 md:bg-transparent rounded-lg transition-colors"
+                      className="p-2 text-zinc-600 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          
-          <div className="mt-4 flex flex-col md:flex-row justify-between items-start md:items-center pt-4 border-t border-gray-100 gap-4">
+              ))}
+            </div>
+
             <button
               type="button"
               onClick={addItem}
-              className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+              className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors py-2"
             >
-              <Plus className="w-4 h-4" /> Add Item
+              <Plus size={16} /> Add another line item
             </button>
-            <div className="w-full md:w-64 space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Subtotal:</span>
-                <span>${subtotal.toFixed(2)}</span>
+          </div>
+
+          <div className="p-6 bg-zinc-950/40 border-t border-zinc-800/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="w-full md:w-auto space-y-4">
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Notes & Terms</label>
+                <textarea
+                  rows={2}
+                  value={formData.notes}
+                  onChange={e => setFormData({ ...formData, notes: e.target.value })}
+                  className="w-full md:w-80 bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-300 focus:outline-none focus:border-zinc-700 transition-all"
+                  placeholder="Payment terms or thank you note..."
+                />
               </div>
-              <div className="flex justify-between text-sm text-gray-600 items-center">
-                <div className="flex items-center gap-2">
+            </div>
+
+            <div className="w-full md:w-80 space-y-4">
+              <div className="flex justify-between items-center text-sm text-zinc-400">
+                <span className="font-mono uppercase tracking-widest text-[10px]">Subtotal</span>
+                <span className="font-mono">${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+              </div>
+              
+              <div className="flex justify-between items-center gap-4">
+                <div className="flex items-center gap-2 flex-1">
                   <input 
                     type="text" 
                     value={formData.tax_name} 
                     onChange={e => setFormData({...formData, tax_name: e.target.value})}
-                    className="w-20 px-2 py-1 text-xs border border-gray-300 rounded"
+                    className="w-20 bg-zinc-950/50 border border-zinc-800 rounded px-2 py-1 text-[10px] font-mono text-zinc-500 focus:outline-none focus:border-zinc-700 uppercase"
                   />
-                  <input 
-                    type="number" 
-                    step="0.01"
-                    min="0"
-                    value={formData.tax_rate} 
-                    onChange={e => setFormData({...formData, tax_rate: parseFloat(e.target.value) || 0})}
-                    className="w-16 px-2 py-1 text-xs border border-gray-300 rounded text-right"
-                  />
-                  <span>%</span>
+                  <div className="relative">
+                    <input 
+                      type="number" 
+                      step="0.01"
+                      min="0"
+                      value={formData.tax_rate} 
+                      onChange={e => setFormData({...formData, tax_rate: parseFloat(e.target.value) || 0})}
+                      className="w-16 bg-zinc-950/50 border border-zinc-800 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-zinc-700 text-right pr-4"
+                    />
+                    <span className="absolute right-1 text-[10px] text-zinc-600 top-1/2 -translate-y-1/2">%</span>
+                  </div>
                 </div>
-                <span>${taxAmount.toFixed(2)}</span>
+                <span className="font-mono text-sm text-zinc-400">${taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
               </div>
-              <div className="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t border-gray-200">
-                <span>Total:</span>
-                <span>${total.toFixed(2)}</span>
+
+              <div className="pt-4 border-t border-zinc-800 flex justify-between items-center">
+                <span className="text-sm font-bold text-white uppercase tracking-wider">Total</span>
+                <span className="text-2xl font-bold text-white font-mono">
+                  ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notes / Terms</label>
-          <textarea
-            rows={3}
-            value={formData.notes}
-            onChange={e => setFormData({ ...formData, notes: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Thank you for your business!"
-          />
-        </div>
-
-        <div className="flex flex-col-reverse sm:flex-row justify-end gap-4">
+        {/* Actions */}
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 border-t border-zinc-800/50">
           <button
             type="button"
             onClick={() => navigate('invoices')}
-            className="w-full sm:w-auto px-6 py-3 sm:py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+            className="px-8 py-3 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-xl font-semibold hover:text-white hover:border-zinc-700 transition-all text-sm"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="w-full sm:w-auto px-6 py-3 sm:py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="flex items-center justify-center gap-2 px-8 py-3 bg-white text-zinc-950 rounded-xl font-bold hover:bg-zinc-200 active:scale-[0.98] transition-all text-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]"
           >
-            Save Invoice
+            <Save size={18} />
+            Commit to Protocol
           </button>
         </div>
       </form>
     </div>
   );
 }
+

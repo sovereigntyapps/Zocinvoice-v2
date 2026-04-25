@@ -171,160 +171,171 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
   };
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto pb-12 animate-in fade-in duration-500">
-      <h1 className="text-3xl font-bold text-zinc-100 tracking-tight">Settings</h1>
+    <div className="space-y-8 max-w-2xl mx-auto pb-24">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white tracking-tight uppercase">Settings</h1>
+          <p className="text-zinc-500 text-sm font-mono tracking-widest mt-1">Node Configuration</p>
+        </div>
+      </div>
 
-      <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-zinc-800">
-          <div className="p-2 bg-zinc-800 rounded-lg text-zinc-300">
-            <Building2 className="w-5 h-5" />
+      {status && (
+        <div className={`p-4 rounded-xl flex items-start gap-3 animate-in slide-in-from-top-2 duration-300 ${
+          status.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 
+          status.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+        }`}>
+          <AlertCircle className="w-5 h-5 auto mt-0.5" />
+          <p className="text-sm font-medium">{status.message}</p>
+        </div>
+      )}
+
+      {/* Company Profile */}
+      <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 p-8 rounded-3xl space-y-8 shadow-2xl">
+        <div className="flex items-center gap-4 pb-6 border-b border-zinc-800/50">
+          <div className="p-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-zinc-400 shadow-inner">
+            <Building2 className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Company Profile</h2>
-            <p className="text-sm text-zinc-500">These details will appear on your invoices.</p>
+            <h2 className="text-xl font-bold text-white tracking-tight">Organization Profile</h2>
+            <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest mt-0.5">Invoice Metadata Enclave</p>
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-6">
-            <div className="shrink-0">
-              <label className="block text-sm font-medium text-zinc-400 mb-2">Company Logo</label>
-              <div className="flex flex-col items-center gap-3">
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row gap-8">
+            <div className="shrink-0 space-y-3">
+              <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Brand Identity</label>
+              <div className="flex flex-col items-center gap-4">
                 {companyLogo ? (
-                  <div className="relative w-24 h-24 border border-zinc-700 rounded-lg overflow-hidden bg-zinc-950 flex items-center justify-center">
-                    <img src={companyLogo} alt="Logo preview" className="max-w-full max-h-full object-contain" />
+                  <div className="relative w-32 h-32 border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-950 flex items-center justify-center group shadow-2xl">
+                    <img src={companyLogo} alt="Logo preview" className="max-w-full max-h-full object-contain p-2" />
                     <button 
                       onClick={() => setCompanyLogo('')}
-                      className="absolute top-1 right-1 bg-zinc-900 rounded-full p-1 shadow-sm text-zinc-400 hover:text-red-500"
+                      className="absolute top-2 right-2 bg-zinc-900/80 backdrop-blur shadow-lg rounded-full p-1.5 text-zinc-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all border border-zinc-800"
                     >
-                      <AlertCircle className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
-                  <div className="w-24 h-24 border-2 border-dashed border-zinc-700 rounded-lg flex flex-col items-center justify-center text-zinc-500 bg-zinc-950/50">
-                    <ImageIcon className="w-8 h-8 mb-1" />
-                    <span className="text-xs">No logo</span>
+                  <div className="w-32 h-32 border-2 border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-600 bg-zinc-950/50 hover:bg-zinc-950/80 hover:border-zinc-700 transition-all cursor-pointer group">
+                    <ImageIcon className="w-10 h-10 mb-2 opacity-20 group-hover:opacity-40 transition-opacity" />
+                    <span className="text-[10px] font-mono uppercase tracking-widest">No Identity</span>
                   </div>
                 )}
-                <label className="cursor-pointer px-3 py-1.5 border border-zinc-700 rounded-md text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition-colors">
-                  <span>Upload Logo</span>
+                <label className="cursor-pointer px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-xl text-xs font-bold text-zinc-400 hover:text-white hover:border-zinc-700 transition-all active:scale-95 shadow-lg">
+                  <span>Update Logo</span>
                   <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
                 </label>
               </div>
             </div>
             
-            <div className="flex-1 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-1">Company Name</label>
+            <div className="flex-1 space-y-6 pt-2">
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Legal Entity Name</label>
                 <input
                   type="text"
                   value={companyName}
                   onChange={e => setCompanyName(e.target.value)}
                   placeholder="e.g. Protocol Inc"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zinc-600"
+                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-600 transition-all"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-1">Email Address</label>
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Public Endpoint (Email)</label>
                 <input
                   type="email"
                   value={companyEmail}
                   onChange={e => setCompanyEmail(e.target.value)}
-                  placeholder="hello@company.com"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zinc-600"
+                  placeholder="hello@protocol.local"
+                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-600 transition-all font-mono text-sm"
                 />
               </div>
             </div>
           </div>
           
-          <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-1">Address / Details</label>
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Physical Coordinates / Address</label>
             <textarea
               rows={3}
               value={companyAddress}
               onChange={e => setCompanyAddress(e.target.value)}
-              placeholder="123 Business Rd&#10;City, State 12345"
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zinc-600 resize-none"
+              placeholder="123 Node Ave&#10;Inertia District, Web3"
+              className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-600 resize-none transition-all text-sm leading-relaxed"
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-zinc-800">
-          <div className="p-2 bg-zinc-800 text-zinc-300 rounded-lg">
-            <Percent className="w-5 h-5" />
+      {/* Tax Configuration */}
+      <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 p-8 rounded-3xl space-y-8 shadow-2xl">
+        <div className="flex items-center gap-4 pb-6 border-b border-zinc-800/50">
+          <div className="p-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-zinc-400 shadow-inner">
+            <Percent className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Tax Configuration</h2>
-            <p className="text-sm text-zinc-500">Set a default tax to be applied to new invoices.</p>
+            <h2 className="text-xl font-bold text-white tracking-tight">Fiscal Rules</h2>
+            <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest mt-0.5">Tax Calculation Logic</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-1">Tax Name</label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Default Tax Label</label>
             <input
               type="text"
               value={taxName}
               onChange={e => setTaxName(e.target.value)}
               placeholder="e.g. VAT, Sales Tax"
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zinc-600"
+              className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-600 transition-all uppercase font-mono text-xs tracking-wider"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-1">Tax Rate (%)</label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={taxRate}
-              onChange={e => setTaxRate(e.target.value)}
-              placeholder="0.00"
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zinc-600"
-            />
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Tax Rate Payload (%)</label>
+            <div className="relative">
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={taxRate}
+                onChange={e => setTaxRate(e.target.value)}
+                placeholder="0.00"
+                className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-600 transition-all font-mono"
+              />
+              <span className="absolute right-4 text-zinc-700 font-mono top-1/2 -translate-y-1/2">%</span>
+            </div>
           </div>
         </div>
         
         <div className="pt-4 flex items-center justify-end">
           <button
             onClick={saveSettings}
-            className="flex items-center gap-2 px-6 py-2.5 bg-white text-zinc-950 rounded-lg font-bold hover:bg-zinc-200 transition-colors"
+            className="flex items-center justify-center gap-2 px-8 py-3 bg-white text-zinc-950 rounded-xl font-bold hover:bg-zinc-200 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] text-sm"
           >
-            <Save className="w-4 h-4" /> Save Profile
+            <Save className="w-4 h-4" /> Commit Protocol Changes
           </button>
         </div>
       </div>
 
-      <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-zinc-800">
-          <div className="p-3 bg-zinc-800 text-zinc-300 rounded-xl">
+      {/* Persistence */}
+      <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 p-8 rounded-3xl shadow-2xl space-y-8">
+        <div className="flex items-center gap-4 pb-6 border-b border-zinc-800/50">
+          <div className="p-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-zinc-400 shadow-inner">
             <HardDrive className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-zinc-100">Data Management</h2>
-            <p className="text-sm text-zinc-500">Export your local WASM database to a file, or restore from a backup.</p>
+            <h2 className="text-xl font-bold text-white tracking-tight">Persistence Enclave</h2>
+            <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest mt-0.5">IDB / OPFS Data Management</p>
           </div>
         </div>
-        
-        {status && (
-          <div className={`p-4 rounded-xl flex items-start gap-3 ${
-            status.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
-            status.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-          }`}>
-            <AlertCircle className="w-5 h-5 auto mt-0.5" />
-            <p className="text-sm font-medium">{status.message}</p>
-          </div>
-        )}
 
         <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={handleExportData}
             disabled={isLoading}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border rounded-xl font-medium transition-colors disabled:opacity-50 ${isUnlocked ? 'bg-zinc-950 text-zinc-300 border-zinc-800 hover:bg-zinc-800' : 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20'}`}
+            className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 border rounded-2xl font-bold transition-all active:scale-[0.98] shadow-lg ${isUnlocked ? 'bg-zinc-950 text-zinc-300 border-zinc-800 hover:bg-zinc-900 hover:border-zinc-700' : 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20'}`}
           >
-            {isUnlocked ? <Download className="w-4 h-4" /> : <Crown className="w-4 h-4" />}
-            Export DB Backup
+            {isUnlocked ? <Download className="w-5 h-5 opacity-50" /> : <Crown className="w-5 h-5 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />}
+            <span className="text-sm">Export Protocol Backup</span>
           </button>
           
           <div className="flex-1">
@@ -338,17 +349,20 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600/10 text-emerald-500 border border-emerald-500/20 rounded-xl font-medium hover:bg-emerald-600/20 transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-emerald-600/5 text-emerald-500 border border-emerald-500/10 rounded-2xl font-bold hover:bg-emerald-600/10 hover:border-emerald-500/20 transition-all active:scale-[0.98] shadow-lg"
             >
-              <Upload className="w-4 h-4" /> Restore Backup
+              <Upload className="w-5 h-5 opacity-50" /> 
+              <span className="text-sm">Restore From Archive</span>
             </button>
           </div>
         </div>
-        <p className="text-xs text-zinc-600 mt-2">
-          <strong>Note:</strong> Restoring a backup will overwrite the current OPFS state.
-        </p>
+        <div className="bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/30 flex items-start gap-4">
+           <AlertCircle className="w-5 h-5 text-zinc-700 mt-0.5 shrink-0" />
+           <p className="text-[10px] text-zinc-600 font-mono leading-relaxed uppercase tracking-widest">
+             Critical Security Note: Restoring an archive will permanently overwrite the current local node state. Identity Enclave encryption must match archive derivation.
+           </p>
+        </div>
       </div>
-
     </div>
   );
 }

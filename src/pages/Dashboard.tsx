@@ -70,33 +70,33 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
       {/* Central Metrics Hub */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex items-center gap-4">
-            <div className="p-3 bg-blue-500/10 text-blue-500 rounded-xl">
+        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 p-6 rounded-2xl flex items-center gap-4 group hover:border-zinc-700/50 transition-all shadow-xl">
+            <div className="p-3.5 bg-blue-500/10 text-blue-500 rounded-xl group-hover:scale-110 transition-transform">
               <DollarSign className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-zinc-500 mb-1">Total Revenue</p>
-              <p className="text-2xl font-bold text-zinc-100">${stats.totalRevenue.toFixed(2)}</p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Total Revenue</p>
+              <p className="text-3xl font-bold text-white tracking-tight">${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
             </div>
         </div>
         
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex items-center gap-4">
-            <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl">
+        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 p-6 rounded-2xl flex items-center gap-4 group hover:border-zinc-700/50 transition-all shadow-xl">
+            <div className="p-3.5 bg-emerald-500/10 text-emerald-500 rounded-xl group-hover:scale-110 transition-transform">
               <FileText className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-zinc-500 mb-1">Invoices</p>
-              <p className="text-2xl font-bold text-zinc-100">{stats.totalInvoices}</p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Invoices</p>
+              <p className="text-3xl font-bold text-white tracking-tight">{stats.totalInvoices}</p>
             </div>
         </div>
 
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex items-center gap-4">
-            <div className="p-3 bg-purple-500/10 text-purple-500 rounded-xl">
+        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 p-6 rounded-2xl flex items-center gap-4 group hover:border-zinc-700/50 transition-all shadow-xl">
+            <div className="p-3.5 bg-purple-500/10 text-purple-500 rounded-xl group-hover:scale-110 transition-transform">
               <Users className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-zinc-500 mb-1">Clients</p>
-              <p className="text-2xl font-bold text-zinc-100">{stats.totalClients}</p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Clients</p>
+              <p className="text-3xl font-bold text-white tracking-tight">{stats.totalClients}</p>
             </div>
         </div>
         
