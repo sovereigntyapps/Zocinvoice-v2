@@ -23,10 +23,11 @@ export default function Reports() {
         FROM invoices
       `);
       
+      const row = statsRes.rows[0] as any;
       setStats({
-        totalRevenue: parseFloat(statsRes.rows[0].total_revenue as string) || 0,
-        paidRevenue: parseFloat(statsRes.rows[0].paid_revenue as string) || 0,
-        unpaidRevenue: parseFloat(statsRes.rows[0].unpaid_revenue as string) || 0,
+        totalRevenue: parseFloat(row.total_revenue as string) || 0,
+        paidRevenue: parseFloat(row.paid_revenue as string) || 0,
+        unpaidRevenue: parseFloat(row.unpaid_revenue as string) || 0,
       });
 
       // Get monthly revenue
@@ -52,110 +53,125 @@ export default function Reports() {
   }, []);
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
-      <div>
-        <h1 className="text-3xl font-bold text-white tracking-tight uppercase">Intelligence</h1>
-        <p className="text-zinc-500 text-sm font-mono tracking-widest mt-1">Analytics Reporting Suite v1.0</p>
+    <div className="space-y-12 max-w-6xl mx-auto pb-24">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
+        <div>
+          <h1 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Intelligence</h1>
+          <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] mt-2">Analytics Reporting Suite v1.0</p>
+        </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-zinc-900/40 backdrop-blur-xl p-6 rounded-3xl border border-zinc-800/50 shadow-2xl group transition-all hover:bg-zinc-900/60">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-white shadow-inner group-hover:border-zinc-700 transition-all">
-              <DollarSign className="w-6 h-6" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="bg-white border border-zinc-200 p-8 rounded-[32px] flex flex-col gap-6 group hover:border-zinc-900 transition-all shadow-xl shadow-zinc-200/40 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:scale-110 transition-transform">
+               <DollarSign size={80} className="text-zinc-900" />
+            </div>
+            <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors shadow-inner">
+               <DollarSign className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Gross Billing</p>
-              <p className="text-2xl font-bold text-white tracking-tight">${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Gross Billing</p>
+              <p className="text-3xl font-black text-zinc-900 tracking-tight transition-transform duration-500 grow font-sans">
+                ${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </p>
             </div>
-          </div>
         </div>
         
-        <div className="bg-zinc-900/40 backdrop-blur-xl p-6 rounded-3xl border border-zinc-800/50 shadow-2xl group transition-all hover:bg-zinc-900/60">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-emerald-400 shadow-inner group-hover:border-emerald-500/20 transition-all">
-              <TrendingUp className="w-6 h-6" />
+        <div className="bg-white border border-zinc-200 p-8 rounded-[32px] flex flex-col gap-6 group hover:border-zinc-900 transition-all shadow-xl shadow-zinc-200/40 relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:scale-110 transition-transform">
+               <TrendingUp size={80} className="text-zinc-900" />
+            </div>
+            <div className="w-14 h-14 bg-zinc-900 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-zinc-900/10">
+               <TrendingUp className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Settled Funds</p>
-              <p className="text-2xl font-bold text-emerald-400 tracking-tight">${stats.paidRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Settled Funds</p>
+              <p className="text-3xl font-black text-zinc-950 tracking-tight grow font-sans underline decoration-emerald-100 underline-offset-8 decoration-4">
+                ${stats.paidRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </p>
             </div>
-          </div>
         </div>
-        
-        <div className="bg-zinc-900/40 backdrop-blur-xl p-6 rounded-3xl border border-zinc-800/50 shadow-2xl group transition-all hover:bg-zinc-900/60">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-zinc-950 border border-zinc-800 rounded-2xl text-amber-500 shadow-inner group-hover:border-amber-500/20 transition-all">
-              <Clock className="w-6 h-6" />
+
+        <div className="bg-white border border-zinc-200 p-8 rounded-[32px] flex flex-col gap-6 group hover:border-zinc-900 transition-all shadow-xl shadow-zinc-200/40 relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:scale-110 transition-transform">
+               <Clock size={80} className="text-zinc-900" />
+            </div>
+            <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors shadow-inner">
+               <Clock className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Pending Sync</p>
-              <p className="text-2xl font-bold text-zinc-100 tracking-tight">${stats.unpaidRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Pending Sync</p>
+              <p className="text-3xl font-black text-zinc-900 tracking-tight grow font-sans">
+                ${stats.unpaidRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </p>
             </div>
-          </div>
         </div>
       </div>
 
-      <div className="bg-zinc-900/40 backdrop-blur-xl p-8 rounded-3xl border border-zinc-800/50 shadow-2xl">
-        <div className="flex justify-between items-center mb-10 border-b border-zinc-800/50 pb-6">
-           <h2 className="text-xl font-bold text-white tracking-tight uppercase">Revenue Trajectory</h2>
-           <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest underline decoration-zinc-800 underline-offset-4">Last 12 Fiscal Epochs</span>
+      <div className="bg-white p-12 rounded-[48px] border border-zinc-200 shadow-2xl shadow-zinc-200/40">
+        <div className="flex justify-between items-center mb-12 border-b border-zinc-50 pb-8">
+           <h2 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Revenue Trajectory</h2>
+           <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">Temporal Flow</span>
         </div>
-        <div className="h-96">
+        <div className="h-[450px]">
           {monthlyData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#18181b" />
+              <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="0" vertical={false} stroke="#f4f4f5" />
                 <XAxis 
                   dataKey="name" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#71717a', fontSize: 10, fontFamily: 'monospace' }} 
-                  dy={15} 
+                  tick={{ fill: '#a1a1aa', fontSize: 10, fontWeight: 700, fontFamily: 'monospace' }} 
+                  dy={20} 
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#71717a', fontSize: 10, fontFamily: 'monospace' }} 
+                  tick={{ fill: '#a1a1aa', fontSize: 10, fontWeight: 700, fontFamily: 'monospace' }} 
                   tickFormatter={(value) => `$${value}`} 
                 />
                 <Tooltip 
-                  cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                  cursor={{ fill: '#f8fafc' }}
                   contentStyle={{ 
-                    backgroundColor: '#09090b', 
-                    borderRadius: '16px', 
-                    border: '1px solid #27272a', 
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-                    padding: '12px 16px'
+                    backgroundColor: '#000000', 
+                    borderRadius: '24px', 
+                    border: 'none', 
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3)',
+                    padding: '20px 24px'
                   }}
                   itemStyle={{ 
                     color: '#fff', 
-                    fontSize: '12px', 
-                    fontWeight: 'bold',
+                    fontSize: '14px', 
+                    fontWeight: '900',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
+                    letterSpacing: '0.1em'
                   }}
                   labelStyle={{ 
                     color: '#71717a', 
                     fontSize: '10px', 
-                    marginBottom: '8px',
-                    fontFamily: 'monospace'
+                    fontWeight: '900',
+                    marginBottom: '10px',
+                    fontFamily: 'monospace',
+                    textTransform: 'uppercase'
                   }}
-                  formatter={(value: number) => [`$${value.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 'Yield']}
+                  formatter={(value: number) => [`$${value.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 'Capture']}
                 />
                 <Bar 
                   dataKey="revenue" 
-                  fill="#ffffff" 
-                  radius={[8, 8, 2, 2]} 
-                  maxBarSize={60} 
-                  animationDuration={1500}
+                  fill="#18181b" 
+                  radius={[12, 12, 4, 4]} 
+                  maxBarSize={80} 
+                  animationDuration={2000}
                 />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-zinc-500 gap-4">
-              <BarChart className="w-12 h-12 opacity-10 animate-pulse" />
-              <p className="font-mono text-xs uppercase tracking-widest">Awaiting transaction density for visualization</p>
+            <div className="h-full flex flex-col items-center justify-center text-zinc-400 gap-8">
+              <div className="w-24 h-24 bg-zinc-50 rounded-full flex items-center justify-center animate-pulse">
+                <BarChart className="w-12 h-12 opacity-10" />
+              </div>
+              <p className="font-black text-[10px] uppercase tracking-[0.4em]">Empty Temporal Buffer</p>
             </div>
           )}
         </div>

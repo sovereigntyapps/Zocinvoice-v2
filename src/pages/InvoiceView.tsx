@@ -22,7 +22,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
     async function loadData() {
       const invRes = await db.query('SELECT * FROM invoices WHERE id = $1', [invoiceId]);
       if (invRes.rows.length > 0) {
-        const inv = invRes.rows[0];
+        const inv = invRes.rows[0] as any;
         setInvoice(inv);
         
         const clientRes = await db.query('SELECT * FROM clients WHERE id = $1', [inv.client_id]);

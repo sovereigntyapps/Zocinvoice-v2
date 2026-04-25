@@ -52,7 +52,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
         }
       } else {
         const settingsRes = await db.query('SELECT * FROM settings WHERE key IN ($1, $2)', ['tax_name', 'tax_rate']);
-        const settings = settingsRes.rows.reduce((acc: any, row: any) => {
+        const settings: any = settingsRes.rows.reduce((acc: any, row: any) => {
           acc[row.key] = row.value;
           return acc;
         }, {});
@@ -136,106 +136,111 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
         <div className="flex items-center gap-4">
           <button 
             onClick={() => navigate('invoices')} 
-            className="p-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-xl transition-all border border-transparent hover:border-zinc-700"
+            className="p-3 text-zinc-400 hover:text-zinc-900 bg-white hover:bg-zinc-100 rounded-2xl transition-all border border-zinc-200 shadow-sm"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
-              {invoiceId ? 'Edit Invoice' : 'Create Invoice'}
+            <h1 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase">
+              {invoiceId ? 'Edit Invoice' : 'New Invoice'}
             </h1>
-            <p className="text-sm text-zinc-500">Drafting a new transaction on the SWA Protocol</p>
+            <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mt-1">Sovereign Ledger Entry: Protocol v1.0</p>
           </div>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Details Card */}
-        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 rounded-2xl p-6 shadow-2xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-            <FileText size={80} />
+        <div className="bg-white border border-zinc-200 rounded-[32px] p-8 shadow-xl shadow-zinc-200/50 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 text-zinc-50 pointer-events-none transition-transform group-hover:scale-110">
+            <FileText size={100} />
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">
-                  <User size={12} /> Client
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
+                  <User size={12} className="text-zinc-300" /> Counterparty
                 </label>
-                <select
-                  required
-                  value={formData.client_id}
-                  onChange={e => setFormData({ ...formData, client_id: e.target.value })}
-                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all appearance-none cursor-pointer"
-                >
-                  <option value="" className="bg-zinc-900">Select a client...</option>
-                  {clients.map(c => (
-                    <option key={c.id} value={c.id} className="bg-zinc-900">
-                      {c.name} {c.company ? `(${c.company})` : ''}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    required
+                    value={formData.client_id}
+                    onChange={e => setFormData({ ...formData, client_id: e.target.value })}
+                    className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="" className="bg-white">Select a client...</option>
+                    {clients.map(c => (
+                      <option key={c.id} value={c.id} className="bg-white text-zinc-900">
+                        {c.name} {c.company ? `(${c.company})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
+                    <Plus size={14} className="rotate-45" />
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">
-                  <Receipt size={12} /> Invoice Number
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
+                  <Receipt size={12} className="text-zinc-300" /> Serial Number
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.invoice_number}
                   onChange={e => setFormData({ ...formData, invoice_number: e.target.value })}
-                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all font-mono"
                   placeholder="INV-XXXX"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">
-                  <CreditCard size={12} /> PO Number
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
+                  <CreditCard size={12} className="text-zinc-300" /> PO Reference
                 </label>
                 <input
                   type="text"
                   value={formData.po_number}
                   onChange={e => setFormData({ ...formData, po_number: e.target.value })}
-                  placeholder="Optional Purchase Order #"
-                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                  placeholder="Purchase Order #"
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all"
                 />
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">
-                  <Calendar size={12} /> Issue Date
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
+                  <Calendar size={12} className="text-zinc-300" /> Issue Timestamp
                 </label>
                 <input
                   type="date"
                   required
                   value={formData.date}
                   onChange={e => setFormData({ ...formData, date: e.target.value })}
-                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all [color-scheme:dark]"
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">
-                  <Calendar size={12} /> Due Date
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
+                  <Calendar size={12} className="text-zinc-300" /> Settlement Due
                 </label>
                 <input
                   type="date"
                   value={formData.due_date}
                   onChange={e => setFormData({ ...formData, due_date: e.target.value })}
-                  className="w-full bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all [color-scheme:dark]"
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all"
                 />
               </div>
 
-              <div className="p-4 bg-zinc-950/30 border border-zinc-800/50 rounded-xl mt-2">
-                <p className="text-xs text-zinc-500 mb-1 font-mono uppercase tracking-widest">Network Status</p>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"></div>
-                  <span className="text-sm text-zinc-300 font-medium">Drafting (Local Node)</span>
+              <div className="p-5 bg-zinc-50 border border-zinc-200 rounded-2xl mt-4">
+                <p className="text-[10px] text-zinc-400 mb-2 font-mono uppercase tracking-[0.2em]">Node Persistence</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-2.5 h-2.5 rounded-full bg-zinc-900 animate-pulse"></div>
+                  <span className="text-sm text-zinc-900 font-black uppercase tracking-tight">Active Enclave</span>
                 </div>
               </div>
             </div>
@@ -243,65 +248,65 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
         </div>
 
         {/* Line Items Card */}
-        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 rounded-2xl overflow-hidden shadow-2xl">
-          <div className="p-6 border-b border-zinc-800/50 flex justify-between items-center">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Plus size={18} className="text-zinc-500" /> Line Items
+        <div className="bg-white border border-zinc-200 rounded-[32px] overflow-hidden shadow-xl shadow-zinc-200/50">
+          <div className="p-8 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
+            <h2 className="text-xl font-black text-zinc-900 flex items-center gap-3 uppercase tracking-tight">
+              <Receipt size={22} className="text-zinc-400" /> Transaction Lines
             </h2>
           </div>
           
-          <div className="p-6 space-y-4">
-            <div className="hidden md:grid grid-cols-12 gap-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest pb-2 border-b border-zinc-800">
-              <div className="col-span-6">Description</div>
-              <div className="col-span-2 text-right">Qty</div>
-              <div className="col-span-2 text-right">Price</div>
-              <div className="col-span-2 text-right px-2">Total</div>
+          <div className="p-8 space-y-6">
+            <div className="hidden md:grid grid-cols-12 gap-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] pb-4 border-b border-zinc-100">
+              <div className="col-span-6">Description / Service Detail</div>
+              <div className="col-span-2 text-right">Units</div>
+              <div className="col-span-2 text-right">Rate</div>
+              <div className="col-span-2 text-right px-4">Yield</div>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
               {items.map((item, index) => (
-                <div key={item.id} className="flex flex-col md:grid md:grid-cols-12 gap-4 items-start md:items-center p-4 md:p-0 bg-zinc-950/20 md:bg-transparent rounded-xl border border-zinc-800 md:border-0">
+                <div key={item.id} className="flex flex-col md:grid md:grid-cols-12 gap-6 items-start md:items-center group">
                   <div className="md:col-span-6 w-full">
-                    <label className="block md:hidden text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">Description</label>
+                    <label className="block md:hidden text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Description</label>
                     <input
                       type="text"
-                      placeholder="Service or product description..."
+                      placeholder="Service detail..."
                       value={item.description}
                       onChange={e => handleItemChange(item.id, 'description', e.target.value)}
-                      className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-600 transition-colors"
+                      className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3.5 text-sm text-zinc-900 font-bold focus:outline-none focus:border-zinc-900 transition-colors"
                     />
                   </div>
-                  <div className="grid grid-cols-2 md:contents gap-4 w-full">
+                  <div className="grid grid-cols-2 md:contents gap-6 w-full">
                     <div className="md:col-span-2">
-                      <label className="block md:hidden text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">Qty</label>
+                      <label className="block md:hidden text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Units</label>
                       <input
                         type="number"
                         min="1"
                         step="0.01"
                         value={item.quantity}
                         onChange={e => handleItemChange(item.id, 'quantity', e.target.value)}
-                        className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-600 transition-colors md:text-right"
+                        className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3.5 text-sm text-zinc-900 font-bold focus:outline-none focus:border-zinc-900 transition-colors md:text-right font-mono"
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block md:hidden text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">Price</label>
+                      <label className="block md:hidden text-[100px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Rate</label>
                       <input
                         type="number"
                         min="0"
                         step="0.01"
                         value={item.unit_price}
                         onChange={e => handleItemChange(item.id, 'unit_price', e.target.value)}
-                        className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-600 transition-colors md:text-right"
+                        className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3.5 text-sm text-zinc-900 font-bold focus:outline-none focus:border-zinc-900 transition-colors md:text-right font-mono"
                       />
                     </div>
                   </div>
-                  <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-3 w-full border-t border-zinc-800 md:border-0 pt-3 md:pt-0">
-                    <div className="md:hidden text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Amount:</div>
-                    <span className="font-mono text-sm text-white">${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-3 w-full">
+                    <div className="md:hidden text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Total:</div>
+                    <span className="font-black text-sm text-zinc-900 font-mono">${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     <button
                       type="button"
                       onClick={() => removeItem(item.id)}
-                      className="p-2 text-zinc-600 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                      className="p-2 text-zinc-300 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition-all"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -313,39 +318,40 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
             <button
               type="button"
               onClick={addItem}
-              className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors py-2"
+              className="group flex items-center gap-3 text-[10px] font-black text-zinc-950 uppercase tracking-[0.2em] transition-all hover:gap-4 py-2"
             >
-              <Plus size={16} /> Add another line item
+              <div className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center">
+                 <Plus size={12} />
+              </div> 
+              Add Protocol Line
             </button>
           </div>
 
-          <div className="p-6 bg-zinc-950/40 border-t border-zinc-800/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div className="w-full md:w-auto space-y-4">
-              <div className="space-y-1.5">
-                <label className="block text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Notes & Terms</label>
-                <textarea
-                  rows={2}
-                  value={formData.notes}
-                  onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full md:w-80 bg-zinc-950/50 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-300 focus:outline-none focus:border-zinc-700 transition-all"
-                  placeholder="Payment terms or thank you note..."
-                />
-              </div>
+          <div className="p-8 bg-zinc-50 border-t border-zinc-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <div className="w-full md:w-auto space-y-2">
+              <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Additional Disclosures</label>
+              <textarea
+                rows={3}
+                value={formData.notes}
+                onChange={e => setFormData({ ...formData, notes: e.target.value })}
+                className="w-full md:w-96 bg-white border border-zinc-200 rounded-2xl px-5 py-4 text-sm text-zinc-600 focus:outline-none focus:border-zinc-900 transition-all shadow-inner"
+                placeholder="Disclosures, terms, and conditions..."
+              />
             </div>
 
-            <div className="w-full md:w-80 space-y-4">
-              <div className="flex justify-between items-center text-sm text-zinc-400">
-                <span className="font-mono uppercase tracking-widest text-[10px]">Subtotal</span>
-                <span className="font-mono">${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+            <div className="w-full md:w-96 space-y-4">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-bold uppercase tracking-[0.1em] text-zinc-400 text-[10px]">Net Yield</span>
+                <span className="font-mono font-bold text-zinc-600">${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
               </div>
               
-              <div className="flex justify-between items-center gap-4">
-                <div className="flex items-center gap-2 flex-1">
+              <div className="flex justify-between items-center gap-6">
+                <div className="flex items-center gap-3 flex-1">
                   <input 
                     type="text" 
                     value={formData.tax_name} 
                     onChange={e => setFormData({...formData, tax_name: e.target.value})}
-                    className="w-20 bg-zinc-950/50 border border-zinc-800 rounded px-2 py-1 text-[10px] font-mono text-zinc-500 focus:outline-none focus:border-zinc-700 uppercase"
+                    className="w-24 bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-[10px] font-black text-zinc-400 focus:outline-none focus:border-zinc-900 uppercase tracking-widest"
                   />
                   <div className="relative">
                     <input 
@@ -354,17 +360,17 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
                       min="0"
                       value={formData.tax_rate} 
                       onChange={e => setFormData({...formData, tax_rate: parseFloat(e.target.value) || 0})}
-                      className="w-16 bg-zinc-950/50 border border-zinc-800 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-zinc-700 text-right pr-4"
+                      className="w-16 bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs text-zinc-900 font-bold focus:outline-none focus:border-zinc-900 text-right pr-5"
                     />
-                    <span className="absolute right-1 text-[10px] text-zinc-600 top-1/2 -translate-y-1/2">%</span>
+                    <span className="absolute right-2 text-[10px] text-zinc-300 font-bold top-1/2 -translate-y-1/2">%</span>
                   </div>
                 </div>
-                <span className="font-mono text-sm text-zinc-400">${taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                <span className="font-mono text-sm font-bold text-zinc-600">${taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
               </div>
 
-              <div className="pt-4 border-t border-zinc-800 flex justify-between items-center">
-                <span className="text-sm font-bold text-white uppercase tracking-wider">Total</span>
-                <span className="text-2xl font-bold text-white font-mono">
+              <div className="pt-6 border-t border-zinc-200 flex justify-between items-center">
+                <span className="text-xs font-black text-zinc-900 uppercase tracking-[0.2em]">Grand Total</span>
+                <span className="text-4xl font-black text-zinc-900 tracking-tighter font-sans">
                   ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
               </div>
@@ -373,20 +379,20 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 border-t border-zinc-800/50">
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-4 pt-8 border-t border-zinc-200">
           <button
             type="button"
             onClick={() => navigate('invoices')}
-            className="px-8 py-3 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-xl font-semibold hover:text-white hover:border-zinc-700 transition-all text-sm"
+            className="px-10 py-4 bg-white border border-zinc-200 text-zinc-400 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:text-zinc-900 hover:border-zinc-900 transition-all shadow-sm"
           >
-            Cancel
+            Abort
           </button>
           <button
             type="submit"
-            className="flex items-center justify-center gap-2 px-8 py-3 bg-white text-zinc-950 rounded-xl font-bold hover:bg-zinc-200 active:scale-[0.98] transition-all text-sm shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+            className="flex items-center justify-center gap-3 px-12 py-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 active:scale-[0.98] transition-all shadow-2xl shadow-zinc-900/20"
           >
-            <Save size={18} />
-            Commit to Protocol
+            <Save size={16} />
+            Commit Ledger Entry
           </button>
         </div>
       </form>

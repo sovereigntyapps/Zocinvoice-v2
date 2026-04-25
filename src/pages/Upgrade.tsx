@@ -108,9 +108,12 @@ export default function Upgrade({ navigate }: { navigate: (route: string) => voi
               <Zap className="w-5 h-5 fill-zinc-950" /> Activate One-Click License
             </button>
             
-            <p className="text-center text-[10px] font-mono text-zinc-600 mt-6 uppercase tracking-widest">
-              Secured by Stripe · All major payment protocols supported
-            </p>
+            <div className="mt-8 pt-8 border-t border-zinc-800">
+              <p className="text-center text-[10px] font-mono text-zinc-600 uppercase tracking-widest leading-relaxed">
+                Secured by Stripe · All major payment protocols supported <br />
+                <span className="text-amber-500/50">Notice: This is digital software. No refunds will be provided after license initialization.</span>
+              </p>
+            </div>
           </div>
         </div>
 

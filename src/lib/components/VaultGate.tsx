@@ -134,175 +134,179 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
 
   // Render the Security Enclave interface
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-zinc-300 font-sans p-4 select-none">
-      <div className="max-w-md w-full bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-        {/* Subtle grid background for the brutalist "Ghost" feel */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-20"></div>
+    <div className="min-h-screen flex items-center justify-center bg-zinc-50 text-zinc-900 font-sans p-6 select-none">
+      <div className="max-w-md w-full bg-white border border-zinc-200 rounded-[48px] p-12 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] relative overflow-hidden">
+        {/* Subtle grid background for the technical "Ghost" feel */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none opacity-50"></div>
         
         <div className="text-center relative z-10 flex flex-col items-center">
-          <div className="h-16 w-16 bg-zinc-800 border border-zinc-700 shadow-inner rounded-full flex items-center justify-center mb-6">
+          <div className="h-20 w-20 bg-zinc-900 border border-zinc-800 shadow-xl rounded-[28px] flex items-center justify-center mb-8 transform hover:scale-105 transition-transform">
             {vaultMode === 'hard' ? (
-               hasVault ? <Lock className="text-zinc-100" size={28} /> : <ShieldCheck className="text-zinc-100" size={28} />
+               hasVault ? <Lock className="text-white" size={32} /> : <ShieldCheck className="text-white" size={32} />
             ) : (
-              <ShieldHalf className="text-zinc-100" size={28} />
+              <ShieldHalf className="text-white" size={32} />
             )}
           </div>
           
-          <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">
-            {vaultMode === 'hard' ? 'Identity Enclave' : 'Hybrid Enclave'}
+          <h1 className="text-4xl font-black text-zinc-900 mb-2 tracking-tighter uppercase leading-none">
+            {vaultMode === 'hard' ? 'Enclave' : 'Hybrid'}
           </h1>
-          <p className="text-sm text-zinc-400 mb-8 max-w-xs leading-relaxed">
+          <p className="text-[10px] font-black text-zinc-400 mb-10 uppercase tracking-[0.3em]">
+            {vaultMode === 'hard' ? 'Security Interface' : 'Key Derivation'}
+          </p>
+
+          <p className="text-sm text-zinc-500 mb-10 max-w-xs leading-relaxed italic">
             {vaultMode === 'hard' 
               ? (hasVault 
-                  ? "Biometric signature required to derive decryption keys and unlock local storage." 
-                  : "Initialize the SWA Protocol. Secure your data with a hardware-derived PRF key.")
-              : "Derived Key Enclave: Secure your data with a local passphrase and PBKDF2 (600k rounds)."}
+                  ? "A hardware-rooted biometric signature is required to derive decryption keys and unlock the local data enclave." 
+                  : "Initialize the SWA Protocol to secure your data with a unique hardware-derived cryptographic key.")
+              : "Derived Key Enclave: Secure your local data stream with a passphrase and 600,000 PBKDF2 iterations."}
           </p>
 
           {supported === false && vaultMode === 'hard' && (
-            <div className="bg-red-950/30 border border-red-900 text-red-400 text-xs p-3 rounded mb-6 flex flex-col items-start text-left w-full gap-2">
+            <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-5 rounded-[24px] mb-8 flex flex-col items-start text-left w-full gap-3">
               <div className="flex items-center">
-                <AlertTriangle size={16} className="mr-2 flex-shrink-0" />
-                <span className="font-bold">Hardware Support Missing</span>
+                <AlertTriangle size={18} className="mr-2 flex-shrink-0" />
+                <span className="font-black uppercase tracking-tight">Hardware Missing</span>
               </div>
-              <p>Your device does not support WebAuthn or PRF. Please use the Hybrid Fallback mode below.</p>
+              <p className="italic">Your device does not support WebAuthn PRF. Use the Hybrid Fallback mode for hardware-agnostic security.</p>
               <button 
                 onClick={() => { setVaultMode('hybrid'); setError(null); }}
-                className="text-white underline font-medium hover:text-zinc-200 mt-1"
+                className="text-zinc-900 font-black uppercase tracking-widest text-[10px] underline underline-offset-4"
               >
-                Switch to Hybrid Passphrase 
+                Switch to Hybrid mode
               </button>
             </div>
           )}
 
           {showHybridOption && !hasVault && vaultMode === 'hard' && (
-             <div className="bg-indigo-950/30 border border-indigo-900 text-indigo-400 text-xs p-3 rounded mb-6 flex flex-col items-start text-left w-full gap-2">
+             <div className="bg-zinc-50 border border-zinc-200 text-zinc-600 text-xs p-5 rounded-[24px] mb-8 flex flex-col items-start text-left w-full gap-3">
                 <div className="flex items-center">
-                  <Fingerprint size={16} className="mr-2 flex-shrink-0" />
-                  <span className="font-bold">Hardware Init Failed</span>
+                  <Fingerprint size={18} className="mr-2 flex-shrink-0" />
+                  <span className="font-black uppercase tracking-tight">Init Failed</span>
                 </div>
-                <p>WebAuthn PRF is not available on this device. You can still secure your data using a passphrase-based Hybrid Enclave.</p>
+                <p className="italic text-zinc-500">WebAuthn PRF is not available in this cluster. Transition to a passphrase-based Hybrid Enclave for local security.</p>
                 <button 
                   onClick={() => { setVaultMode('hybrid'); setError(null); }}
-                  className="text-white underline font-medium hover:text-zinc-200 mt-1"
+                  className="text-zinc-900 font-black uppercase tracking-widest text-[10px] underline underline-offset-4"
                 >
-                  Use Hybrid Passphrase Fallback
+                  Use Hybrid Fallback
                 </button>
              </div>
           )}
 
           {window.self !== window.top && (
-            <div className="bg-amber-950/30 border border-amber-900 text-amber-400 text-xs p-3 rounded mb-6 flex flex-col items-start text-left w-full gap-2">
+            <div className="bg-amber-50 border border-amber-100 text-amber-600 text-xs p-6 rounded-[24px] mb-8 flex flex-col items-start text-left w-full gap-3">
               <div className="flex items-start">
-                <AlertTriangle size={16} className="mr-2 flex-shrink-0 mt-0.5" />
-                <span className="font-bold">Preview Environment Detected</span>
+                <AlertTriangle size={18} className="mr-3 flex-shrink-0 mt-0.5" />
+                <span className="font-black uppercase tracking-tight">Environment Alert</span>
               </div>
-              <p>WebAuthn Hardware Identity requires a top-level window context. Please open this app in a new tab using the ↗️ button in the top-right corner of the preview to initialize the Vault.</p>
+              <p className="italic text-amber-700">WebAuthn requires a top-level window. Open the application in a new tab via the ↗️ button to initialize hardware identity.</p>
             </div>
           )}
 
           {error && (
-            <div className="bg-orange-950/30 border border-orange-900 text-orange-400 text-xs p-3 rounded mb-8 w-full">
-              {error.includes("publickey-credentials-create") || error.includes("publickey-credentials-get") ? "WebAuthn is not supported inside this preview iframe. Please open the app in a new tab using the ↗️ button in the top right." : error}
+            <div className="bg-zinc-900 text-white font-mono text-[10px] p-5 rounded-[24px] mb-10 w-full uppercase tracking-widest leading-loose">
+              {error.includes("publickey-credentials-create") || error.includes("publickey-credentials-get") ? "Access Denied: WebAuthn restricted in current context. Use new tab." : error}
             </div>
           )}
 
           {hasVault ? (
-            <div className="w-full space-y-4">
+            <div className="w-full space-y-6">
               {vaultMode === 'hybrid' && (
-                <div className="space-y-1 text-left">
-                  <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Master Passphrase</label>
+                <div className="space-y-2 text-left">
+                  <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Master Passphrase</label>
                   <input
                     type="password"
                     value={passphrase}
                     onChange={(e) => setPassphrase(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-white transition-colors"
+                    className="w-full bg-zinc-50 border border-zinc-200 rounded-[20px] py-4 px-6 text-zinc-900 font-black focus:outline-none focus:ring-2 focus:ring-zinc-900/5 transition-all text-center tracking-widest"
                   />
                 </div>
               )}
               <button
                 onClick={handleUnlock}
                 disabled={isUnlocking || (vaultMode === 'hard' && window.self !== window.top)}
-                className="w-full flex items-center justify-center bg-white text-zinc-900 font-semibold py-3 px-4 rounded-lg hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
+                className="w-full flex items-center justify-center bg-zinc-950 text-white font-black uppercase tracking-widest text-[10px] py-5 px-6 rounded-[24px] hover:bg-zinc-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed group shadow-2xl shadow-zinc-900/20 active:scale-95"
               >
                 {isUnlocking ? (
                   <span className="animate-pulse">Deriving Key...</span>
                 ) : (
                   <>
-                    {vaultMode === 'hard' ? <Fingerprint size={18} className="mr-2" /> : <Lock size={18} className="mr-2" />}
-                    {vaultMode === 'hard' ? 'Unlock with Biometrics' : 'Unseal Vault'}
+                    {vaultMode === 'hard' ? <Fingerprint size={18} className="mr-3" /> : <Lock size={18} className="mr-3" />}
+                    {vaultMode === 'hard' ? 'Unseal Enclave' : 'Auth Protocol'}
                   </>
                 )}
               </button>
               <button 
                 onClick={handleReset}
-                className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors w-full"
+                className="text-[10px] font-black text-zinc-400 hover:text-zinc-900 transition-colors w-full uppercase tracking-[0.2em]"
               >
-                Reset Identity Connection
+                Reset Node Identity
               </button>
             </div>
           ) : (
-            <div className="w-full space-y-4">
+            <div className="w-full space-y-6">
               {vaultMode === 'hard' ? (
                 <button
                   onClick={handleCreateVault}
                   disabled={isUnlocking || supported === false || window.self !== window.top}
-                  className="w-full flex items-center justify-center bg-white text-zinc-900 font-semibold py-3 px-4 rounded-lg hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                  className="w-full flex items-center justify-center bg-zinc-950 text-white font-black uppercase tracking-widest text-[10px] py-5 px-6 rounded-[24px] hover:bg-zinc-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed group shadow-2xl shadow-zinc-900/40 active:scale-95"
                 >
                   {isUnlocking ? (
                     <span className="animate-pulse">Sealing Vault...</span>
                   ) : (
                     <>
-                      <KeyRound size={18} className="mr-2 group-hover:scale-110 transition-transform" />
-                      Initialize Hardware Identity
+                      <KeyRound size={18} className="mr-3 group-hover:rotate-12 transition-transform" />
+                      Initialize Identity
                     </>
                   )}
                 </button>
               ) : (
-                <form onSubmit={handleCreateHybridVault} className="space-y-4">
-                   <div className="space-y-1 text-left text-zinc-400 text-xs px-2 mb-4">
-                      <p>Hybrid mode creates a local vault derived from your passphrase. Key derivation happens on-device using 600,000 PBKDF2 iterations.</p>
+                <form onSubmit={handleCreateHybridVault} className="space-y-6">
+                   <div className="text-left text-zinc-400 text-[10px] font-black uppercase tracking-widest px-2 mb-2 leading-relaxed opacity-60">
+                      Hybrid mode derives local keys via 600,000 PBKDF2 cycles.
                    </div>
-                   <div className="space-y-1 text-left">
-                    <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-1">Set Master Passphrase</label>
+                   <div className="space-y-2 text-left">
+                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Set Master Passphrase</label>
                     <input
                       type="password"
                       required
                       value={passphrase}
                       onChange={(e) => setPassphrase(e.target.value)}
-                      placeholder="Enter a strong passphrase"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-white transition-colors"
+                      placeholder="Enter Secure Phrase"
+                      className="w-full bg-zinc-50 border border-zinc-200 rounded-[20px] py-4 px-6 text-zinc-900 font-black focus:outline-none focus:ring-2 focus:ring-zinc-900/5 transition-all text-center tracking-widest"
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={isUnlocking || !passphrase}
-                    className="w-full flex items-center justify-center bg-white text-zinc-900 font-semibold py-3 px-4 rounded-lg hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                    className="w-full flex items-center justify-center bg-zinc-950 text-white font-black uppercase tracking-widest text-[10px] py-5 px-6 rounded-[24px] hover:bg-zinc-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed group shadow-2xl shadow-zinc-900/40 active:scale-95"
                   >
                     {isUnlocking ? (
                       <span className="animate-pulse">Deriving Identity...</span>
                     ) : (
                       <>
-                        <ShieldHalf size={18} className="mr-2 group-hover:scale-110 transition-transform" />
-                        Seal Hybrid Vault
+                        <ShieldHalf size={18} className="mr-3" />
+                        Seal Hybrid Enclave
                       </>
                     )}
                   </button>
                   <button 
                     type="button"
                     onClick={() => { setVaultMode('hard'); setError(null); }}
-                    className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors w-full"
+                    className="text-[10px] font-black text-zinc-400 hover:text-zinc-900 transition-colors w-full uppercase tracking-[0.2em]"
                   >
-                    Back to Hardware Mode
+                    Back to Hardware
                   </button>
                 </form>
               )}
             </div>
           )}
 
-          <div className="mt-8 pt-6 border-t border-zinc-800 w-full text-center">
-            <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">SWA Protocol • SOVEREIGN</span>
+          <div className="mt-12 pt-8 border-t border-zinc-50 w-full text-center">
+            <span className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">SWA Protocol • Sovereign</span>
           </div>
         </div>
       </div>

@@ -20,16 +20,16 @@ export default function Sidebar({ currentRoute, navigate, className = '' }: Side
   ];
 
   return (
-    <aside className={twMerge("w-64 bg-zinc-950 border-r border-zinc-800 flex-col", className)}>
-      <div className="p-6 border-b border-zinc-navbar/10">
-        <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2 cursor-pointer" onClick={() => navigate('landing')}>
-          <div className="w-8 h-8 rounded bg-zinc-100 flex items-center justify-center">
-            <Crown className="w-5 h-5 text-zinc-950" />
+    <aside className={twMerge("w-64 bg-white border-r border-zinc-200 flex flex-col", className)}>
+      <div className="p-6 border-b border-zinc-100">
+        <h1 className="text-xl font-bold tracking-tight text-zinc-900 flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-80" onClick={() => navigate('landing')}>
+          <div className="w-8 h-8 rounded bg-zinc-950 flex items-center justify-center">
+            <Crown className="w-5 h-5 text-white" />
           </div>
           SWA Protocol
         </h1>
       </div>
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
           const isActive = currentRoute === item.id;
           return (
@@ -38,21 +38,21 @@ export default function Sidebar({ currentRoute, navigate, className = '' }: Side
               onClick={() => navigate(item.id)}
               className={twMerge(
                 clsx(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all',
                   isActive
-                    ? 'bg-zinc-800/50 text-white border border-zinc-700/50'
-                    : 'text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300 border border-transparent'
+                    ? 'bg-zinc-100 text-zinc-900 shadow-sm'
+                    : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 border border-transparent'
                 )
               )}
             >
-              <item.icon className={clsx('w-4 h-4', isActive ? 'text-zinc-300' : 'text-zinc-500')} />
+              <item.icon className={clsx('w-4 h-4 transition-colors', isActive ? 'text-zinc-900' : 'text-zinc-400')} />
               {item.label}
             </button>
           );
         })}
       </nav>
-      <div className="p-4 border-t border-zinc-800 text-xs text-zinc-600 text-center font-mono">
-        SWA 1.0 • SOVEREIGN
+      <div className="p-6 border-t border-zinc-100 text-[10px] text-zinc-400 text-center font-mono uppercase tracking-[0.2em]">
+        Node v1.0 • Sovereign
       </div>
     </aside>
   );

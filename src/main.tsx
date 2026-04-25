@@ -10,12 +10,6 @@ import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <VaultGate onUnlocked={(key) => {
-      // Key can be stored in a secure state manager or singleton here.
-      // For now, we mount the App which handles the Data Enclave.
-      console.log('Vault Unlocked. Key derived successfully.');
-    }}>
-      <App />
-    </VaultGate>
+    <App />
   </StrictMode>,
 );

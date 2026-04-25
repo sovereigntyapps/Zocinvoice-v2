@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../db';
-import { Download, Upload, AlertCircle, HardDrive, Building2, Image as ImageIcon, Percent, Save, Crown } from 'lucide-react';
+import { Download, Upload, AlertCircle, HardDrive, Building2, Image as ImageIcon, Percent, Save, Crown, Trash2 } from 'lucide-react';
 import { isAppUnlocked } from '../lib/license';
 
 export default function Settings({ navigate }: { navigate: (route: string) => void }) {
@@ -20,7 +20,7 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
     async function loadSettings() {
       try {
         const res = await db.query('SELECT * FROM settings');
-        const settings = res.rows.reduce((acc: any, row: any) => {
+        const settings: any = res.rows.reduce((acc: any, row: any) => {
           acc[row.key] = row.value;
           return acc;
         }, {});

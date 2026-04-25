@@ -34,69 +34,87 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
   }, []);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto">
+    <div className="space-y-12 animate-in fade-in duration-700 max-w-6xl mx-auto pb-24">
       {!isUnlocked && (
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 flex items-center justify-between">
-           <div>
-             <h3 className="text-amber-500 font-bold mb-1 flex items-center gap-2">
-                <Crown className="w-5 h-5" /> Trial Mode Active
-             </h3>
-             <p className="text-amber-500/80 text-sm">You are using the free preview of Sovereignty Apps. Upgrade to secure your OPFS lifetime license.</p>
+        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+           <div className="flex items-center gap-6">
+             <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center shrink-0">
+                <Crown className="w-8 h-8 text-amber-500" />
+             </div>
+             <div>
+               <h3 className="text-zinc-900 font-black uppercase tracking-tight text-xl mb-1">
+                  Enclave Upgrade Required
+               </h3>
+               <p className="text-zinc-500 text-sm leading-relaxed max-w-lg italic">
+                  You are auditing the Sovereignty Protocol in trial mode. Secure your hardware-rooted <code>license.bin</code> to ensure permanent device persistence.
+               </p>
+             </div>
            </div>
            <button 
               onClick={() => navigate('upgrade')}
-              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold rounded-xl transition-colors shrink-0"
+              className="px-8 py-3.5 bg-zinc-900 hover:bg-black text-white font-black uppercase tracking-widest text-[10px] rounded-xl transition-all shadow-xl shadow-zinc-900/20 shrink-0 transform active:scale-95"
            >
-              Upgrade Now
+              Initialize Purchase
            </button>
         </div>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-zinc-100 tracking-tight">Dashboard</h1>
-          <p className="text-zinc-500 mt-1 text-sm">Hardware-Rooted Local Protocol</p>
+          <h1 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Intelligence</h1>
+          <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] mt-2">Hardware-Rooted Node Dynamics</p>
         </div>
         <div className="flex gap-4">
            <button
             onClick={() => navigate('invoice-new')}
-            className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-500 transition-colors"
+            className="px-10 py-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 transition-all shadow-2xl shadow-zinc-900/20 active:scale-95"
            >
-            Create Invoice
+            New Ledger Entry
           </button>
         </div>
       </div>
       
       {/* Central Metrics Hub */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
-        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 p-6 rounded-2xl flex items-center gap-4 group hover:border-zinc-700/50 transition-all shadow-xl">
-            <div className="p-3.5 bg-blue-500/10 text-blue-500 rounded-xl group-hover:scale-110 transition-transform">
-              <DollarSign className="w-6 h-6" />
+        <div className="bg-white border border-zinc-200 p-8 rounded-[32px] flex flex-col gap-6 group hover:border-zinc-900 transition-all shadow-xl shadow-zinc-200/40 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:scale-110 transition-transform">
+               <DollarSign size={80} className="text-zinc-900" />
+            </div>
+            <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors shadow-inner">
+               <DollarSign className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Total Revenue</p>
-              <p className="text-3xl font-bold text-white tracking-tight">${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Yield</p>
+              <p className="text-4xl font-black text-zinc-900 tracking-tight transition-transform duration-500 grow font-sans">
+                ${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </p>
             </div>
         </div>
         
-        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 p-6 rounded-2xl flex items-center gap-4 group hover:border-zinc-700/50 transition-all shadow-xl">
-            <div className="p-3.5 bg-emerald-500/10 text-emerald-500 rounded-xl group-hover:scale-110 transition-transform">
-              <FileText className="w-6 h-6" />
+        <div className="bg-white border border-zinc-200 p-8 rounded-[32px] flex flex-col gap-6 group hover:border-zinc-900 transition-all shadow-xl shadow-zinc-200/40 relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:scale-110 transition-transform">
+               <FileText size={80} className="text-zinc-900" />
+            </div>
+            <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors shadow-inner">
+               <FileText className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Invoices</p>
-              <p className="text-3xl font-bold text-white tracking-tight">{stats.totalInvoices}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Committed Docs</p>
+              <p className="text-4xl font-black text-zinc-900 tracking-tight grow font-sans">{stats.totalInvoices}</p>
             </div>
         </div>
 
-        <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 p-6 rounded-2xl flex items-center gap-4 group hover:border-zinc-700/50 transition-all shadow-xl">
-            <div className="p-3.5 bg-purple-500/10 text-purple-500 rounded-xl group-hover:scale-110 transition-transform">
-              <Users className="w-6 h-6" />
+        <div className="bg-white border border-zinc-200 p-8 rounded-[32px] flex flex-col gap-6 group hover:border-zinc-900 transition-all shadow-xl shadow-zinc-200/40 relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:scale-110 transition-transform">
+               <Users size={80} className="text-zinc-900" />
+            </div>
+            <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors shadow-inner">
+               <Users className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">Clients</p>
-              <p className="text-3xl font-bold text-white tracking-tight">{stats.totalClients}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Verified Counterparties</p>
+              <p className="text-4xl font-black text-zinc-900 tracking-tight grow font-sans">{stats.totalClients}</p>
             </div>
         </div>
         
