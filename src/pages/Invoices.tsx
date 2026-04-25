@@ -75,8 +75,8 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
         <div>
-          <h1 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Invoices</h1>
-          <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] mt-2">Historical Ledger Stream</p>
+          <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Invoices</h1>
+          <p className="text-zinc-500 text-sm mt-1">History of all transactions</p>
         </div>
         <button
           onClick={handleCreate}

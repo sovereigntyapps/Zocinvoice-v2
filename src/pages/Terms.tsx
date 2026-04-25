@@ -31,18 +31,15 @@ export default function Terms({ navigate }: { navigate: (route: string) => void 
             </p>
           </section>
 
-          <section className="bg-red-50 p-8 rounded-[32px] border border-red-100 text-center">
-            <h2 className="text-xl font-black text-red-950 uppercase tracking-tight mb-4 flex items-center justify-center gap-2">
-               Absolute Liability Invariant
+          <section className="bg-red-50 p-6 rounded-2xl border border-red-100">
+            <h2 className="text-lg font-bold text-red-900 mb-3">
+               Data Responsibility & Liability
             </h2>
-            <p className="text-red-900 font-bold mb-4">
-              Because this application persists data fundamentally inside your local browser enclave, you are <strong className="uppercase">solely and exclusively responsible</strong> for executing periodic database snapshots and hardware key security. 
+            <p className="text-sm leading-relaxed text-red-800 mb-4">
+              This application persists data locally in your browser. You are <strong>solely and exclusively responsible</strong> for making regular backups and securing your device. 
             </p>
-            <p className="text-red-800 text-sm italic mb-4">
-              If your browser's private storage is evicted, or biometric keys are lost, the data will be cryptographically inaccessible. <strong className="not-italic">Sovereignty Apps and its affiliates are not liable—now or in the future—for data corruption, loss of access, lost revenue, or any damages arising from your use of this software.</strong>
-            </p>
-            <p className="text-red-900 font-bold text-xs uppercase tracking-widest">
-              No Backups = Permanent Data Risk
+            <p className="text-sm leading-relaxed text-red-800">
+              Sovereignty Apps is not liable—now or in the future—for data loss, corruption, or any damages arising from the use of this software. <strong>No Backups = Data Loss Risk.</strong>
             </p>
           </section>
 

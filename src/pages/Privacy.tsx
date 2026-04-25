@@ -34,17 +34,17 @@ export default function Privacy({ navigate }: { navigate: (route: string) => voi
             </p>
           </section>
 
-          <section className="bg-zinc-50 p-8 rounded-[32px] border border-zinc-100 italic text-center">
-            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4 not-italic">3. Data Persistence & Backup</h2>
-            <p>
-              Your data belongs strictly to your machine. Clearing your browser's private storage securely wipes all enclaves forever. <strong className="text-zinc-900 font-bold uppercase">If you intend to use this protocol for any duration, you must execute manual database exports regularly.</strong> We cannot recover data that we do not possess.
+          <section className="bg-zinc-50 p-6 rounded-2xl border border-zinc-100">
+            <h2 className="text-lg font-bold text-zinc-900 mb-3">3. Data Persistence & Backup</h2>
+            <p className="text-sm leading-relaxed text-zinc-600">
+              Your data belongs strictly to your machine. Clearing your browser's private storage securely wipes all local data forever. <strong>If you intend to use this application for any duration, you must export manual data backups regularly.</strong> We cannot recover data that we do not possess.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">4. Liability Limitation</h2>
-            <p className="text-sm">
-              By utilizing the SWA Architecture, you acknowledge that Sovereignty Apps, its developers, and affiliates are <strong className="text-zinc-900 font-bold uppercase">never liable for any data loss, financial impact, or damages</strong>—direct or indirect—now or in any future timeline. The protocol's local-first nature places all operational risk on the user Node.
+            <h2 className="text-lg font-bold text-zinc-900 mb-3">4. Liability Limitation</h2>
+            <p className="text-sm leading-relaxed text-zinc-600">
+              By using this application, you acknowledge that Sovereignty Apps and its affiliates are <strong>not liable for any data loss, financial impact, or damages</strong>—direct or indirect—now or in the future. The local-first nature of this software places all operational responsibility on the user.
             </p>
           </section>
 

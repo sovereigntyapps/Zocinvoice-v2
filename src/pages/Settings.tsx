@@ -171,193 +171,177 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
   };
 
   return (
-    <div className="space-y-12 max-w-4xl mx-auto pb-24 animate-in fade-in duration-700">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+    <div className="space-y-8 max-w-2xl mx-auto pb-24">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Settings</h1>
-          <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] mt-2">Node Configuration & Identity</p>
+          <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Settings</h1>
+          <p className="text-zinc-500 text-sm mt-1">Configure your organization and app preferences</p>
         </div>
-        <div className="flex gap-4">
-           <button
-            onClick={saveSettings}
-            className="flex items-center justify-center gap-3 px-10 py-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 active:scale-95 transition-all shadow-2xl shadow-zinc-900/20"
-          >
-            <Save className="w-5 h-5" /> Commit Changes
-          </button>
-        </div>
+        <button
+          onClick={saveSettings}
+          className="flex items-center gap-2 px-6 py-2.5 bg-zinc-900 text-white rounded-lg font-semibold hover:bg-black transition-colors shadow-sm"
+        >
+          <Save className="w-4 h-4" /> Save Settings
+        </button>
       </div>
 
-      {status && (
-        <div className={`p-6 rounded-[32px] flex items-start gap-4 animate-in slide-in-from-top-2 duration-300 border ${
-          status.type === 'success' ? 'bg-zinc-950 text-white border-zinc-950 shadow-2xl shadow-zinc-900/20' : 
-          status.type === 'error' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-zinc-50 text-zinc-600 border-zinc-200'
+      {status.message && (
+        <div className={`p-4 rounded-xl flex items-start gap-3 border ${
+          status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
+          status.type === 'error' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'
         }`}>
-          <AlertCircle className="w-6 h-6 shrink-0 mt-0.5" />
-          <p className="text-sm font-bold uppercase tracking-tight leading-relaxed">{status.message}</p>
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <p className="text-sm font-medium">{status.message}</p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-12">
-        {/* Company Profile Card */}
-        <div className="bg-white border border-zinc-200 p-12 rounded-[48px] shadow-2xl shadow-zinc-200/40 space-y-10 group">
-          <div className="flex items-center gap-6 pb-8 border-b border-zinc-50">
-            <div className="w-16 h-16 bg-zinc-50 border border-zinc-100 rounded-3xl flex items-center justify-center text-zinc-900 group-hover:bg-zinc-900 group-hover:text-white transition-all shadow-inner">
-              <Building2 className="w-8 h-8" />
-            </div>
-            <div>
-              <h2 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Identity</h2>
-              <p className="text-[10px] text-zinc-400 font-mono uppercase tracking-widest mt-1">Organization Metadata</p>
-            </div>
-          </div>
+      {/* Company Profile */}
+      <div className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-zinc-100">
+          <Building2 className="w-5 h-5 text-zinc-400" />
+          <h2 className="text-lg font-bold text-zinc-900">Organization Profile</h2>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-            <div className="md:col-span-4 space-y-4">
-              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Brand Signature</label>
-              <div className="relative group/logo">
+        <div className="space-y-6">
+          <div className="flex items-start gap-8">
+            <div className="space-y-3">
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Logo</label>
+              <div className="flex flex-col items-center gap-4">
                 {companyLogo ? (
-                  <div className="w-full aspect-square border border-zinc-100 rounded-[32px] overflow-hidden bg-zinc-50 flex items-center justify-center p-6 shadow-inner relative">
-                    <img src={companyLogo} alt="Logo" className="max-w-full max-h-full object-contain" />
+                  <div className="relative w-32 h-32 border border-zinc-200 rounded-xl overflow-hidden bg-zinc-50 flex items-center justify-center group">
+                    <img src={companyLogo} alt="Logo preview" className="max-w-full max-h-full object-contain p-2" />
                     <button 
                       onClick={() => setCompanyLogo('')}
-                      className="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-full p-2 text-zinc-300 hover:text-red-500 opacity-0 group-hover/logo:opacity-100 transition-all border border-zinc-100 shadow-xl"
+                      className="absolute top-2 right-2 bg-white shadow-md rounded-full p-1 text-zinc-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity border border-zinc-100"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
-                  <div className="w-full aspect-square border-2 border-dashed border-zinc-100 rounded-[32px] flex flex-col items-center justify-center text-zinc-300 bg-zinc-50/50 hover:bg-zinc-50 transition-all group-hover/logo:border-zinc-200">
-                    <ImageIcon className="w-12 h-12 mb-3 opacity-20" />
-                    <span className="text-[10px] font-mono uppercase tracking-widest">Null Logo</span>
+                  <div className="w-32 h-32 border-2 border-dashed border-zinc-200 rounded-xl flex flex-col items-center justify-center text-zinc-400 bg-zinc-50/50">
+                    <ImageIcon className="w-8 h-8 mb-1 opacity-20" />
+                    <span className="text-[10px] font-medium">No Logo</span>
                   </div>
                 )}
-                <label className="mt-4 block cursor-pointer">
-                  <div className="w-full py-4 bg-white border border-zinc-200 rounded-2xl text-center text-[10px] font-black text-zinc-400 uppercase tracking-widest hover:text-zinc-900 hover:border-zinc-900 transition-all active:scale-[0.98] shadow-sm">
-                    Upload Identity
-                  </div>
+                <label className="cursor-pointer px-4 py-2 bg-white border border-zinc-200 rounded-lg text-xs font-bold text-zinc-600 hover:bg-zinc-50 transition-colors">
+                  <span>Change Logo</span>
                   <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
                 </label>
               </div>
             </div>
             
-            <div className="md:col-span-8 space-y-8">
-              <div className="space-y-4">
-                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Legal Entity Name</label>
+            <div className="flex-1 space-y-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Company Name</label>
                 <input
                   type="text"
                   value={companyName}
                   onChange={e => setCompanyName(e.target.value)}
-                  placeholder="e.g. Protocol Dynamics Ltd"
-                  className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-6 py-5 text-zinc-900 font-bold focus:outline-none focus:border-zinc-900 transition-all"
+                  placeholder="Your Business Name"
+                  className="w-full bg-white border border-zinc-200 rounded-lg px-4 py-2.5 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all"
                 />
               </div>
-              <div className="space-y-4">
-                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Contact Protocol (Email)</label>
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Contact Email</label>
                 <input
                   type="email"
                   value={companyEmail}
                   onChange={e => setCompanyEmail(e.target.value)}
-                  placeholder="hello@enclave.local"
-                  className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-6 py-5 text-zinc-900 font-mono text-sm focus:outline-none focus:border-zinc-900 transition-all"
-                />
-              </div>
-              <div className="space-y-4">
-                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Physical Node Coordinates</label>
-                <textarea
-                  rows={3}
-                  value={companyAddress}
-                  onChange={e => setCompanyAddress(e.target.value)}
-                  placeholder="123 Enclave Way&#10;Sovereign District, SWA Core"
-                  className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-6 py-5 text-zinc-900 font-bold focus:outline-none focus:border-zinc-900 resize-none transition-all text-sm leading-relaxed"
+                  placeholder="contact@example.com"
+                  className="w-full bg-white border border-zinc-200 rounded-lg px-4 py-2.5 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all font-mono text-sm"
                 />
               </div>
             </div>
+          </div>
+          
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Address</label>
+            <textarea
+              rows={3}
+              value={companyAddress}
+              onChange={e => setCompanyAddress(e.target.value)}
+              placeholder="Full mailing address..."
+              className="w-full bg-white border border-zinc-200 rounded-lg px-4 py-2.5 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all text-sm leading-relaxed"
+            />
           </div>
         </div>
+      </div>
 
-        {/* Fiscal Config Card */}
-        <div className="bg-white border border-zinc-200 p-12 rounded-[48px] shadow-2xl shadow-zinc-200/40 space-y-10 group">
-          <div className="flex items-center gap-6 pb-8 border-b border-zinc-50">
-            <div className="w-16 h-16 bg-zinc-50 border border-zinc-100 rounded-3xl flex items-center justify-center text-zinc-900 group-hover:bg-zinc-900 group-hover:text-white transition-all shadow-inner">
-              <Percent className="w-8 h-8" />
-            </div>
-            <div>
-              <h2 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Fiscal</h2>
-              <p className="text-[10px] text-zinc-400 font-mono uppercase tracking-widest mt-1">Tax Calculation Engine</p>
-            </div>
+      {/* Tax Configuration */}
+      <div className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-zinc-100">
+          <Percent className="w-5 h-5 text-zinc-400" />
+          <h2 className="text-lg font-bold text-zinc-900">Tax Settings</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Tax Label</label>
+            <input
+              type="text"
+              value={taxName}
+              onChange={e => setTaxName(e.target.value)}
+              placeholder="e.g. VAT, GST"
+              className="w-full bg-white border border-zinc-200 rounded-lg px-4 py-2.5 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all"
+            />
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Default Tax Label</label>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Tax Rate (%)</label>
+            <div className="relative">
               <input
-                type="text"
-                value={taxName}
-                onChange={e => setTaxName(e.target.value)}
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-6 py-5 text-zinc-900 font-black uppercase tracking-widest text-[10px] focus:outline-none focus:border-zinc-900 transition-all"
+                type="number"
+                step="0.01"
+                min="0"
+                value={taxRate}
+                onChange={e => setTaxRate(e.target.value)}
+                placeholder="0.00"
+                className="w-full bg-white border border-zinc-200 rounded-lg px-4 py-2.5 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all font-mono"
               />
-            </div>
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Tax Rate (%)</label>
-              <div className="relative">
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={taxRate}
-                  onChange={e => setTaxRate(e.target.value)}
-                  className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-6 py-5 text-zinc-900 font-mono text-lg focus:outline-none focus:border-zinc-900 transition-all"
-                />
-                <span className="absolute right-6 text-zinc-300 font-mono top-1/2 -translate-y-1/2 font-black">%</span>
-              </div>
+              <span className="absolute right-4 text-zinc-400 font-mono top-1/2 -translate-y-1/2">%</span>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Data Persistence Card */}
-        <div className="bg-zinc-50 border border-zinc-100 p-12 rounded-[48px] space-y-10 group">
-          <div className="flex items-center gap-6 pb-8 border-b border-zinc-200/50">
-            <div className="w-16 h-16 bg-white border border-zinc-200 rounded-3xl flex items-center justify-center text-zinc-400 group-hover:bg-zinc-900 group-hover:text-white transition-all shadow-sm">
-              <HardDrive className="w-8 h-8" />
-            </div>
-            <div>
-              <h2 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Persistence</h2>
-              <p className="text-[10px] text-zinc-400 font-mono uppercase tracking-widest mt-1">Data Backup & Recovery</p>
-            </div>
-          </div>
+      {/* Persistence */}
+      <div className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-zinc-100">
+          <HardDrive className="w-5 h-5 text-zinc-400" />
+          <h2 className="text-lg font-bold text-zinc-900">Data & Backup</h2>
+        </div>
 
-          <div className="flex flex-col sm:flex-row gap-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button
+            onClick={handleExportData}
+            disabled={isLoading}
+            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-bold transition-all active:scale-[0.98] ${isUnlocked ? 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200' : 'bg-amber-50 text-amber-700 border border-amber-100 hover:bg-amber-100'}`}
+          >
+            {isUnlocked ? <Download className="w-5 h-5" /> : <Crown className="w-5 h-5" />}
+            Export Data Backup
+          </button>
+          
+          <div className="flex-1">
+            <input 
+              type="file" 
+              accept=".json" 
+              className="hidden" 
+              ref={fileInputRef}
+              onChange={handleImportData}
+            />
             <button
-              onClick={handleExportData}
+              onClick={() => fileInputRef.current?.click()}
               disabled={isLoading}
-              className={`flex-1 flex items-center justify-center gap-4 px-8 py-6 rounded-[24px] font-black uppercase tracking-widest text-[10px] transition-all active:scale-[0.98] shadow-xl ${isUnlocked ? 'bg-zinc-950 text-white hover:bg-zinc-800 shadow-zinc-900/20' : 'bg-white text-amber-600 border border-amber-100 hover:bg-amber-50 shadow-amber-900/5'}`}
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-lg font-bold hover:bg-black transition-all active:scale-[0.98]"
             >
-              {isUnlocked ? <Download className="w-5 h-5" /> : <Crown className="w-5 h-5" />}
-              Export Archive
+              <Upload className="w-5 h-5" /> Import Data
             </button>
-            
-            <div className="flex-1">
-              <input 
-                type="file" 
-                accept=".json" 
-                className="hidden" 
-                ref={fileInputRef}
-                onChange={handleImportData}
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isLoading}
-                className="w-full flex items-center justify-center gap-4 px-8 py-6 bg-white border border-zinc-200 text-zinc-400 rounded-[24px] font-black uppercase tracking-widest text-[10px] hover:text-zinc-900 hover:border-zinc-900 transition-all active:scale-[0.98] shadow-xl shadow-zinc-100"
-              >
-                <Upload className="w-5 h-5" /> Restore State
-              </button>
-            </div>
           </div>
-          <div className="p-6 bg-white/50 rounded-[24px] border border-zinc-200/50 flex items-start gap-5">
-             <AlertCircle className="w-6 h-6 text-zinc-300 mt-0.5 shrink-0" />
-             <p className="text-[10px] text-zinc-400 font-mono leading-relaxed uppercase tracking-[0.15em]">
-               Safety Protocol: State restoration is terminal. The current local IDB enclave will be purged and re-initialized with the archive payload.
-             </p>
-          </div>
+        </div>
+        <div className="p-4 bg-zinc-50 rounded-lg flex items-start gap-4">
+           <AlertCircle className="w-5 h-5 text-zinc-400 mt-0.5 shrink-0" />
+           <p className="text-xs text-zinc-500 leading-relaxed">
+             <strong>Warning:</strong> Importing data will overwrite all existing local records. Please ensure you have a backup of your current data before proceeding.
+           </p>
         </div>
       </div>
     </div>
