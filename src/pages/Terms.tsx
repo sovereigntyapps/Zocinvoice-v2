@@ -31,8 +31,8 @@ export default function Terms({ navigate }: { navigate: (route: string) => void 
             </p>
           </section>
 
-          <section className="bg-red-50 p-8 rounded-[32px] border border-red-100">
-            <h2 className="text-xl font-black text-red-950 uppercase tracking-tight mb-4 flex items-center gap-2">
+          <section className="bg-red-50 p-8 rounded-[32px] border border-red-100 text-center">
+            <h2 className="text-xl font-black text-red-950 uppercase tracking-tight mb-4 flex items-center justify-center gap-2">
                Absolute Liability Invariant
             </h2>
             <p className="text-red-900 font-bold mb-4">

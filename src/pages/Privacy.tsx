@@ -34,7 +34,7 @@ export default function Privacy({ navigate }: { navigate: (route: string) => voi
             </p>
           </section>
 
-          <section className="bg-zinc-50 p-8 rounded-[32px] border border-zinc-100 italic">
+          <section className="bg-zinc-50 p-8 rounded-[32px] border border-zinc-100 italic text-center">
             <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4 not-italic">3. Data Persistence & Backup</h2>
             <p>
               Your data belongs strictly to your machine. Clearing your browser's private storage securely wipes all enclaves forever. <strong className="text-zinc-900 font-bold uppercase">If you intend to use this protocol for any duration, you must execute manual database exports regularly.</strong> We cannot recover data that we do not possess.
