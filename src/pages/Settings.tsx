@@ -127,36 +127,45 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
           throw new Error('Invalid backup file format');
         }
         
-        await db.query('DELETE FROM invoice_items');
-        await db.query('DELETE FROM invoices');
-        await db.query('DELETE FROM clients');
-        await db.query('DELETE FROM settings');
+        // Execute Import within a Transaction for Atomic Resilience
+        await db.exec('BEGIN');
         
-        for (const s of parsed.data.settings || []) {
-          await db.query('INSERT INTO settings (key, value) VALUES ($1, $2)', [s.key, s.value]);
+        try {
+          await db.query('DELETE FROM invoice_items');
+          await db.query('DELETE FROM invoices');
+          await db.query('DELETE FROM clients');
+          await db.query('DELETE FROM settings');
+          
+          for (const s of parsed.data.settings || []) {
+            await db.query('INSERT INTO settings (key, value) VALUES ($1, $2)', [s.key, s.value]);
+          }
+          
+          for (const c of parsed.data.clients || []) {
+            await db.query('INSERT INTO clients (id, name, email, company, created_at) VALUES ($1, $2, $3, $4, $5)', 
+              [c.id, c.name, c.email, c.company, c.created_at]);
+          }
+          
+          for (const i of parsed.data.invoices || []) {
+            await db.query(`
+              INSERT INTO invoices (id, client_id, invoice_number, po_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes, created_at)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            `, [i.id, i.client_id, i.invoice_number, i.po_number, i.date, i.due_date, i.status, i.subtotal, i.tax_name, i.tax_rate, i.tax_amount, i.total, i.notes, i.created_at]);
+          }
+          
+          for (const item of parsed.data.invoice_items || []) {
+            await db.query(`
+              INSERT INTO invoice_items (id, invoice_id, description, quantity, unit_price, amount)
+              VALUES ($1, $2, $3, $4, $5, $6)
+            `, [item.id, item.invoice_id, item.description, item.quantity, item.unit_price, item.amount]);
+          }
+          
+          await db.exec('COMMIT');
+          setStatus({ type: 'success', message: 'Data imported! Refreshing...' });
+          setTimeout(() => window.location.reload(), 1500);
+        } catch (innerError) {
+          await db.exec('ROLLBACK');
+          throw innerError;
         }
-        
-        for (const c of parsed.data.clients || []) {
-          await db.query('INSERT INTO clients (id, name, email, company, created_at) VALUES ($1, $2, $3, $4, $5)', 
-            [c.id, c.name, c.email, c.company, c.created_at]);
-        }
-        
-        for (const i of parsed.data.invoices || []) {
-          await db.query(`
-            INSERT INTO invoices (id, client_id, invoice_number, po_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes, created_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-          `, [i.id, i.client_id, i.invoice_number, i.po_number, i.date, i.due_date, i.status, i.subtotal, i.tax_name, i.tax_rate, i.tax_amount, i.total, i.notes, i.created_at]);
-        }
-        
-        for (const item of parsed.data.invoice_items || []) {
-          await db.query(`
-            INSERT INTO invoice_items (id, invoice_id, description, quantity, unit_price, amount)
-            VALUES ($1, $2, $3, $4, $5, $6)
-          `, [item.id, item.invoice_id, item.description, item.quantity, item.unit_price, item.amount]);
-        }
-        
-        setStatus({ type: 'success', message: 'Data imported! Refreshing...' });
-        setTimeout(() => window.location.reload(), 1500);
       } catch (error) {
         console.error('Import failed:', error);
         setStatus({ type: 'error', message: 'Failed to import data. Invalid file format.' });
@@ -185,7 +194,7 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
         </button>
       </div>
 
-      {status.message && (
+      {status && status.message && (
         <div className={`p-4 rounded-xl flex items-start gap-3 border ${
           status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
           status.type === 'error' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'

@@ -43,6 +43,10 @@ export async function initDb() {
       key TEXT PRIMARY KEY,
       value TEXT
     );
+
+    -- Performance Indices
+    CREATE INDEX IF NOT EXISTS idx_invoices_client_id ON invoices(client_id);
+    CREATE INDEX IF NOT EXISTS idx_invoices_created_at ON invoices(created_at);
   `);
 }
 

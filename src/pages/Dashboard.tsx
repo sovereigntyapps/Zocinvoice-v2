@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../db';
 import { isAppUnlocked } from '../lib/license';
-import { LayoutDashboard, Crown, LogOut, DollarSign, FileText, Users, ArrowRight } from 'lucide-react';
+import { LayoutDashboard, DollarSign, FileText, Users } from 'lucide-react';
 
 export default function Dashboard({ navigate }: { navigate: (route: string) => void }) {
-  const [isUnlocked, setIsUnlocked] = useState(true);
   const [stats, setStats] = useState({
     totalInvoices: 0,
     totalClients: 0,
@@ -12,7 +11,6 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
   });
 
   useEffect(() => {
-    isAppUnlocked().then(setIsUnlocked);
     async function loadStats() {
       try {
         const invoicesRes = await db.query('SELECT COUNT(*) as count, SUM(total) as revenue FROM invoices');
@@ -35,30 +33,6 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700 max-w-6xl mx-auto pb-24">
-      {!isUnlocked && (
-        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-           <div className="flex items-center gap-6">
-             <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center shrink-0">
-                <Crown className="w-8 h-8 text-amber-500" />
-             </div>
-             <div>
-               <h3 className="text-zinc-900 font-black uppercase tracking-tight text-xl mb-1">
-                  Enclave Upgrade Required
-               </h3>
-               <p className="text-zinc-500 text-sm leading-relaxed max-w-lg italic">
-                  You are auditing the Sovereignty Protocol in trial mode. Secure your hardware-rooted <code>license.bin</code> to ensure permanent device persistence.
-               </p>
-             </div>
-           </div>
-           <button 
-              onClick={() => navigate('upgrade')}
-              className="px-8 py-3.5 bg-zinc-900 hover:bg-black text-white font-black uppercase tracking-widest text-[10px] rounded-xl transition-all shadow-xl shadow-zinc-900/20 shrink-0 transform active:scale-95"
-           >
-              Initialize Purchase
-           </button>
-        </div>
-      )}
-
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Home</h1>
@@ -70,7 +44,7 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
             className="px-10 py-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 transition-all shadow-2xl shadow-zinc-900/20 active:scale-95"
            >
             New Ledger Entry
-          </button>
+           </button>
         </div>
       </div>
       
@@ -119,7 +93,6 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
         </div>
         
       </div>
-
     </div>
   );
 }

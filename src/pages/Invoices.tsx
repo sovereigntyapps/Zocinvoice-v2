@@ -47,6 +47,16 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
     navigate('invoice-new');
   };
 
+  const formatSafeDate = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return 'Invalid Date';
+      return format(d, 'yyyy.MM.dd');
+    } catch {
+      return 'N/A';
+    }
+  };
+
   return (
     <div className="space-y-12 max-w-6xl mx-auto pb-24">
       {!isUnlocked && invoices.length >= 3 && (
@@ -122,7 +132,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                    <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Yield & Timestamp</div>
                    <div className="flex items-baseline gap-3">
                       <span className="text-zinc-900 font-black text-2xl tracking-tighter">${parseFloat(invoice.total as string).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                      <span className="text-zinc-300 font-mono text-[10px] uppercase">{format(new Date(invoice.date as string), 'yyyy.MM.dd')}</span>
+                      <span className="text-zinc-300 font-mono text-[10px] uppercase">{formatSafeDate(invoice.date as string)}</span>
                    </div>
                 </div>
                 <div className="flex gap-3">
@@ -175,7 +185,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                     </div>
                   </td>
                   <td className="px-8 py-7 text-zinc-400 font-mono text-[10px] uppercase tracking-widest">
-                    {format(new Date(invoice.date as string), 'MMM dd, yyyy')}
+                    {formatSafeDate(invoice.date as string)}
                   </td>
                   <td className="px-8 py-7 font-black text-zinc-900 tracking-tighter text-lg">
                     ${parseFloat(invoice.total as string).toLocaleString(undefined, { minimumFractionDigits: 2 })}
