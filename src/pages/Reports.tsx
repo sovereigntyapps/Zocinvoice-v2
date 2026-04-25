@@ -56,8 +56,8 @@ export default function Reports() {
     <div className="space-y-12 max-w-6xl mx-auto pb-24">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
         <div>
-          <h1 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Intelligence</h1>
-          <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] mt-2">Analytics Reporting Suite v1.0</p>
+          <h1 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Reports</h1>
+          <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] mt-2">Analytics Reporting Suite</p>
         </div>
       </div>
       

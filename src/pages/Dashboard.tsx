@@ -61,8 +61,8 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Intelligence</h1>
-          <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] mt-2">Hardware-Rooted Node Dynamics</p>
+          <h1 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Dashboard</h1>
+          <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] mt-2">Personal Billing Dynamics</p>
         </div>
         <div className="flex gap-4">
            <button

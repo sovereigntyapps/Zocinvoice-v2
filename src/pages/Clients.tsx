@@ -67,7 +67,7 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
     <div className="space-y-12 max-w-6xl mx-auto pb-24">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
         <div>
-          <h1 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Counterparties</h1>
+          <h1 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Clients</h1>
           <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.2em] mt-2">Verified Identity Registry</p>
         </div>
         <button
