@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../db';
-import { Plus, Eye, Edit2, Trash2, AlertTriangle } from 'lucide-react';
+import { Plus, Eye, Edit2, Trash2, AlertTriangle, Crown } from 'lucide-react';
 import { format } from 'date-fns';
+import { isAppUnlocked } from '../lib/license';
 
 export default function Invoices({ navigate }: { navigate: (route: string, params?: any) => void }) {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [invoiceToDelete, setInvoiceToDelete] = useState<string | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState(true);
 
   const loadInvoices = async () => {
     const res = await db.query(`
@@ -20,6 +22,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
 
   useEffect(() => {
     loadInvoices();
+    isAppUnlocked().then(setIsUnlocked);
   }, []);
 
   const confirmDelete = (id: string) => {
@@ -36,12 +39,37 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
     }
   };
 
+  const handleCreate = () => {
+    if (!isUnlocked && invoices.length >= 3) {
+      navigate('upgrade');
+      return;
+    }
+    navigate('invoice-new');
+  };
+
   return (
     <div className="space-y-6">
+      {!isUnlocked && invoices.length >= 3 && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+           <div>
+             <h3 className="text-amber-600 font-bold mb-1 flex items-center gap-2">
+                <Crown className="w-5 h-5" /> Trial Limit Reached
+             </h3>
+             <p className="text-amber-700/80 text-sm">You have reached the maximum of 3 invoices permitted on the free preview. Upgrade to unlock unlimited native hardware invoicing.</p>
+           </div>
+           <button 
+              onClick={() => navigate('upgrade')}
+              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold rounded-xl transition-colors shrink-0"
+           >
+              Upgrade Now
+           </button>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
         <button
-          onClick={() => navigate('invoice-new')}
+          onClick={handleCreate}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-4 h-4" /> Create Invoice

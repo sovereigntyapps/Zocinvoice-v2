@@ -12,19 +12,19 @@ export default function BottomNav({ currentRoute, navigate, className = '' }: an
   ];
 
   return (
-    <nav className={clsx("fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around p-2 z-50 pb-safe", className)}>
+    <nav className={clsx("fixed bottom-0 left-0 right-0 bg-zinc-950 border-t border-zinc-800 flex justify-around p-2 z-50 pb-safe", className)}>
       {navItems.map((item) => {
-        const isActive = currentRoute === item.id || currentRoute.startsWith(item.id + '-');
+        const isActive = currentRoute === item.id;
         return (
           <button
             key={item.id}
             onClick={() => navigate(item.id)}
             className={clsx(
               'flex flex-col items-center p-2 rounded-lg text-xs font-medium transition-colors min-w-[64px]',
-              isActive ? 'text-blue-600' : 'text-gray-500 hover:text-gray-900'
+              isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
             )}
           >
-            <item.icon className={clsx('w-6 h-6 mb-1', isActive ? 'text-blue-600' : 'text-gray-400')} />
+            <item.icon className={clsx('w-6 h-6 mb-1', isActive ? 'text-white' : 'text-zinc-500')} />
             {item.label}
           </button>
         );

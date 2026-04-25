@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../db';
-import { Save, Download, Upload, AlertCircle, Percent, Building2, Image as ImageIcon, Heart, HardDrive } from 'lucide-react';
+import { Download, Upload, AlertCircle, HardDrive, Building2, Image as ImageIcon, Heart, Percent, Save, Crown } from 'lucide-react';
+import { isAppUnlocked } from '../lib/license';
 
-export default function Settings() {
+export default function Settings({ navigate }: { navigate: (route: string) => void }) {
   const [taxName, setTaxName] = useState('Tax');
   const [taxRate, setTaxRate] = useState('0');
   const [companyName, setCompanyName] = useState('');
@@ -11,22 +12,28 @@ export default function Settings() {
   const [companyLogo, setCompanyLogo] = useState('');
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info', message: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    isAppUnlocked().then(setIsUnlocked);
     async function loadSettings() {
-      const res = await db.query('SELECT * FROM settings');
-      const settings = res.rows.reduce((acc: any, row: any) => {
-        acc[row.key] = row.value;
-        return acc;
-      }, {});
-      
-      setTaxName(settings.tax_name || 'Tax');
-      setTaxRate(settings.tax_rate || '0');
-      setCompanyName(settings.company_name || '');
-      setCompanyEmail(settings.company_email || '');
-      setCompanyAddress(settings.company_address || '');
-      setCompanyLogo(settings.company_logo || '');
+      try {
+        const res = await db.query('SELECT * FROM settings');
+        const settings = res.rows.reduce((acc: any, row: any) => {
+          acc[row.key] = row.value;
+          return acc;
+        }, {});
+        
+        setTaxName(settings.tax_name || 'Tax');
+        setTaxRate(settings.tax_rate || '0');
+        setCompanyName(settings.company_name || '');
+        setCompanyEmail(settings.company_email || '');
+        setCompanyAddress(settings.company_address || '');
+        setCompanyLogo(settings.company_logo || '');
+      } catch (e) {
+        console.error(e);
+      }
     }
     loadSettings();
   }, []);
@@ -58,11 +65,15 @@ export default function Settings() {
   };
 
   const handleExportData = async () => {
+    if (!isUnlocked) {
+      navigate('upgrade');
+      return;
+    }
+
     try {
       setIsLoading(true);
       setStatus({ type: 'info', message: 'Preparing export...' });
       
-      // Dump all tables
       const clients = await db.query('SELECT * FROM clients');
       const invoices = await db.query('SELECT * FROM invoices');
       const items = await db.query('SELECT * FROM invoice_items');
@@ -83,7 +94,7 @@ export default function Settings() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `sovereignty-invoices-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `sovereignty-hub-backup-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -112,28 +123,24 @@ export default function Settings() {
         const content = event.target?.result as string;
         const parsed = JSON.parse(content);
         
-        if (!parsed.data || !parsed.data.clients) {
+        if (!parsed.data) {
           throw new Error('Invalid backup file format');
         }
         
-        // Clear existing data
         await db.query('DELETE FROM invoice_items');
         await db.query('DELETE FROM invoices');
         await db.query('DELETE FROM clients');
         await db.query('DELETE FROM settings');
         
-        // Import Settings
         for (const s of parsed.data.settings || []) {
           await db.query('INSERT INTO settings (key, value) VALUES ($1, $2)', [s.key, s.value]);
         }
         
-        // Import Clients
         for (const c of parsed.data.clients || []) {
           await db.query('INSERT INTO clients (id, name, email, company, created_at) VALUES ($1, $2, $3, $4, $5)', 
             [c.id, c.name, c.email, c.company, c.created_at]);
         }
         
-        // Import Invoices
         for (const i of parsed.data.invoices || []) {
           await db.query(`
             INSERT INTO invoices (id, client_id, invoice_number, po_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes, created_at)
@@ -141,7 +148,6 @@ export default function Settings() {
           `, [i.id, i.client_id, i.invoice_number, i.po_number, i.date, i.due_date, i.status, i.subtotal, i.tax_name, i.tax_rate, i.tax_amount, i.total, i.notes, i.created_at]);
         }
         
-        // Import Items
         for (const item of parsed.data.invoice_items || []) {
           await db.query(`
             INSERT INTO invoice_items (id, invoice_id, description, quantity, unit_price, amount)
@@ -149,7 +155,7 @@ export default function Settings() {
           `, [item.id, item.invoice_id, item.description, item.quantity, item.unit_price, item.amount]);
         }
         
-        setStatus({ type: 'success', message: 'Data imported successfully! Refreshing...' });
+        setStatus({ type: 'success', message: 'Data imported! Refreshing...' });
         setTimeout(() => window.location.reload(), 1500);
       } catch (error) {
         console.error('Import failed:', error);
@@ -159,49 +165,48 @@ export default function Settings() {
     };
     reader.readAsText(file);
     
-    // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
   return (
-    <div className="space-y-6 max-w-2xl pb-12">
-      <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+    <div className="space-y-6 max-w-2xl mx-auto pb-12 animate-in fade-in duration-500">
+      <h1 className="text-3xl font-bold text-zinc-100 tracking-tight">Settings</h1>
 
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-          <div className="p-2 bg-gray-100 rounded-lg text-gray-900">
+      <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-zinc-800">
+          <div className="p-2 bg-zinc-800 rounded-lg text-zinc-300">
             <Building2 className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Company Profile</h2>
-            <p className="text-sm text-gray-500">These details will appear on your invoices.</p>
+            <h2 className="text-lg font-bold text-white">Company Profile</h2>
+            <p className="text-sm text-zinc-500">These details will appear on your invoices.</p>
           </div>
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-start gap-6">
+          <div className="flex flex-col sm:flex-row gap-6">
             <div className="shrink-0">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
+              <label className="block text-sm font-medium text-zinc-400 mb-2">Company Logo</label>
               <div className="flex flex-col items-center gap-3">
                 {companyLogo ? (
-                  <div className="relative w-24 h-24 border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+                  <div className="relative w-24 h-24 border border-zinc-700 rounded-lg overflow-hidden bg-zinc-950 flex items-center justify-center">
                     <img src={companyLogo} alt="Logo preview" className="max-w-full max-h-full object-contain" />
                     <button 
                       onClick={() => setCompanyLogo('')}
-                      className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-sm text-gray-500 hover:text-red-600"
+                      className="absolute top-1 right-1 bg-zinc-900 rounded-full p-1 shadow-sm text-zinc-400 hover:text-red-500"
                     >
                       <AlertCircle className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
-                  <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 bg-gray-50">
+                  <div className="w-24 h-24 border-2 border-dashed border-zinc-700 rounded-lg flex flex-col items-center justify-center text-zinc-500 bg-zinc-950/50">
                     <ImageIcon className="w-8 h-8 mb-1" />
                     <span className="text-xs">No logo</span>
                   </div>
                 )}
-                <label className="cursor-pointer px-3 py-1.5 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                <label className="cursor-pointer px-3 py-1.5 border border-zinc-700 rounded-md text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition-colors">
                   <span>Upload Logo</span>
                   <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
                 </label>
@@ -210,90 +215,65 @@ export default function Settings() {
             
             <div className="flex-1 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-1">Company Name</label>
                 <input
                   type="text"
                   value={companyName}
                   onChange={e => setCompanyName(e.target.value)}
-                  placeholder="e.g. ZOC Solutions"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="e.g. Protocol Inc"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zinc-600"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-1">Email Address</label>
                 <input
                   type="email"
                   value={companyEmail}
                   onChange={e => setCompanyEmail(e.target.value)}
                   placeholder="hello@company.com"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zinc-600"
                 />
               </div>
             </div>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address / Details</label>
+            <label className="block text-sm font-medium text-zinc-400 mb-1">Address / Details</label>
             <textarea
               rows={3}
               value={companyAddress}
               onChange={e => setCompanyAddress(e.target.value)}
               placeholder="123 Business Rd&#10;City, State 12345"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zinc-600 resize-none"
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-          <div className="p-2 bg-pink-50 text-pink-600 rounded-lg shrink-0">
-            <Heart className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-gray-900">Support the Developer</h2>
-            <p className="text-sm text-gray-500">Keep this tool free and private for everyone.</p>
-          </div>
-        </div>
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-          <p className="text-sm text-gray-600 flex-1">
-            This invoicing app uses a Zero-Operating-Cost architecture, meaning your data stays completely private on your device. If this tool saves your business time and money, consider supporting its continued development!
-          </p>
-          <a
-            href="https://buymeacoffee.com/YOUR_USERNAME_HERE"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 flex items-center gap-2 px-6 py-2.5 bg-[#FFDD00] text-gray-900 font-bold rounded-lg hover:bg-[#FFD000] transition-colors shadow-sm"
-          >
-            ☕ Buy me a coffee
-          </a>
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-          <div className="p-2 bg-gray-100 rounded-lg text-gray-900">
+      <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-zinc-800">
+          <div className="p-2 bg-zinc-800 text-zinc-300 rounded-lg">
             <Percent className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Tax Configuration</h2>
-            <p className="text-sm text-gray-500">Set a default tax to be applied to new invoices.</p>
+            <h2 className="text-lg font-bold text-white">Tax Configuration</h2>
+            <p className="text-sm text-zinc-500">Set a default tax to be applied to new invoices.</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tax Name</label>
+            <label className="block text-sm font-medium text-zinc-400 mb-1">Tax Name</label>
             <input
               type="text"
               value={taxName}
               onChange={e => setTaxName(e.target.value)}
               placeholder="e.g. VAT, Sales Tax"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zinc-600"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tax Rate (%)</label>
+            <label className="block text-sm font-medium text-zinc-400 mb-1">Tax Rate (%)</label>
             <input
               type="number"
               step="0.01"
@@ -301,7 +281,7 @@ export default function Settings() {
               value={taxRate}
               onChange={e => setTaxRate(e.target.value)}
               placeholder="0.00"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-zinc-600"
             />
           </div>
         </div>
@@ -309,30 +289,30 @@ export default function Settings() {
         <div className="pt-4 flex items-center justify-end">
           <button
             onClick={saveSettings}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            className="flex items-center gap-2 px-6 py-2.5 bg-white text-zinc-950 rounded-lg font-bold hover:bg-zinc-200 transition-colors"
           >
-            <Save className="w-4 h-4" /> Save Settings
+            <Save className="w-4 h-4" /> Save Profile
           </button>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-            <HardDrive className="w-5 h-5" />
+      <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-zinc-800">
+          <div className="p-3 bg-zinc-800 text-zinc-300 rounded-xl">
+            <HardDrive className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Data Management</h2>
-            <p className="text-sm text-gray-500">Export your data to a file, or restore from a previous backup.</p>
+            <h2 className="text-lg font-bold text-zinc-100">Data Management</h2>
+            <p className="text-sm text-zinc-500">Export your local WASM database to a file, or restore from a backup.</p>
           </div>
         </div>
         
         {status && (
-          <div className={`p-4 rounded-lg flex items-start gap-3 ${
-            status.type === 'success' ? 'bg-green-50 text-green-800' : 
-            status.type === 'error' ? 'bg-red-50 text-red-800' : 'bg-blue-50 text-blue-800'
+          <div className={`p-4 rounded-xl flex items-start gap-3 ${
+            status.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
+            status.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
           }`}>
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 auto mt-0.5" />
             <p className="text-sm font-medium">{status.message}</p>
           </div>
         )}
@@ -341,9 +321,10 @@ export default function Settings() {
           <button
             onClick={handleExportData}
             disabled={isLoading}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border rounded-xl font-medium transition-colors disabled:opacity-50 ${isUnlocked ? 'bg-zinc-950 text-zinc-300 border-zinc-800 hover:bg-zinc-800' : 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20'}`}
           >
-            <Download className="w-4 h-4" /> Export Backup
+            {isUnlocked ? <Download className="w-4 h-4" /> : <Crown className="w-4 h-4" />}
+            Export DB Backup
           </button>
           
           <div className="flex-1">
@@ -357,16 +338,17 @@ export default function Settings() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-lg font-medium hover:bg-blue-50 transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600/10 text-emerald-500 border border-emerald-500/20 rounded-xl font-medium hover:bg-emerald-600/20 transition-colors disabled:opacity-50"
             >
               <Upload className="w-4 h-4" /> Restore Backup
             </button>
           </div>
         </div>
-        <p className="text-xs text-gray-500 mt-2">
-          <strong>Note:</strong> Restoring a backup will overwrite all current data on this device.
+        <p className="text-xs text-zinc-600 mt-2">
+          <strong>Note:</strong> Restoring a backup will overwrite the current OPFS state.
         </p>
       </div>
+
     </div>
   );
 }

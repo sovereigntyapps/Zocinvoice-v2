@@ -1,5 +1,5 @@
 {
-  "name": "ZOC Invoice",
-  "description": "A local-first invoice generator using ZOC 3.0 architecture with PGlite and GitHub sync.",
-  "requestFramePermissions": []
+  "name": "Sovereign Invoice",
+  "description": "Sovereign Invoice using the SWA Protocol with PGlite OPFS and WebAuthn keys.",
+  "requestFramePermissions": ["publickey-credentials-get", "publickey-credentials-create"]
 }

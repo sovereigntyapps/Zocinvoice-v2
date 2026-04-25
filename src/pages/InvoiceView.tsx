@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../db';
 import { ArrowLeft, Download, Printer, CheckCircle, Circle } from 'lucide-react';
 import { format } from 'date-fns';
+import { isAppUnlocked } from '../lib/license';
 import domtoimage from 'dom-to-image';
 import jsPDF from 'jspdf';
 
@@ -10,12 +11,14 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
   const [client, setClient] = useState<any>(null);
   const [items, setItems] = useState<any[]>([]);
   const [companySettings, setCompanySettings] = useState<any>({});
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const invoiceRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [invoiceHeight, setInvoiceHeight] = useState(1131);
 
   useEffect(() => {
+    isAppUnlocked().then(setIsUnlocked);
     async function loadData() {
       const invRes = await db.query('SELECT * FROM invoices WHERE id = $1', [invoiceId]);
       if (invRes.rows.length > 0) {
@@ -163,7 +166,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
                     {companySettings.company_name ? companySettings.company_name.charAt(0).toUpperCase() : 'Z'}
                   </div>
                 )}
-                <h3 className="font-bold text-gray-900">{companySettings.company_name || 'ZOC Solutions'}</h3>
+                <h3 className="font-bold text-gray-900">{companySettings.company_name || 'Sovereign Apps'}</h3>
                 {companySettings.company_email && <p className="text-gray-500 text-sm">{companySettings.company_email}</p>}
                 {companySettings.company_address && <p className="text-gray-500 text-sm whitespace-pre-wrap mt-1">{companySettings.company_address}</p>}
               </div>
@@ -247,9 +250,11 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
               </div>
             )}
 
-            <div className="mt-auto pt-8 border-t border-gray-100 text-center text-sm text-gray-400">
-              Free Invoice Generator by <span className="font-semibold text-gray-500">Sovereignty Apps</span>
-            </div>
+            {!isUnlocked && (
+              <div className="mt-auto pt-8 border-t border-gray-100 text-center text-sm text-gray-400">
+                Free Invoice Generator by <span className="font-semibold text-gray-500">Sovereignty Apps</span>
+              </div>
+            )}
           </div>
           </div>
         </div>

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { initDb } from './db';
 import Layout from './lib/components/Layout';
 import Landing from './pages/Landing';
@@ -17,6 +17,8 @@ import InvoiceView from './pages/InvoiceView';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 
+import Upgrade from './pages/Upgrade';
+
 export default function App() {
   const [isDbReady, setIsDbReady] = useState(false);
   const [currentRoute, setCurrentRoute] = useState('landing');
@@ -27,12 +29,13 @@ export default function App() {
   }, []);
 
   if (!isDbReady) {
-    return <div className="flex h-screen items-center justify-center bg-gray-50 text-gray-500">Initializing Database...</div>;
+    return <div className="flex h-screen items-center justify-center bg-zinc-950 text-zinc-500 font-mono text-sm uppercase tracking-widest animate-pulse">Initializing Identity Enclave & OPFS...</div>;
   }
 
   const navigate = (route: string, params: any = {}) => {
     setCurrentRoute(route);
     setRouteParams(params);
+    window.scrollTo(0, 0);
   };
 
   if (currentRoute === 'landing') {
@@ -57,6 +60,7 @@ export default function App() {
       case 'invoice-edit': return <InvoiceForm navigate={navigate} invoiceId={routeParams.id} />;
       case 'invoice-view': return <InvoiceView navigate={navigate} invoiceId={routeParams.id} />;
       case 'settings': return <Settings navigate={navigate} />;
+      case 'upgrade': return <Upgrade navigate={navigate} />;
       default: return <Dashboard navigate={navigate} />;
     }
   };

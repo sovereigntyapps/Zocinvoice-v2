@@ -1,7 +1,7 @@
 import { PGlite } from '@electric-sql/pglite';
 
-// Initialize PGlite with IndexedDB persistence
-export const db = new PGlite('idb://invoice-generator-db-v2');
+// Initialize PGlite with IndexedDB persistence (The "Hard Drive" of the SWA Protocol)
+export const db = new PGlite('idb://sovereignty-invoice-db-v3');
 
 export async function initDb() {
   await db.exec(`
@@ -38,34 +38,11 @@ export async function initDb() {
       unit_price DECIMAL(10, 2) DEFAULT 0,
       amount DECIMAL(10, 2) DEFAULT 0
     );
-    
+
     CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
       value TEXT
     );
-
-    -- Add new columns to existing invoices table if they don't exist
-    DO $$
-    BEGIN
-      BEGIN
-        ALTER TABLE invoices ADD COLUMN subtotal DECIMAL(10, 2) DEFAULT 0;
-      EXCEPTION WHEN duplicate_column THEN END;
-      
-      BEGIN
-        ALTER TABLE invoices ADD COLUMN tax_name TEXT;
-      EXCEPTION WHEN duplicate_column THEN END;
-      
-      BEGIN
-        ALTER TABLE invoices ADD COLUMN tax_rate DECIMAL(10, 2) DEFAULT 0;
-      EXCEPTION WHEN duplicate_column THEN END;
-      
-      BEGIN
-        ALTER TABLE invoices ADD COLUMN tax_amount DECIMAL(10, 2) DEFAULT 0;
-      EXCEPTION WHEN duplicate_column THEN END;
-      
-      BEGIN
-        ALTER TABLE invoices ADD COLUMN po_number TEXT;
-      EXCEPTION WHEN duplicate_column THEN END;
-    END $$;
   `);
 }
+
