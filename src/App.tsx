@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { initDb } from './db';
+import { unlockApp } from './lib/license';
 import Layout from './lib/components/Layout';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
@@ -25,6 +26,23 @@ export default function App() {
   const [routeParams, setRouteParams] = useState<any>({});
 
   useEffect(() => {
+    // Check for Stripe callback
+    const searchParams = new URLSearchParams(window.location.search);
+    const unlocked = searchParams.get('unlocked');
+    const sessionId = searchParams.get('session_id');
+
+    if (unlocked === 'true' && sessionId && sessionId.startsWith('cs_')) {
+      // Validate basic format of Checkout Session ID and unlock
+      unlockApp()
+        .then(() => {
+          // Clean up the URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+          // Navigate to dashboard or upgrade page
+          setCurrentRoute('dashboard');
+        })
+        .catch(console.error);
+    }
+
     initDb().then(() => setIsDbReady(true)).catch(console.error);
   }, []);
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../db';
-import { Download, Upload, AlertCircle, HardDrive, Building2, Image as ImageIcon, Heart, Percent, Save, Crown } from 'lucide-react';
+import { Download, Upload, AlertCircle, HardDrive, Building2, Image as ImageIcon, Percent, Save, Crown } from 'lucide-react';
 import { isAppUnlocked } from '../lib/license';
 
 export default function Settings({ navigate }: { navigate: (route: string) => void }) {

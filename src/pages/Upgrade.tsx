@@ -1,30 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Crown, Zap, Shield, HardDrive, Check, Loader2, Key } from 'lucide-react';
-import { isAppUnlocked, process1ClickPayment } from '../lib/license';
+import { isAppUnlocked } from '../lib/license';
 
 export default function Upgrade({ navigate }: { navigate: (route: string) => void }) {
   const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     isAppUnlocked().then(setIsUnlocked).catch(() => setIsUnlocked(false));
   }, []);
 
   const handle1ClickPayment = async () => {
-    setIsProcessing(true);
-    setError(null);
-    try {
-      await process1ClickPayment();
-      setIsUnlocked(true);
-    } catch (err: any) {
-      console.error(err);
-      if (err.name !== 'AbortError') {
-        setError(err.message || "Failed to process payment");
-      }
-    } finally {
-      setIsProcessing(false);
-    }
+    // SWA Pattern: Redirect to Stripe Payment Link
+    // The developer must set the success URL in Stripe Dashboard to the app's URL + ?unlocked=true&session_id={CHECKOUT_SESSION_ID}
+    window.location.href = 'https://buy.stripe.com/test_3cs3do42A0eX37y3cc'; // Placeholder link
   };
 
   if (isUnlocked === null) {
@@ -96,19 +84,13 @@ export default function Upgrade({ navigate }: { navigate: (route: string) => voi
 
           <button
             onClick={handle1ClickPayment}
-            disabled={isProcessing}
-            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 group"
           >
-            {isProcessing ? (
-              <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
-            ) : (
-              <><Zap className="w-5 h-5 text-blue-300 group-hover:text-white transition-colors" /> 1-Click Pay</>
-            )}
+            <Zap className="w-5 h-5 text-blue-300 group-hover:text-white transition-colors" /> Buy 1-Click Protocol License
           </button>
-          {error && <div className="text-red-400 text-sm mt-3 text-center">{error}</div>}
           
           <p className="text-center text-xs text-zinc-600 mt-4">
-            Secured by W3C Web Payments API. Supports Apple Pay & Google Pay.
+            Payments securely processed by Stripe. Apple Pay & Google Pay supported.
           </p>
         </div>
 
