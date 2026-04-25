@@ -8,7 +8,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
   const [invoices, setInvoices] = useState<any[]>([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [invoiceToDelete, setInvoiceToDelete] = useState<string | null>(null);
-  const [isUnlocked, setIsUnlocked] = useState(true);
+  const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
 
   const loadInvoices = async () => {
     const res = await db.query(`
@@ -22,7 +22,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
 
   useEffect(() => {
     loadInvoices();
-    isAppUnlocked().then(setIsUnlocked);
+    isAppUnlocked().then(setIsUnlocked).catch(() => setIsUnlocked(false));
   }, []);
 
   const confirmDelete = (id: string) => {
@@ -40,10 +40,6 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
   };
 
   const handleCreate = () => {
-    if (!isUnlocked && invoices.length >= 3) {
-      navigate('upgrade');
-      return;
-    }
     navigate('invoice-new');
   };
 
@@ -59,30 +55,6 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
 
   return (
     <div className="space-y-12 max-w-6xl mx-auto pb-24">
-      {!isUnlocked && invoices.length >= 3 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-[32px] p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
-           <div className="flex items-center gap-6">
-             <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center shrink-0">
-                <Crown className="w-8 h-8 text-amber-500" />
-             </div>
-             <div>
-               <h3 className="text-zinc-900 font-black uppercase tracking-tight text-xl mb-1">
-                  Protocol Threshold Reached
-               </h3>
-               <p className="text-zinc-500 text-sm leading-relaxed max-w-lg italic">
-                  You have reached the free-tier limit of 3 commits on the Sovereignty Protocol. Upgrade your hardware license for unlimited biometric ledger access.
-               </p>
-             </div>
-           </div>
-           <button 
-              onClick={() => navigate('upgrade')}
-              className="px-10 py-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 transition-all shadow-2xl shadow-zinc-900/20 active:scale-95 shrink-0"
-           >
-              Upgrade Protocol
-           </button>
-        </div>
-      )}
-
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
         <div>
           <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Invoices</h1>

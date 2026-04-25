@@ -12,11 +12,11 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
   const [companyLogo, setCompanyLogo] = useState('');
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info', message: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(true);
+  const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    isAppUnlocked().then(setIsUnlocked);
+    isAppUnlocked().then(setIsUnlocked).catch(() => setIsUnlocked(false));
     async function loadSettings() {
       try {
         const res = await db.query('SELECT * FROM settings');
@@ -216,7 +216,7 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
             <div className="space-y-3">
               <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Logo</label>
               <div className="flex flex-col items-center gap-4">
-                {companyLogo ? (
+                {companyLogo && isUnlocked ? (
                   <div className="relative w-32 h-32 border border-zinc-200 rounded-xl overflow-hidden bg-zinc-50 flex items-center justify-center group">
                     <img src={companyLogo} alt="Logo preview" className="max-w-full max-h-full object-contain p-2" />
                     <button 
@@ -227,15 +227,29 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
                     </button>
                   </div>
                 ) : (
-                  <div className="w-32 h-32 border-2 border-dashed border-zinc-200 rounded-xl flex flex-col items-center justify-center text-zinc-400 bg-zinc-50/50">
+                  <div className="w-32 h-32 border-2 border-dashed border-zinc-200 rounded-xl flex flex-col items-center justify-center text-zinc-400 bg-zinc-50/50 group relative">
+                    {!isUnlocked && (
+                      <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center z-10 rounded-xl">
+                         <Crown className="w-6 h-6 text-amber-500 fill-amber-500 animate-bounce" />
+                      </div>
+                    )}
                     <ImageIcon className="w-8 h-8 mb-1 opacity-20" />
                     <span className="text-[10px] font-medium">No Logo</span>
                   </div>
                 )}
-                <label className="cursor-pointer px-4 py-2 bg-white border border-zinc-200 rounded-lg text-xs font-bold text-zinc-600 hover:bg-zinc-50 transition-colors">
-                  <span>Change Logo</span>
-                  <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
-                </label>
+                {isUnlocked ? (
+                  <label className="cursor-pointer px-4 py-2 bg-white border border-zinc-200 rounded-lg text-xs font-bold text-zinc-600 hover:bg-zinc-50 transition-colors">
+                    <span>Change Logo</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                  </label>
+                ) : (
+                  <button 
+                    onClick={() => navigate('upgrade')}
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 border border-amber-100 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-amber-100 transition-colors"
+                  >
+                    <Crown className="w-3 h-3 fill-amber-500" /> Unlock Branding
+                  </button>
+                )}
               </div>
             </div>
             

@@ -12,7 +12,7 @@ export default function Upgrade({ navigate }: { navigate: (route: string) => voi
   const handle1ClickPayment = async () => {
     // SWA Pattern: Redirect to Stripe Payment Link
     // The developer must set the success URL in Stripe Dashboard to the app's URL + ?unlocked=true&session_id={CHECKOUT_SESSION_ID}
-    window.location.href = 'https://buy.stripe.com/test_3cs3do42A0eX37y3cc'; // Placeholder link
+    window.location.href = 'https://buy.stripe.com/14A3co9GGeWa1bofBi2Ji00';
   };
 
   if (isUnlocked === null) {
@@ -68,11 +68,12 @@ export default function Upgrade({ navigate }: { navigate: (route: string) => voi
 
         <ul className="space-y-4 mb-10">
           {[
-            "Unlimited Invoices & Clients",
-            "Advanced Business Reports",
-            "Local Data Backups & Exports",
-            "Custom Branding & Logos",
-            "Future Feature Updates Included"
+            "Advanced Fiscal Analytics & Intelligence",
+            "Secured Local Data Backups & Exports",
+            "Custom Organization Branding & Logos",
+            "Unlimited Sovereign Identity Registry",
+            "Removal of 'Free Tier' Footer Branding",
+            "Priority Access to Protocol Updates"
           ].map((feature, i) => (
             <li key={i} className="flex gap-3 items-center">
               <Check className="w-5 h-5 text-emerald-500 shrink-0" />

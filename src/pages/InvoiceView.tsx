@@ -11,14 +11,14 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
   const [client, setClient] = useState<any>(null);
   const [items, setItems] = useState<any[]>([]);
   const [companySettings, setCompanySettings] = useState<any>({});
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
   const invoiceRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [invoiceHeight, setInvoiceHeight] = useState(1131);
 
   useEffect(() => {
-    isAppUnlocked().then(setIsUnlocked);
+    isAppUnlocked().then(setIsUnlocked).catch(() => setIsUnlocked(false));
     async function loadData() {
       const invRes = await db.query('SELECT * FROM invoices WHERE id = $1', [invoiceId]);
       if (invRes.rows.length > 0) {
@@ -172,7 +172,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
                 </div>
               </div>
               <div className="text-right">
-                {companySettings.company_logo ? (
+                {companySettings.company_logo && isUnlocked ? (
                   <img src={companySettings.company_logo} alt="Company Logo" className="h-14 object-contain ml-auto mb-4" />
                 ) : (
                   <div className="w-14 h-14 bg-zinc-950 rounded-2xl flex items-center justify-center text-white font-bold text-2xl ml-auto mb-4 shadow-lg uppercase">
@@ -269,7 +269,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
               </div>
             )}
 
-            {!isUnlocked && (
+            {!isUnlocked && isUnlocked !== null && (
               <div className="mt-auto pt-12 border-t border-zinc-50 text-center space-y-1 opacity-40 grayscale group">
                 <p className="text-[8px] font-mono text-zinc-400 uppercase tracking-widest">Protocol Ledger Proof v2.0</p>
                 <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Native Applet by <span className="text-zinc-900 group-hover:text-zinc-400 transition-colors">Sovereignty Apps</span></p>

@@ -34,13 +34,26 @@ export default function App() {
     const unlocked = searchParams.get('unlocked');
     const sessionId = searchParams.get('session_id');
 
-    if (unlocked === 'true' && sessionId && sessionId.startsWith('cs_')) {
+    // SWA Gatekeeper: Only process if it looks like a valid Stripe session
+    if (unlocked === 'true' && sessionId?.startsWith('cs_live_') && sessionId.length > 30) {
+      // In a real production environment with high stakes, one would use a 
+      // serverless function to verify the session_id against Stripe's API.
+      // For a Sovereign Local-First app, we treat the redirect as the "One-Tap" trigger.
+      
       unlockApp()
         .then(() => {
-          window.history.replaceState({}, document.title, window.location.pathname);
-          setCurrentRoute('dashboard');
+          // Immediately purge the URL to prevent "Refresh to Unlock" loops or sharing
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+          
+          // Force a small delay to make the "Verifying" transition feel real
+          setTimeout(() => {
+            setCurrentRoute('dashboard');
+          }, 800);
         })
-        .catch(console.error);
+        .catch(err => {
+          console.error("License Acquisition Failed:", err);
+        });
     }
   }, []);
 
@@ -77,7 +90,7 @@ export default function App() {
               case 'dashboard': return <Dashboard navigate={navigate} />;
               case 'clients': return <Clients navigate={navigate} />;
               case 'invoices': return <Invoices navigate={navigate} />;
-              case 'reports': return <Reports />;
+              case 'reports': return <Reports navigate={navigate} />;
               case 'invoice-new': return <InvoiceForm navigate={navigate} />;
               case 'invoice-edit': return <InvoiceForm navigate={navigate} invoiceId={routeParams.id} />;
               case 'invoice-view': return <InvoiceView navigate={navigate} invoiceId={routeParams.id} />;
