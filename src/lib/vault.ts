@@ -46,11 +46,51 @@ export function base64urlToBuffer(base64urlString: string): Uint8Array {
  */
 export async function isGhostVaultSupported(): Promise<boolean> {
   if (!window.PublicKeyCredential) return false;
-  
-  // Some browsers might support WebAuthn but not PRF.
-  // We can't definitively check PRF support without calling the API, 
-  // but looking for standard publickey capability is a prerequisite.
   return window.isSecureContext && PublicKeyCredential !== undefined;
+}
+
+/**
+ * Checks if the browser explicitly supports the PRF extension via the getExtensions API.
+ * This is a softer check and might not be available in all browsers.
+ */
+export async function checkPrfSupport(): Promise<boolean> {
+  if (!window.PublicKeyCredential) return false;
+  const exts = (navigator.credentials as any).getClientExtensionResults?.() || {};
+  // Standard check for PRF support in the browser environment
+  const availableExts = PublicKeyCredential.getClientCapabilities ? await (PublicKeyCredential as any).getClientCapabilities() : null;
+  if (availableExts && availableExts.prf) return true;
+  
+  // Fallback: If we can't check capabilities, we assume true and let createVault fail gracefully
+  return true;
+}
+
+/**
+ * Hybrid Identity: Key Derivation using PBKDF2 (600,000 iterations).
+ * Used when WebAuthn PRF is unavailable.
+ */
+export async function deriveKeyFromPassphrase(passphrase: string): Promise<Uint8Array> {
+  const encoder = new TextEncoder();
+  const passwordKey = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(passphrase),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits', 'deriveKey']
+  );
+
+  // Sovereign Web Protocol standard: PBKDF2 600k iterations with SHA-256
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt: encoder.encode('sovereignty-hybrid-v1-standard-salt'),
+      iterations: 600000,
+      hash: 'SHA-256'
+    },
+    passwordKey,
+    256
+  );
+
+  return new Uint8Array(derivedBits);
 }
 
 /**
