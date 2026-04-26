@@ -1,7 +1,7 @@
 import { PGlite } from "@electric-sql/pglite";
 
-// Initialize PGlite with OPFS persistence (Sovereign Web Protocol: Near-native disk I/O)
-export const db = new PGlite("opfs://sovereignty-invoice-db-v3");
+// Initialize PGlite with IDB persistence (stable across iframe/production)
+export const db = new PGlite("idb://sovereignty-invoice-db-v3");
 
 export async function initDb() {
   await db.exec(`
