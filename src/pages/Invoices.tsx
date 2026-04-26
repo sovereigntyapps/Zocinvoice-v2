@@ -40,6 +40,12 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
   };
 
   const handleCreate = () => {
+    if (invoices.length >= 5 && !isUnlocked) {
+      if (confirm('You have reached the limit of 5 invoices on the free plan. Upgrade to Pro?')) {
+        navigate('upgrade');
+      }
+      return;
+    }
     navigate('invoice-new');
   };
 

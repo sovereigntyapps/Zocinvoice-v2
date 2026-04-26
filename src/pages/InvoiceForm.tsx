@@ -149,7 +149,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
             <h1 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase">
               {invoiceId ? 'Edit Invoice' : 'New Invoice'}
             </h1>
-            <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mt-1">Invoice Details & Preferences</p>
+            <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mt-1">Invoice Details</p>
           </div>
         </div>
       </div>
@@ -242,10 +242,10 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
               </div>
 
               <div className="p-5 bg-zinc-50 border border-zinc-200 rounded-2xl mt-4">
-                <p className="text-[10px] text-zinc-400 mb-2 font-mono uppercase tracking-[0.2em]">Storage Status</p>
+                <p className="text-[10px] text-zinc-400 mb-2 font-mono uppercase tracking-[0.2em]">Data Status</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-zinc-900 animate-pulse"></div>
-                  <span className="text-sm text-zinc-900 font-black uppercase tracking-tight">Offline First</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <span className="text-sm text-zinc-900 font-black uppercase tracking-tight">Saved Locally</span>
                 </div>
               </div>
             </div>
@@ -262,7 +262,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
           
           <div className="p-8 space-y-6">
             <div className="hidden md:grid grid-cols-12 gap-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] pb-4 border-b border-zinc-100">
-              <div className="col-span-6">Description / Service</div>
+              <div className="col-span-6">Description</div>
               <div className="col-span-2 text-right">Qty</div>
               <div className="col-span-2 text-right">Price</div>
               <div className="col-span-2 text-right px-4">Amount</div>

@@ -124,7 +124,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
             </button>
             <div>
               <h1 className="text-2xl font-bold text-white tracking-tight uppercase">Invoice {invoice.invoice_number}</h1>
-              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">Status: Order Confirmed</p>
+              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">Details and Export</p>
             </div>
           </div>
           <span className={`px-4 py-1.5 rounded-xl text-[10px] font-mono uppercase tracking-widest border transition-all ${
@@ -172,7 +172,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
               <div>
                 <h2 className="text-4xl font-extrabold text-zinc-900 tracking-tighter mb-2">INVOICE</h2>
                 <div className="flex items-center gap-2">
-                   <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">Serial Code</span>
+                   <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Invoice Number</span>
                    <p className="text-zinc-600 font-bold">#{invoice.invoice_number}</p>
                 </div>
               </div>
@@ -192,7 +192,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
 
             <div className="grid grid-cols-2 gap-16 mb-20 relative z-10">
               <div>
-                <p className="text-[10px] font-bold text-zinc-300 uppercase tracking-[0.2em] mb-4">Counterparty / Billed To</p>
+                <p className="text-[10px] font-bold text-zinc-300 uppercase tracking-[0.2em] mb-4">Bill To</p>
                 <div className="space-y-1">
                   <h4 className="font-black text-zinc-900 text-xl tracking-tight">{client.name}</h4>
                   {client.company && <p className="text-zinc-600 font-medium">{client.company}</p>}
@@ -225,10 +225,10 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b-[3px] border-zinc-900">
-                    <th className="py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Service Description</th>
-                    <th className="py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Units</th>
-                    <th className="py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Rate</th>
-                    <th className="py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Line Total</th>
+                    <th className="py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Description</th>
+                    <th className="py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Qty</th>
+                    <th className="py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Price</th>
+                    <th className="py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100">
@@ -249,7 +249,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
                 {(invoice.tax_rate > 0 || invoice.tax_amount > 0) ? (
                   <>
                     <div className="flex justify-between items-center text-zinc-400 text-sm font-medium px-2">
-                      <span>Transaction Subtotal</span>
+                      <span>Subtotal</span>
                       <span className="text-zinc-600 font-mono">${parseFloat(invoice.subtotal || invoice.total).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
                     <div className="flex justify-between items-center text-zinc-400 text-sm font-medium px-2">
@@ -280,7 +280,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
 
             {invoice.notes && (
               <div className="mt-10 pt-10 border-t-2 border-dashed border-zinc-100 relative z-10">
-                <p className="text-[10px] font-bold text-zinc-300 uppercase tracking-[0.2em] mb-4">Additional Disclosures / Notes</p>
+                <p className="text-[10px] font-bold text-zinc-300 uppercase tracking-[0.2em] mb-4">Notes & Terms</p>
                 <div className="p-6 bg-zinc-50/50 rounded-2xl border border-zinc-100/50">
                   <p className="text-zinc-600 text-sm leading-relaxed whitespace-pre-wrap">{invoice.notes}</p>
                 </div>
@@ -289,8 +289,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
 
             {!isUnlocked && isUnlocked !== null && (
               <div className="mt-auto pt-12 border-t border-zinc-50 text-center space-y-1 opacity-40 grayscale group">
-                <p className="text-[8px] font-mono text-zinc-400 uppercase tracking-widest">Invoice Proof v2.0</p>
-                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Native Applet by <span className="text-zinc-900 group-hover:text-zinc-400 transition-colors">Sovereignty Apps</span></p>
+                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Sovereign Invoice</p>
               </div>
             )}
           </div>
@@ -337,7 +336,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
                   className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-zinc-950 border border-zinc-800 text-zinc-400 rounded-2xl font-bold hover:text-white hover:border-zinc-700 transition-all active:scale-[0.98] shadow-lg"
                 >
                   <Printer className="w-5 h-5 opacity-40" /> 
-                  <span className="text-sm">Native Print</span>
+                  <span className="text-sm">Print Invoice</span>
                 </button>
                 
                 <button
@@ -345,7 +344,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
                   className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white text-zinc-950 rounded-2xl font-bold hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl shadow-white/5"
                 >
                   <Download className="w-5 h-5 opacity-40" /> 
-                  <span className="text-sm">Generate PDF</span>
+                  <span className="text-sm">Download PDF</span>
                 </button>
              </div>
           </div>
@@ -354,10 +353,10 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
              <div className="p-4 bg-zinc-950/50 rounded-2xl border border-zinc-800/30">
                <div className="flex items-center gap-2 mb-2">
                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                 <span className="text-[8px] font-mono text-emerald-500 uppercase tracking-widest">Enclave Verified</span>
+                 <span className="text-[8px] font-mono text-emerald-500 uppercase tracking-widest">Secure Backup</span>
                </div>
                <p className="text-[9px] text-zinc-600 font-mono leading-relaxed uppercase tracking-widest">
-                 Hardware-rooted encryption active. This view is rendered from local WASM threads.
+                 Your data is stored securely and privately on this device.
                </p>
              </div>
           </div>

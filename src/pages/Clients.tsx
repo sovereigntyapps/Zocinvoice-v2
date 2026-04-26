@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../db';
 import { v4 as uuidv4 } from 'uuid';
-import { Plus, Edit2, Trash2, AlertTriangle, Users, Search, ArrowRight, UserPlus, Mail, Phone, MapPin, Building2, Globe } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertTriangle, Users } from 'lucide-react';
+import { isAppUnlocked } from '../lib/license';
 
 export default function Clients({ navigate }: { navigate: (route: string) => void }) {
   const [clients, setClients] = useState<any[]>([]);
@@ -9,6 +10,7 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
   const [formData, setFormData] = useState({ id: '', name: '', email: '', company: '' });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<string | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
 
   const loadClients = async () => {
     const res = await db.query('SELECT * FROM clients ORDER BY created_at DESC');
@@ -17,6 +19,7 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
 
   useEffect(() => {
     loadClients();
+    isAppUnlocked().then(setIsUnlocked).catch(() => setIsUnlocked(false));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,6 +38,17 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
     setIsFormOpen(false);
     setFormData({ id: '', name: '', email: '', company: '' });
     loadClients();
+  };
+
+  const handleCreate = () => {
+    if (clients.length >= 1 && !isUnlocked) {
+      if (confirm('You have reached the limit of 1 client on the free plan. Upgrade to Pro?')) {
+        navigate('upgrade');
+      }
+      return;
+    }
+    setFormData({ id: '', name: '', email: '', company: '' });
+    setIsFormOpen(true);
   };
 
   const handleEdit = (client: any) => {
@@ -71,10 +85,7 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
           <p className="text-zinc-500 text-sm mt-1">Manage your customer registry</p>
         </div>
         <button
-          onClick={() => {
-            setFormData({ id: '', name: '', email: '', company: '' });
-            setIsFormOpen(true);
-          }}
+          onClick={handleCreate}
           className="flex items-center justify-center gap-3 px-10 py-4 bg-zinc-950 text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-zinc-800 active:scale-95 transition-all shadow-2xl shadow-zinc-900/20"
         >
           <Plus className="w-5 h-5" /> New Client

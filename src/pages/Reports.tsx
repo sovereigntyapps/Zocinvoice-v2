@@ -117,7 +117,7 @@ export default function Reports({ navigate }: { navigate: (route: string) => voi
           <div className="h-[450px]">
             {monthlyData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 30 }}>
                   <CartesianGrid strokeDasharray="0" vertical={false} stroke="#f4f4f5" />
                   <XAxis 
                     dataKey="name" 
