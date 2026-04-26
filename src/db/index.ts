@@ -26,9 +26,18 @@ export async function initDb() {
       tax_rate DECIMAL(10, 2) DEFAULT 0,
       tax_amount DECIMAL(10, 2) DEFAULT 0,
       total DECIMAL(10, 2) DEFAULT 0,
+      paid_amount DECIMAL(10, 2) DEFAULT 0,
       notes TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+
+    -- Add paid_amount if it doesn't exist (primitive migration)
+    DO $$ 
+    BEGIN 
+      IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='paid_amount') THEN
+        ALTER TABLE invoices ADD COLUMN paid_amount DECIMAL(10, 2) DEFAULT 0;
+      END IF;
+    END $$;
 
     CREATE TABLE IF NOT EXISTS invoice_items (
       id UUID PRIMARY KEY,

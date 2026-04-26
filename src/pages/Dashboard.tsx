@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../db';
 import { isAppUnlocked } from '../lib/license';
-import { LayoutDashboard, DollarSign, FileText, Users } from 'lucide-react';
+import { LayoutDashboard, DollarSign, FileText, Users, Clock } from 'lucide-react';
 
 export default function Dashboard({ navigate }: { navigate: (route: string) => void }) {
   const [stats, setStats] = useState({
     totalInvoices: 0,
     totalClients: 0,
     totalRevenue: 0,
+    paidRevenue: 0,
   });
 
   useEffect(() => {
     async function loadStats() {
       try {
-        const invoicesRes = await db.query('SELECT COUNT(*) as count, SUM(total) as revenue FROM invoices');
+        const invoicesRes = await db.query('SELECT COUNT(*) as count, SUM(total) as revenue, SUM(paid_amount) as paid FROM invoices');
         const clientsRes = await db.query('SELECT COUNT(*) as count FROM clients');
         
         const invoiceRow = invoicesRes.rows[0] as any;
@@ -22,6 +23,7 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
         setStats({
           totalInvoices: invoiceRow ? parseInt(invoiceRow.count) || 0 : 0,
           totalRevenue: invoiceRow ? parseFloat(invoiceRow.revenue) || 0 : 0,
+          paidRevenue: invoiceRow ? parseFloat(invoiceRow.paid) || 0 : 0,
           totalClients: clientsRow ? parseInt(clientsRow.count) || 0 : 0,
         });
       } catch (e) {
@@ -49,46 +51,49 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
       </div>
       
       {/* Central Metrics Hub */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         
         <div className="bg-white border border-zinc-200 p-8 rounded-[32px] flex flex-col gap-6 group hover:border-zinc-900 transition-all shadow-xl shadow-zinc-200/40 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:scale-110 transition-transform">
-               <DollarSign size={80} className="text-zinc-900" />
-            </div>
-            <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors shadow-inner">
-               <DollarSign className="w-7 h-7" />
+            <div className="w-12 h-12 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors shadow-inner">
+               <DollarSign className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Revenue</p>
-              <p className="text-4xl font-black text-zinc-900 tracking-tight transition-transform duration-500 grow font-sans">
-                ${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Collected Total</p>
+              <p className="text-3xl font-black text-zinc-900 tracking-tight font-sans">
+                ${stats.paidRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </p>
+            </div>
+        </div>
+
+        <div className="bg-white border border-zinc-200 p-8 rounded-[32px] flex flex-col gap-6 group hover:border-zinc-900 transition-all shadow-xl shadow-zinc-200/40 relative overflow-hidden">
+            <div className="w-12 h-12 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-colors shadow-inner">
+               <Clock className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Balance Due</p>
+              <p className="text-3xl font-black text-zinc-900 tracking-tight font-sans">
+                ${(stats.totalRevenue - stats.paidRevenue).toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </p>
             </div>
         </div>
         
         <div className="bg-white border border-zinc-200 p-8 rounded-[32px] flex flex-col gap-6 group hover:border-zinc-900 transition-all shadow-xl shadow-zinc-200/40 relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:scale-110 transition-transform">
-               <FileText size={80} className="text-zinc-900" />
-            </div>
-            <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors shadow-inner">
-               <FileText className="w-7 h-7" />
+            <div className="w-12 h-12 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors shadow-inner">
+               <FileText className="w-6 h-6" />
             </div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Invoices</p>
-              <p className="text-4xl font-black text-zinc-900 tracking-tight grow font-sans">{stats.totalInvoices}</p>
+              <p className="text-3xl font-black text-zinc-900 tracking-tight font-sans">{stats.totalInvoices}</p>
             </div>
         </div>
 
         <div className="bg-white border border-zinc-200 p-8 rounded-[32px] flex flex-col gap-6 group hover:border-zinc-900 transition-all shadow-xl shadow-zinc-200/40 relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-8 opacity-[0.05] group-hover:scale-110 transition-transform">
-               <Users size={80} className="text-zinc-900" />
-            </div>
-            <div className="w-14 h-14 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors shadow-inner">
-               <Users className="w-7 h-7" />
+            <div className="w-12 h-12 bg-zinc-50 border border-zinc-100 text-zinc-900 rounded-2xl flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors shadow-inner">
+               <Users className="w-6 h-6" />
             </div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Clients</p>
-              <p className="text-4xl font-black text-zinc-900 tracking-tight grow font-sans">{stats.totalClients}</p>
+              <p className="text-3xl font-black text-zinc-900 tracking-tight font-sans">{stats.totalClients}</p>
             </div>
         </div>
         

@@ -12,22 +12,22 @@ export default function Terms({ navigate }: { navigate: (route: string) => void 
           <ArrowLeft className="w-4 h-4" /> Returns to Source
         </button>
         
-        <h1 className="text-6xl font-black mb-12 text-zinc-900 tracking-tighter uppercase leading-none">Terms of Sovereignty</h1>
+        <h1 className="text-6xl font-black mb-12 text-zinc-900 tracking-tighter uppercase leading-none">Terms of Service</h1>
         
         <div className="max-w-none space-y-10 text-zinc-500 leading-relaxed italic">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] not-italic text-zinc-400">Last Enforced: April 25, 2026</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] not-italic text-zinc-400">Last Updated: April 25, 2026</p>
           
           <section>
             <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">1. Acceptance of Terms</h2>
             <p>
-              By initializing the SWA Protocol, you accept and agree to be bound by the terms and provisions of this hardware-rooted local execution environment.
+              By using this application, you accept and agree to be bound by the terms and provisions of this local-first execution environment.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">2. Description of Architecture</h2>
+            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">2. Description of Service</h2>
             <p>
-              Sovereignty Apps are distributed via our proprietary Sovereign Web App (SWA) Architecture. The software executes locally and autonomously. It is provided "as is" without warranty of any kind.
+              This software executes locally on your device. It is provided "as is" without warranty of any kind.
             </p>
           </section>
 
@@ -44,9 +44,9 @@ export default function Terms({ navigate }: { navigate: (route: string) => void 
           </section>
 
           <section>
-            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">4. Sovereign Operations</h2>
+            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">3. Usage Policies</h2>
             <p>
-              You agree not to reverse engineer the WASM binary or inject malicious scripts into the PGLite execution thread.
+              You agree not to reverse engineer the application binary or inject malicious scripts into the database execution thread.
             </p>
           </section>
         </div>

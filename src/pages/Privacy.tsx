@@ -12,18 +12,18 @@ export default function Privacy({ navigate }: { navigate: (route: string) => voi
           <ArrowLeft className="w-4 h-4" /> Returns to Source
         </button>
         
-        <h1 className="text-6xl font-black mb-12 text-zinc-900 tracking-tighter uppercase leading-none">Privacy Protocol</h1>
+        <h1 className="text-6xl font-black mb-12 text-zinc-900 tracking-tighter uppercase leading-none">Privacy Policy</h1>
         
         <div className="max-w-none space-y-10 text-zinc-500 leading-relaxed italic">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] not-italic text-zinc-400">Last Enforced: April 25, 2026</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] not-italic text-zinc-400">Last Updated: April 25, 2026</p>
           
           <section>
-            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">1. The SWA Protocol Promise</h2>
+            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">1. Our Privacy Promise</h2>
             <p>
-              Sovereignty Apps are built using our proprietary Sovereign Web App (SWA) Architecture. This means <strong className="text-zinc-900 not-italic uppercase font-bold">we do not operate servers, we do not have a central database, and we are physically incapable of accessing your data.</strong>
+              This application is built with a local-first architecture. This means <strong className="text-zinc-900 not-italic uppercase font-bold">we do not operate servers, we do not have a central database, and we are physically incapable of accessing your data.</strong>
             </p>
             <p className="mt-4">
-              Your usage data, files, and calculations are stored locally in your web browser using OPFS (Origin Private File System) and hardware-rooted WebAuthn keys.
+              Your usage data, files, and calculations are stored locally on your device.
             </p>
           </section>
 
@@ -49,9 +49,9 @@ export default function Privacy({ navigate }: { navigate: (route: string) => voi
           </section>
 
           <section>
-            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">5. Transmission</h2>
+            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">5. Contact</h2>
             <p>
-              For inquiries regarding the SWA Protocol specification, contact: <span className="text-zinc-900 font-bold border-b border-zinc-200">sovereigntyapps@gmail.com</span>.
+              For inquiries regarding our privacy practices, contact: <span className="text-zinc-900 font-bold border-b border-zinc-200">sovereigntyapps@gmail.com</span>.
             </p>
           </section>
         </div>

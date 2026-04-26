@@ -1,5 +1,5 @@
 {
   "name": "Sovereign Invoice",
-  "description": "Sovereign Invoice using the SWA Protocol with PGlite OPFS and WebAuthn keys.",
+  "description": "Secure, local-first invoicing app for managing clients and payments without cloud dependencies.",
   "requestFramePermissions": ["publickey-credentials-get", "publickey-credentials-create"]
 }

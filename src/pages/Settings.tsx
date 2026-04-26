@@ -212,8 +212,8 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
         </div>
 
         <div className="space-y-6">
-          <div className="flex items-start gap-8">
-            <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row items-start gap-8">
+            <div className="space-y-3 w-full sm:w-auto">
               <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Logo</label>
               <div className="flex flex-col items-center gap-4">
                 {companyLogo && isUnlocked ? (

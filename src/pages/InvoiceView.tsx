@@ -100,9 +100,12 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
   };
 
   const handleMarkAsPaid = async () => {
-    const newStatus = invoice.status === 'paid' ? 'sent' : 'paid';
-    await db.query('UPDATE invoices SET status = $1 WHERE id = $2', [newStatus, invoiceId]);
-    setInvoice({ ...invoice, status: newStatus });
+    const isPaid = invoice.status === 'paid';
+    const newStatus = isPaid ? 'unpaid' : 'paid';
+    const newPaidAmount = isPaid ? 0 : parseFloat(invoice.total);
+    
+    await db.query('UPDATE invoices SET status = $1, paid_amount = $2 WHERE id = $3', [newStatus, newPaidAmount, invoiceId]);
+    setInvoice({ ...invoice, status: newStatus, paid_amount: newPaidAmount });
   };
 
   if (!invoice || !client) return <div className="p-8 text-center text-gray-500">Loading invoice...</div>;
@@ -127,6 +130,8 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
           <span className={`px-4 py-1.5 rounded-xl text-[10px] font-mono uppercase tracking-widest border transition-all ${
             invoice.status === 'paid' 
             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
+            : invoice.status === 'partial'
+            ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
             : 'bg-zinc-800/50 text-zinc-500 border-zinc-700'
           }`}>
             {invoice.status}
@@ -257,6 +262,19 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
                   <span className="font-extrabold text-zinc-400 text-[10px] uppercase tracking-[0.2em]">Grand Total</span>
                   <span className="font-black text-zinc-950 text-3xl tracking-tighter">${parseFloat(invoice.total).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
+                
+                {parseFloat(invoice.paid_amount) > 0 && (
+                  <div className="space-y-2 px-2">
+                    <div className="flex justify-between items-center text-emerald-600 text-xs font-bold uppercase tracking-wider">
+                      <span>Total Paid</span>
+                      <span className="font-mono">-${parseFloat(invoice.paid_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-zinc-900 text-sm font-black uppercase tracking-widest pt-2 border-t border-zinc-100/50">
+                      <span>Balance Due</span>
+                      <span className="font-mono">${(parseFloat(invoice.total) - parseFloat(invoice.paid_amount)).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -284,7 +302,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
       <div className="w-full lg:w-80 shrink-0 space-y-6 print:hidden">
         <div className="bg-zinc-900/40 backdrop-blur-xl p-8 rounded-3xl border border-zinc-800/50 shadow-2xl sticky top-8 space-y-8">
           <div>
-            <h3 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">Invoicing Logic</h3>
+            <h3 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">Payment Actions</h3>
             <div className="space-y-4">
               <button
                 onClick={handleMarkAsPaid}
@@ -297,12 +315,12 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
                 {invoice.status === 'paid' ? (
                   <>
                     <CheckCircle className="w-5 h-5" />
-                    Transaction Settled
+                    Fully Paid
                   </>
                 ) : (
                   <>
                     <Circle className="w-5 h-5 opacity-40" />
-                    Settle Transaction
+                    Mark as Paid
                   </>
                 )}
               </button>

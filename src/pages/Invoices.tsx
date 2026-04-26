@@ -88,6 +88,8 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                 <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${
                   invoice.status === 'paid' 
                   ? 'bg-zinc-950 text-white border-zinc-950' 
+                  : invoice.status === 'partial'
+                  ? 'bg-amber-50 text-amber-700 border-amber-200'
                   : 'bg-zinc-50 text-zinc-400 border-zinc-200'
                 }`}>
                   {invoice.status}
@@ -160,12 +162,21 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                     {formatSafeDate(invoice.date as string)}
                   </td>
                   <td className="px-8 py-7 font-black text-zinc-900 tracking-tighter text-lg">
-                    ${parseFloat(invoice.total as string).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    <div className="flex flex-col">
+                      <span>${parseFloat(invoice.total as string).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      {parseFloat(invoice.paid_amount as string) > 0 && parseFloat(invoice.paid_amount as string) < parseFloat(invoice.total as string) && (
+                        <span className="text-[10px] text-emerald-600 tracking-normal font-bold">
+                          Paid: ${parseFloat(invoice.paid_amount as string).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-8 py-7 text-center">
                     <span className={`inline-flex px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${
                       invoice.status === 'paid' 
                       ? 'bg-zinc-950 text-white border-zinc-950 shadow-xl shadow-zinc-950/10' 
+                      : invoice.status === 'partial'
+                      ? 'bg-amber-50 text-amber-700 border-amber-100 shadow-xl shadow-amber-500/5'
                       : 'bg-white text-zinc-400 border-zinc-200'
                     }`}>
                       {invoice.status}

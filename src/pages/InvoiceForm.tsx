@@ -11,10 +11,11 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
     po_number: '',
     date: new Date().toISOString().split('T')[0],
     due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    status: 'draft',
+    status: 'unpaid',
     notes: '',
     tax_name: 'Tax',
-    tax_rate: 0
+    tax_rate: 0,
+    paid_amount: 0
   });
   const [items, setItems] = useState([{ id: uuidv4(), description: '', quantity: 1, unit_price: 0, amount: 0 }]);
 
@@ -36,7 +37,8 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
             status: inv.status as string,
             notes: inv.notes as string || '',
             tax_name: inv.tax_name as string || 'Tax',
-            tax_rate: parseFloat(inv.tax_rate as string || '0')
+            tax_rate: parseFloat(inv.tax_rate as string || '0'),
+            paid_amount: parseFloat(inv.paid_amount as string || '0')
           });
 
           const itemsRes = await db.query('SELECT * FROM invoice_items WHERE invoice_id = $1', [invoiceId]);
@@ -103,17 +105,20 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
     }
 
     const id = invoiceId || uuidv4();
+    
+    // Auto-calculate status based on paid_amount
+    const calculatedStatus = Number(formData.paid_amount) >= total - 0.01 ? 'paid' : (Number(formData.paid_amount) > 0 ? 'partial' : 'unpaid');
 
     if (invoiceId) {
       await db.query(
-        'UPDATE invoices SET client_id = $1, invoice_number = $2, date = $3, due_date = $4, status = $5, subtotal = $6, tax_name = $7, tax_rate = $8, tax_amount = $9, total = $10, notes = $11, po_number = $13 WHERE id = $12',
-        [formData.client_id, formData.invoice_number, formData.date, formData.due_date, formData.status, subtotal, formData.tax_name, formData.tax_rate, taxAmount, total, formData.notes, id, formData.po_number]
+        'UPDATE invoices SET client_id = $1, invoice_number = $2, date = $3, due_date = $4, status = $5, subtotal = $6, tax_name = $7, tax_rate = $8, tax_amount = $9, total = $10, notes = $11, po_number = $13, paid_amount = $14 WHERE id = $12',
+        [formData.client_id, formData.invoice_number, formData.date, formData.due_date, calculatedStatus, subtotal, formData.tax_name, formData.tax_rate, taxAmount, total, formData.notes, id, formData.po_number, formData.paid_amount]
       );
       await db.query('DELETE FROM invoice_items WHERE invoice_id = $1', [id]);
     } else {
       await db.query(
-        'INSERT INTO invoices (id, client_id, invoice_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes, po_number) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
-        [id, formData.client_id, formData.invoice_number, formData.date, formData.due_date, formData.status, subtotal, formData.tax_name, formData.tax_rate, taxAmount, total, formData.notes, formData.po_number]
+        'INSERT INTO invoices (id, client_id, invoice_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes, po_number, paid_amount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
+        [id, formData.client_id, formData.invoice_number, formData.date, formData.due_date, calculatedStatus, subtotal, formData.tax_name, formData.tax_rate, taxAmount, total, formData.notes, formData.po_number, formData.paid_amount]
       );
     }
 
@@ -368,11 +373,28 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
                 <span className="font-mono text-sm font-bold text-zinc-600">${taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
               </div>
 
-              <div className="pt-6 border-t border-zinc-200 flex justify-between items-center">
-                <span className="text-xs font-black text-zinc-900 uppercase tracking-[0.2em]">Grand Total</span>
-                <span className="text-4xl font-black text-zinc-900 tracking-tighter font-sans">
-                  ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </span>
+              <div className="pt-6 border-t border-zinc-200 flex flex-col gap-4">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold uppercase tracking-[0.1em] text-zinc-400">Total Paid</span>
+                  <div className="relative">
+                    <span className="absolute left-3 text-zinc-400 font-mono top-1/2 -translate-y-1/2">$</span>
+                    <input 
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.paid_amount}
+                      onChange={e => setFormData({...formData, paid_amount: parseFloat(e.target.value) || 0})}
+                      className="w-32 bg-white border border-zinc-200 rounded-lg pl-6 pr-3 py-1.5 text-sm font-bold text-zinc-900 focus:outline-none focus:border-zinc-900 text-right font-mono"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-black text-zinc-900 uppercase tracking-[0.2em]">Grand Total</span>
+                  <span className="text-4xl font-black text-zinc-900 tracking-tighter font-sans">
+                    ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
