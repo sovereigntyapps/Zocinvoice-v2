@@ -25,6 +25,7 @@ import ProGuard from './lib/components/ProGuard';
 
 export default function App() {
   const [isDbReady, setIsDbReady] = useState(false);
+  const [dbError, setDbError] = useState<string | null>(null);
   const [currentRoute, setCurrentRoute] = useState('landing');
   const [routeParams, setRouteParams] = useState<any>({});
   const [masterKey, setMasterKey] = useState<Uint8Array | null>(null);
@@ -82,7 +83,12 @@ export default function App() {
   const handleUnlocked = (key: Uint8Array) => {
     setMasterKey(key);
     // Initialize DB only after unlocking to ensure we have the key if needed for encryption
-    initDb().then(() => setIsDbReady(true)).catch(console.error);
+    initDb()
+      .then(() => setIsDbReady(true))
+      .catch((err) => {
+        console.error('db init err:', err);
+        setDbError(err instanceof Error ? err.message : String(err));
+      });
   };
 
   if (currentRoute === 'landing') {
@@ -121,8 +127,23 @@ export default function App() {
           })()}
         </Layout>
       ) : (
-        <div className="flex h-screen items-center justify-center bg-zinc-50 text-zinc-400 font-mono text-sm uppercase tracking-widest animate-pulse">
-          Starting your space...
+        <div className="flex flex-col h-screen items-center justify-center bg-zinc-50 px-4 text-center">
+          {dbError ? (
+            <div className="bg-red-50 text-red-600 p-4 rounded-lg font-mono text-sm max-w-lg">
+              Database initialization failed: {dbError}
+              <br />
+              <button 
+                onClick={() => window.location.reload()}
+                className="mt-4 px-4 py-2 bg-red-100/50 hover:bg-red-100 text-red-700 rounded transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            <div className="text-zinc-400 font-mono text-sm uppercase tracking-widest animate-pulse">
+              Starting your space...
+            </div>
+          )}
         </div>
       )}
     </VaultGate>
