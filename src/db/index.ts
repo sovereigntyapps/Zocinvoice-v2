@@ -1,7 +1,7 @@
-import { PGlite } from '@electric-sql/pglite';
+import { PGlite } from "@electric-sql/pglite";
 
 // Initialize PGlite with OPFS persistence (Sovereign Web Protocol: Near-native disk I/O)
-export const db = new PGlite('opfs://sovereignty-invoice-db-v3');
+export const db = new PGlite("opfs://sovereignty-invoice-db-v3");
 
 export async function initDb() {
   await db.exec(`
@@ -58,4 +58,3 @@ export async function initDb() {
     CREATE INDEX IF NOT EXISTS idx_invoices_created_at ON invoices(created_at);
   `);
 }
-

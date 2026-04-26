@@ -16,11 +16,10 @@ export default defineConfig(({mode}) => {
       react(), 
       tailwindcss(),
       VitePWA({
-        registerType: 'prompt', // Sovereign Web Protocol: Offline bootloader with non-blocking update strategy
+        registerType: 'autoUpdate',
         includeAssets: ['icon.svg'],
         workbox: {
-          maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // 15MB to allow pglite wasm
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
+          maximumFileSizeToCacheInBytes: 15 * 1024 * 1024 // 15MB to allow pglite wasm
         },
         manifest: {
           name: 'Sovereignty Invoices',
