@@ -30,17 +30,39 @@ export default function App() {
   const [routeParams, setRouteParams] = useState<any>({});
   const [masterKey, setMasterKey] = useState<Uint8Array | null>(null);
   const [vaultEnabled, setVaultEnabled] = useState<boolean>(() => {
-    // Default to true for security, but allow override
     const saved = localStorage.getItem('SOVEREIGN_VAULT_ENABLED');
     return saved === null ? true : saved === 'true';
   });
 
   useEffect(() => {
-    if (!vaultEnabled) {
-      // If vault is disabled, auto-init DB with a dummy key or no key
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'SOVEREIGN_VAULT_ENABLED') {
+        setVaultEnabled(e.newValue === null ? true : e.newValue === 'true');
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Check periodically for local changes in the same tab
+    const interval = setInterval(() => {
+      const saved = localStorage.getItem('SOVEREIGN_VAULT_ENABLED');
+      const val = saved === null ? true : saved === 'true';
+      if (val !== vaultEnabled) {
+        setVaultEnabled(val);
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [vaultEnabled]);
+
+  useEffect(() => {
+    if (!vaultEnabled && !isDbReady) {
+      // If vault is disabled and DB not ready, auto-init DB
       handleUnlocked(new Uint8Array(32)); 
     }
-  }, [vaultEnabled]);
+  }, [vaultEnabled, isDbReady]);
 
   useEffect(() => {
     // Check for Stripe callback

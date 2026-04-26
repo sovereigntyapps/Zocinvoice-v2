@@ -500,96 +500,112 @@ export default function InvoiceView({
       </div>
 
       {/* Right side: Actions Sidebar */}
-      <div className="w-full lg:w-80 shrink-0 space-y-6 print:hidden">
-        <div className="bg-zinc-50 border border-zinc-200/60 p-6 rounded-[32px] shadow-sm sticky top-8 space-y-8">
+      <div className="w-full lg:w-96 shrink-0 space-y-6 print:hidden">
+        <div className="bg-white border border-zinc-200 p-8 rounded-[40px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-8 space-y-10">
           <div>
-            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4 ml-1">
-              Actions
-            </h3>
-            <div className="space-y-3">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] ml-1">
+                Status Architecture
+              </h3>
+              <div className={`w-2 h-2 rounded-full ${invoice.status === 'paid' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'}`} />
+            </div>
+            
+            <div className="space-y-4">
               <button
                 onClick={handleMarkAsPaid}
-                className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl font-bold transition-all active:scale-[0.98] border ${
+                className={`w-full group relative flex items-center justify-between px-6 py-5 rounded-2xl font-bold transition-all active:scale-[0.97] border ${
                   invoice.status === "paid"
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                    : "bg-white text-zinc-900 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 shadow-sm"
+                    ? "bg-emerald-50/50 text-emerald-800 border-emerald-100"
+                    : "bg-zinc-900 text-white border-zinc-800 hover:bg-black shadow-xl shadow-zinc-900/10"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  {invoice.status === "paid" ? (
-                    <CheckCircle className="w-5 h-5 text-emerald-500" />
-                  ) : (
-                    <Circle className="w-5 h-5 text-zinc-300" />
-                  )}
-                  <span className="text-sm">Mark as Paid</span>
+                <div className="flex items-center gap-4">
+                  <div className={`p-2 rounded-xl transition-colors ${invoice.status === 'paid' ? 'bg-emerald-100 text-emerald-600' : 'bg-white/10 text-white'}`}>
+                    {invoice.status === "paid" ? (
+                      <CheckCircle className="w-5 h-5" />
+                    ) : (
+                      <Circle className="w-5 h-5" />
+                    )}
+                  </div>
+                  <span className="text-sm font-black tracking-tight uppercase">
+                    {invoice.status === 'paid' ? 'Settled In Full' : 'Mark as Paid'}
+                  </span>
                 </div>
-                {invoice.status === "paid" && (
-                   <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter">Done</span>
+                {invoice.status !== 'paid' && (
+                  <ArrowLeft className="w-4 h-4 rotate-180 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
                 )}
               </button>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">
-              Export options
+          <div className="space-y-6">
+            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] ml-1">
+              Distribution
             </h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => handlePrint()}
-                className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-zinc-200 text-zinc-600 rounded-2xl font-bold hover:text-zinc-900 hover:border-zinc-900 transition-all active:scale-95 group"
+                className="flex flex-col items-center justify-center gap-3 p-6 bg-white border border-zinc-100 text-zinc-600 rounded-3xl font-bold hover:text-zinc-900 hover:border-zinc-900 hover:shadow-lg transition-all active:scale-95 group"
               >
-                <div className="w-10 h-10 rounded-xl bg-zinc-50 flex items-center justify-center group-hover:bg-zinc-100 transition-colors">
-                  <Printer className="w-5 h-5 opacity-60" />
+                <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center group-hover:bg-zinc-100 transition-colors">
+                  <Printer className="w-6 h-6 opacity-40 group-hover:opacity-100" />
                 </div>
-                <span className="text-[10px] uppercase tracking-widest">Print</span>
+                <span className="text-[10px] font-black uppercase tracking-widest italic">Print</span>
               </button>
 
               <button
                 onClick={handleExportPDF}
-                className="flex flex-col items-center justify-center gap-2 p-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-black transition-all active:scale-95 group shadow-xl shadow-zinc-900/10"
+                className="flex flex-col items-center justify-center gap-3 p-6 bg-zinc-50 border border-transparent text-zinc-600 rounded-3xl font-bold hover:text-zinc-900 hover:bg-white hover:border-zinc-900 hover:shadow-lg transition-all active:scale-95 group"
               >
-                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                  <Download className="w-5 h-5" />
+                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm">
+                  <Download className="w-6 h-6 opacity-40 group-hover:opacity-100" />
                 </div>
-                <span className="text-[10px] uppercase tracking-widest">PDF</span>
+                <span className="text-[10px] font-black uppercase tracking-widest italic">PDF</span>
               </button>
             </div>
           </div>
 
-          <div className="space-y-4 pt-2 border-t border-zinc-200/50">
-            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">
-              Management
+          <div className="space-y-4 pt-6 border-t border-zinc-100">
+            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] ml-1">
+              Protocol
             </h3>
             <div className="space-y-2">
               <button
                 onClick={handleShare}
-                className="w-full flex items-center gap-3 p-3 bg-white border border-zinc-200 text-zinc-600 rounded-xl font-bold text-xs hover:text-zinc-900 hover:bg-zinc-50 transition-all"
+                className="w-full flex items-center gap-4 p-4 bg-white border border-zinc-100 text-zinc-600 rounded-2xl font-bold text-[11px] uppercase tracking-wider hover:text-zinc-900 hover:border-zinc-300 transition-all group"
               >
-                <div className="p-1.5 bg-zinc-100 rounded-lg">
-                  <Share2 className="w-3.5 h-3.5" />
+                <div className="p-2 bg-zinc-50 rounded-xl group-hover:bg-zinc-100 transition-colors">
+                  <Share2 className="w-4 h-4" />
                 </div>
-                Send via Email
+                Generate Share Link
               </button>
 
               <button
                 onClick={handleDuplicate}
-                className="w-full flex items-center gap-3 p-3 bg-white border border-zinc-200 text-zinc-600 rounded-xl font-bold text-xs hover:text-zinc-900 hover:bg-zinc-50 transition-all"
+                className="w-full flex items-center gap-4 p-4 bg-white border border-zinc-100 text-zinc-600 rounded-2xl font-bold text-[11px] uppercase tracking-wider hover:text-zinc-900 hover:border-zinc-300 transition-all group"
               >
-                <div className="p-1.5 bg-zinc-100 rounded-lg">
-                  <Copy className="w-3.5 h-3.5" />
+                <div className="p-2 bg-zinc-50 rounded-xl group-hover:bg-zinc-100 transition-colors">
+                  <Copy className="w-4 h-4" />
                 </div>
-                Duplicate Entry
+                Clone Blueprint
               </button>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-zinc-200/50">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-zinc-100/50">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.1em]">
-                Local Node Persistence Active
-              </p>
+          <div className="pt-4">
+            <div className="flex items-center gap-4 p-5 rounded-3xl bg-zinc-50/80 border border-zinc-100/50">
+              <div className="relative">
+                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <div className="absolute inset-0 w-2 h-2 rounded-full bg-emerald-500 animate-ping opacity-20" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-zinc-900 uppercase tracking-widest leading-none mb-1">
+                  Local Node 0x1
+                </p>
+                <p className="text-[9px] font-medium text-zinc-400 uppercase tracking-tighter">
+                  Encrypted & Persistent
+                </p>
+              </div>
             </div>
           </div>
         </div>
