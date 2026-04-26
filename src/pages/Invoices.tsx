@@ -178,7 +178,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
             <p className="text-sm font-black uppercase tracking-[0.2em]">No invoices found</p>
           </div>
         ) : (
-          filteredInvoices.map(invoice => (
+          filteredInvoices.map((invoice: any) => (
             <div key={invoice.id} className="bg-white p-8 rounded-[32px] border border-zinc-200 shadow-xl shadow-zinc-200/40 space-y-6 group active:scale-[0.98] transition-all relative overflow-hidden">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
@@ -249,7 +249,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                 </td>
               </tr>
             ) : (
-              filteredInvoices.map(invoice => (
+              filteredInvoices.map((invoice: any) => (
                 <tr key={invoice.id} className="hover:bg-zinc-50/50 transition-colors group/row">
                   <td className="px-8 py-7 font-black text-zinc-900 tracking-tight font-mono">{invoice.invoice_number}</td>
                   <td className="px-8 py-7">

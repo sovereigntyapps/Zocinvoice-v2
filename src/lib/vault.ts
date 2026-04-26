@@ -53,8 +53,8 @@ export class WebAuthnVaultError extends Error {
 /**
  * Encodes an ArrayBuffer to a Base64URL string (for WebAuthn APIs).
  */
-export function bufferToBase64url(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer);
+export function bufferToBase64url(buffer: ArrayBuffer | Uint8Array): string {
+  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
   let str = '';
   for (const charCode of bytes) {
     str += String.fromCharCode(charCode);

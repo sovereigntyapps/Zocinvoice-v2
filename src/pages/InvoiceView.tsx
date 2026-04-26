@@ -100,6 +100,26 @@ export default function InvoiceView({
 
   const handlePrint = useReactToPrint({
     contentRef: invoiceRef,
+    documentTitle: `Invoice_${invoice?.invoice_number}`,
+    pageStyle: `
+      @page {
+        size: auto;
+        margin: 0;
+      }
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          background: white !important;
+        }
+        .print-only {
+          width: 100% !important;
+          margin: 0 !important;
+          padding: 20mm !important;
+          min-height: 100vh !important;
+        }
+      }
+    `,
   });
 
   const handleExportPDF = async () => {
@@ -147,7 +167,7 @@ export default function InvoiceView({
   };
 
   const handleDuplicate = async () => {
-    const invRes = await db.query('SELECT COUNT(*) as count FROM invoices');
+    const invRes = await db.query('SELECT COUNT(*) as count FROM invoices') as any;
     if (invRes.rows[0].count >= 5 && !isUnlocked) {
       if (confirm('You have reached the limit of 5 invoices on the free plan. Upgrade to Pro?')) {
         navigate('upgrade');
@@ -224,17 +244,18 @@ export default function InvoiceView({
           }}
         >
           <div
-            className="shadow-2xl print:shadow-none print:w-full print:scale-100"
+            className="shadow-2xl print:shadow-none print:!w-full print:!scale-100 print:!transform-none"
             style={{
               transform: `scale(${scale})`,
               transformOrigin: "top center",
               width: "800px",
+              maxWidth: "100%",
             }}
           >
             {/* The actual invoice template to be exported */}
             <div
               ref={invoiceRef}
-              className="bg-white p-10 sm:p-16 mx-auto flex flex-col relative overflow-hidden w-[800px] min-h-[1131px] print:w-full print:min-h-0 print:p-12 print:shadow-none origin-top-left"
+              className="bg-white p-10 sm:p-16 mx-auto flex flex-col relative overflow-hidden w-[800px] min-h-[1131px] print-only print:shadow-none origin-top-left"
             >
               {invoice.status === "paid" && (
                 <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 pointer-events-none opacity-[0.03] z-0">
