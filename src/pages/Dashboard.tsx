@@ -43,7 +43,7 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
             onClick={() => navigate('invoice-new')}
             className="px-10 py-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 transition-all shadow-2xl shadow-zinc-900/20 active:scale-95"
            >
-            New Ledger Entry
+            New Invoice
            </button>
         </div>
       </div>
@@ -59,7 +59,7 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
                <DollarSign className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Yield</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Revenue</p>
               <p className="text-4xl font-black text-zinc-900 tracking-tight transition-transform duration-500 grow font-sans">
                 ${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </p>
@@ -74,7 +74,7 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
                <FileText className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Committed Docs</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Invoices</p>
               <p className="text-4xl font-black text-zinc-900 tracking-tight grow font-sans">{stats.totalInvoices}</p>
             </div>
         </div>
@@ -87,7 +87,7 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
                <Users className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Verified Counterparties</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Clients</p>
               <p className="text-4xl font-black text-zinc-900 tracking-tight grow font-sans">{stats.totalClients}</p>
             </div>
         </div>

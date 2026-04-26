@@ -121,7 +121,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
             </button>
             <div>
               <h1 className="text-2xl font-bold text-white tracking-tight uppercase">Invoice {invoice.invoice_number}</h1>
-              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">Protocol State: Transaction</p>
+              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">Status: Order Confirmed</p>
             </div>
           </div>
           <span className={`px-4 py-1.5 rounded-xl text-[10px] font-mono uppercase tracking-widest border transition-all ${
@@ -248,7 +248,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
                       <span className="text-zinc-600 font-mono">${parseFloat(invoice.subtotal || invoice.total).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
                     <div className="flex justify-between items-center text-zinc-400 text-sm font-medium px-2">
-                      <span>{invoice.tax_name || 'Protocol Tax'} ({parseFloat(invoice.tax_rate || 0)}%)</span>
+                      <span>{invoice.tax_name || 'Tax'} ({parseFloat(invoice.tax_rate || 0)}%)</span>
                       <span className="text-zinc-600 font-mono">${parseFloat(invoice.tax_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
                   </>
@@ -271,7 +271,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
 
             {!isUnlocked && isUnlocked !== null && (
               <div className="mt-auto pt-12 border-t border-zinc-50 text-center space-y-1 opacity-40 grayscale group">
-                <p className="text-[8px] font-mono text-zinc-400 uppercase tracking-widest">Protocol Ledger Proof v2.0</p>
+                <p className="text-[8px] font-mono text-zinc-400 uppercase tracking-widest">Invoice Proof v2.0</p>
                 <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Native Applet by <span className="text-zinc-900 group-hover:text-zinc-400 transition-colors">Sovereignty Apps</span></p>
               </div>
             )}
@@ -312,7 +312,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
           <div className="h-px bg-zinc-800/50"></div>
 
           <div>
-             <h3 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">Export Protocol</h3>
+             <h3 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">Export Invoice</h3>
              <div className="space-y-3">
                 <button
                   onClick={() => window.print()}

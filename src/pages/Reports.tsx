@@ -54,11 +54,6 @@ export default function Reports({ navigate }: { navigate: (route: string) => voi
   }, []);
 
   return (
-    <ProGuard 
-      navigate={navigate} 
-      title="Advanced Analytics" 
-      description="Unlock deep business insights, revenue trajectory charts, and detailed financial summaries with a Pro License."
-    >
       <div className="space-y-12 max-w-6xl mx-auto pb-24">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
           <div>
@@ -76,7 +71,7 @@ export default function Reports({ navigate }: { navigate: (route: string) => voi
                  <DollarSign className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Gross Billing</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Total Billing</p>
                 <p className="text-3xl font-black text-zinc-900 tracking-tight transition-transform duration-500 grow font-sans">
                   ${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </p>
@@ -91,7 +86,7 @@ export default function Reports({ navigate }: { navigate: (route: string) => voi
                  <TrendingUp className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Settled Funds</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Paid Revenue</p>
                 <p className="text-3xl font-black text-zinc-950 tracking-tight grow font-sans underline decoration-emerald-100 underline-offset-8 decoration-4">
                   ${stats.paidRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </p>
@@ -106,7 +101,7 @@ export default function Reports({ navigate }: { navigate: (route: string) => voi
                  <Clock className="w-7 h-7" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Pending Sync</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Unpaid Revenue</p>
                 <p className="text-3xl font-black text-zinc-900 tracking-tight grow font-sans">
                   ${stats.unpaidRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </p>
@@ -116,8 +111,8 @@ export default function Reports({ navigate }: { navigate: (route: string) => voi
 
         <div className="bg-white p-12 rounded-[48px] border border-zinc-200 shadow-2xl shadow-zinc-200/40">
           <div className="flex justify-between items-center mb-12 border-b border-zinc-50 pb-8">
-             <h2 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Revenue Trajectory</h2>
-             <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">Temporal Flow</span>
+             <h2 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Revenue Overview</h2>
+             <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">Monthly Chart</span>
           </div>
           <div className="h-[450px]">
             {monthlyData.length > 0 ? (
@@ -177,12 +172,11 @@ export default function Reports({ navigate }: { navigate: (route: string) => voi
                 <div className="w-24 h-24 bg-zinc-50 rounded-full flex items-center justify-center animate-pulse">
                   <BarChart3 className="w-12 h-12 opacity-10" />
                 </div>
-                <p className="font-black text-[10px] uppercase tracking-[0.4em]">Empty Temporal Buffer</p>
+                <p className="font-black text-[10px] uppercase tracking-[0.4em]">No report data found</p>
               </div>
             )}
           </div>
         </div>
       </div>
-    </ProGuard>
   );
 }

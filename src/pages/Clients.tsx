@@ -77,7 +77,7 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
           }}
           className="flex items-center justify-center gap-3 px-10 py-4 bg-zinc-950 text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-zinc-800 active:scale-95 transition-all shadow-2xl shadow-zinc-900/20"
         >
-          <Plus className="w-5 h-5" /> Register Identity
+          <Plus className="w-5 h-5" /> New Client
         </button>
       </div>
 
@@ -87,40 +87,40 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
             <Plus size={100} className="rotate-45" />
           </div>
           <div className="flex justify-between items-center border-b border-zinc-100 pb-6 relative z-10">
-             <h2 className="text-2xl font-black text-zinc-900 tracking-tight uppercase leading-none">{formData.id ? 'Modify Identity' : 'New Registration'}</h2>
-             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">Enclave Buffer</span>
+             <h2 className="text-2xl font-black text-zinc-900 tracking-tight uppercase leading-none">{formData.id ? 'Edit Client' : 'New Client'}</h2>
+             <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">Client Form</span>
           </div>
           <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Legal Name / Pseudonym</label>
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Client Name</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all"
-                  placeholder="e.g. Satoshi Nakamoto"
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all font-sans"
+                  placeholder="e.g. John Doe"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Communication Endpoint</label>
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Email Address</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all"
-                  placeholder="email@protocol.com"
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all font-sans"
+                  placeholder="email@example.com"
                 />
               </div>
               <div className="md:col-span-2 space-y-2">
-                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Associated Entity / DAO</label>
+                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Company / Organization</label>
                 <input
                   type="text"
                   value={formData.company}
                   onChange={e => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all"
-                  placeholder="The Genesis Block Ltd."
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-zinc-900 font-bold focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all font-sans"
+                  placeholder="Acme Corp"
                 />
               </div>
             </div>
@@ -130,13 +130,13 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
                 onClick={() => setIsFormOpen(false)}
                 className="px-10 py-4 bg-white border border-zinc-200 text-zinc-400 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:text-zinc-900 hover:border-zinc-900 transition-all shadow-sm"
               >
-                Abort
+                Cancel
               </button>
               <button
                 type="submit"
                 className="px-12 py-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 active:scale-[0.98] transition-all shadow-2xl shadow-zinc-900/20"
               >
-                Commit Identity
+                Save Client
               </button>
             </div>
           </form>
@@ -147,14 +147,14 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
       <div className="block lg:hidden space-y-6">
         {clients.length === 0 ? (
           <div className="bg-white border border-zinc-200 p-16 text-center text-zinc-400 rounded-[32px] shadow-xl shadow-zinc-100 italic">
-            Zero counterparties detected in local node.
+            No clients found in local storage.
           </div>
         ) : (
           clients.map(client => (
             <div key={client.id} className="bg-white p-8 rounded-[32px] border border-zinc-200 shadow-xl shadow-zinc-200/40 space-y-6 group active:scale-[0.98] transition-all relative overflow-hidden">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
-                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Protocol Identity</div>
+                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Client Details</div>
                   <div className="font-black text-zinc-900 tracking-tight text-2xl leading-none">{client.name}</div>
                   {client.company && <div className="text-xs text-zinc-500 font-bold uppercase tracking-tight mt-1">{client.company}</div>}
                 </div>
@@ -182,10 +182,10 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
         <table className="w-full text-left text-sm border-collapse">
           <thead>
             <tr className="border-b border-zinc-100 bg-zinc-50/50">
-              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Validated Name</th>
-              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Organization Detail</th>
-              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Contact Vector</th>
-              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] text-right">Ops</th>
+              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Name</th>
+              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Organization</th>
+              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Contact Email</th>
+              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-50">
@@ -195,7 +195,7 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
                   <div className="w-24 h-24 bg-zinc-50 rounded-full border border-zinc-100 flex items-center justify-center animate-pulse">
                      <Users className="w-10 h-10 opacity-20" />
                   </div>
-                  <span className="font-black text-[10px] tracking-[0.3em] uppercase">Null Identity Enclave</span>
+                  <span className="font-black text-[10px] tracking-[0.3em] uppercase">No Clients Found</span>
                 </td>
               </tr>
             ) : (
@@ -218,14 +218,14 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
                       <button
                         onClick={() => handleEdit(client)}
                         className="p-3 text-zinc-400 hover:text-zinc-900 bg-white hover:bg-zinc-50 rounded-xl transition-all border border-zinc-200 shadow-sm"
-                        title="Edit Identity"
+                        title="Edit Client"
                       >
                         <Edit2 className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => confirmDelete(client.id)}
-                        className="p-3 text-zinc-400 hover:text-red-600 bg-white hover:bg-red-50 rounded-xl transition-all border border-zinc-200 shadow-sm"
-                        title="Purge Identity"
+                        className="p-3 text-zinc-400 hover:text-red-600 bg-white hover:bg-zinc-50 rounded-xl transition-all border border-zinc-200 shadow-sm"
+                        title="Delete Client"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -247,9 +247,9 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
                 <AlertTriangle className="w-12 h-12 text-red-500 transition-transform group-hover:scale-110" />
               </div>
               <div className="space-y-4">
-                <h3 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Purge Identity</h3>
+                <h3 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Delete Client</h3>
                 <p className="text-zinc-500 text-sm leading-relaxed px-4 underline decoration-red-100 underline-offset-8">
-                  Warning: Purging this identity will also delete all associated ledger entries. This action is terminal.
+                  Warning: Deleting this client will also delete all associated invoices. This action cannot be undone.
                 </p>
               </div>
             </div>
@@ -267,7 +267,7 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
                 }}
                 className="w-full py-4 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px] transition-colors"
               >
-                Abort Protocol
+                Cancel
               </button>
             </div>
           </div>

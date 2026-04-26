@@ -19,7 +19,7 @@ export default function Landing({ navigate }: LandingProps) {
           onClick={() => navigate('dashboard')}
           className="text-sm font-medium hover:text-white transition-colors"
         >
-          Unlock Enclave
+          Open App
         </button>
       </header>
 
@@ -27,7 +27,7 @@ export default function Landing({ navigate }: LandingProps) {
         <div className="flex flex-col items-center text-center mb-24">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900 text-xs font-medium tracking-wide mb-8">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            SWA Protocol Active
+            Local First • Secured
           </div>
           
           <h1 className="text-5xl md:text-7xl lg:text-[100px] leading-[0.9] tracking-tighter font-semibold mb-8 text-white max-w-4xl">
@@ -44,7 +44,7 @@ export default function Landing({ navigate }: LandingProps) {
               onClick={() => navigate('dashboard')}
               className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-zinc-950 rounded-lg font-bold hover:bg-zinc-200 transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
             >
-              Unlock Vault <LogIn className="w-4 h-4 ml-1" />
+              Get Started <LogIn className="w-4 h-4 ml-1" />
             </button>
           </div>
         </div>
@@ -56,9 +56,9 @@ export default function Landing({ navigate }: LandingProps) {
               <div className="w-12 h-12 bg-zinc-800 rounded-xl flex items-center justify-center mb-6 text-white shadow-inner">
                 <Fingerprint className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Biometric PRF Keys</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Biometric Security</h3>
               <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                Secured by FaceID / TouchID. The vault derives a master key directly from your hardware to authorize database connections.
+                Secured by FaceID / TouchID. Your device hardware provides the master key to unlock your financial data.
               </p>
             </div>
 
@@ -66,9 +66,9 @@ export default function Landing({ navigate }: LandingProps) {
               <div className="w-12 h-12 bg-zinc-800 rounded-xl flex items-center justify-center mb-6 text-white shadow-inner">
                 <HardDrive className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">OPFS Persistence</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Local Storage</h3>
               <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                Data is persisted directly to your machine's Origin Private File System using high-frequency WASM-threaded PGlite architecture.
+                Data is saved directly to your machine. High-performance local database ensures your info never leaves your device.
               </p>
             </div>
 
@@ -91,7 +91,7 @@ export default function Landing({ navigate }: LandingProps) {
           <button onClick={() => navigate('privacy')} className="hover:text-white transition-colors">Privacy</button>
           <button onClick={() => navigate('terms')} className="hover:text-white transition-colors">Terms</button>
         </div>
-        <p>© {new Date().getFullYear()} Sovereignty Apps. The SWA Protocol.</p>
+        <p>© {new Date().getFullYear()} Sovereignty Apps. Built for Sovereignty.</p>
       </footer>
     </div>
   );

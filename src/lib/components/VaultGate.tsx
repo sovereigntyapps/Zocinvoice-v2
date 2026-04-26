@@ -149,18 +149,18 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
           </div>
           
           <h1 className="text-4xl font-black text-zinc-900 mb-2 tracking-tighter uppercase leading-none">
-            {vaultMode === 'hard' ? 'Enclave' : 'Hybrid'}
+            {vaultMode === 'hard' ? 'Security' : 'Access'}
           </h1>
           <p className="text-[10px] font-black text-zinc-400 mb-10 uppercase tracking-[0.3em]">
-            {vaultMode === 'hard' ? 'Security Interface' : 'Key Derivation'}
+            {vaultMode === 'hard' ? 'Biometric Unlock' : 'Password Login'}
           </p>
 
           <p className="text-sm text-zinc-500 mb-10 max-w-xs leading-relaxed italic">
             {vaultMode === 'hard' 
               ? (hasVault 
-                  ? "A hardware-rooted biometric signature is required to derive decryption keys and unlock the local data enclave." 
-                  : "Initialize the SWA Protocol to secure your data with a unique hardware-derived cryptographic key.")
-              : "Derived Key Enclave: Secure your local data stream with a passphrase and 600,000 PBKDF2 iterations."}
+                  ? "Use your biometric signature to securely unlock your local data." 
+                  : "Enable security to protect your data with a unique hardware-derived key.")
+              : "Standard Security: Protect your data with a master passphrase."}
           </p>
 
           {supported === false && vaultMode === 'hard' && (
@@ -235,7 +235,7 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
                 ) : (
                   <>
                     {vaultMode === 'hard' ? <Fingerprint size={18} className="mr-3" /> : <Lock size={18} className="mr-3" />}
-                    {vaultMode === 'hard' ? 'Unseal Enclave' : 'Auth Protocol'}
+                    {vaultMode === 'hard' ? 'Unlock Account' : 'Login'}
                   </>
                 )}
               </button>
@@ -259,7 +259,7 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
                   ) : (
                     <>
                       <KeyRound size={18} className="mr-3 group-hover:rotate-12 transition-transform" />
-                      Initialize Identity
+                      Set up Security
                     </>
                   )}
                 </button>
@@ -289,7 +289,7 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
                     ) : (
                       <>
                         <ShieldHalf size={18} className="mr-3" />
-                        Seal Hybrid Enclave
+                        Enable Security
                       </>
                     )}
                   </button>
@@ -306,7 +306,7 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
           )}
 
           <div className="mt-12 pt-8 border-t border-zinc-50 w-full text-center">
-            <span className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">SWA Protocol • Sovereign</span>
+            <span className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">Local First • Sovereign Hub</span>
           </div>
         </div>
       </div>

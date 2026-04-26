@@ -26,7 +26,7 @@ export default function Sidebar({ currentRoute, navigate, className = '' }: Side
           <div className="w-8 h-8 rounded bg-zinc-950 flex items-center justify-center">
             <Crown className="w-5 h-5 text-white" />
           </div>
-          SWA Protocol
+          Sovereign Hub
         </h1>
       </div>
       <nav className="flex-1 p-4 space-y-1">

@@ -58,13 +58,13 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
         <div>
           <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Invoices</h1>
-          <p className="text-zinc-500 text-sm mt-1">History of all transactions</p>
+          <p className="text-zinc-500 text-sm mt-1">Manage your business invoices</p>
         </div>
         <button
           onClick={handleCreate}
           className="flex items-center justify-center gap-3 px-10 py-4 bg-zinc-950 text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-zinc-800 active:scale-95 transition-all shadow-2xl shadow-zinc-900/20"
         >
-          <Plus className="w-5 h-5" /> New Transaction
+          <Plus className="w-5 h-5" /> New Invoice
         </button>
       </div>
 
@@ -75,14 +75,14 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
             <div className="w-20 h-20 bg-zinc-50 border border-zinc-100 rounded-full flex items-center justify-center">
               <AlertTriangle className="w-10 h-10 opacity-20" />
             </div>
-            <p className="text-sm font-black uppercase tracking-[0.2em]">Zero Data Enclave Depth</p>
+            <p className="text-sm font-black uppercase tracking-[0.2em]">No invoices recorded yet</p>
           </div>
         ) : (
           invoices.map(invoice => (
             <div key={invoice.id} className="bg-white p-8 rounded-[32px] border border-zinc-200 shadow-xl shadow-zinc-200/40 space-y-6 group active:scale-[0.98] transition-all relative overflow-hidden">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
-                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Serial #</div>
+                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Invoice #</div>
                   <div className="font-black text-zinc-900 tracking-tight text-xl">{invoice.invoice_number}</div>
                 </div>
                 <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${
@@ -95,13 +95,13 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
               </div>
               
               <div className="space-y-1">
-                <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Counterparty</div>
-                <div className="text-zinc-900 font-bold text-lg leading-tight">{invoice.client_name || 'Anonymous Node'}</div>
+                <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Client</div>
+                <div className="text-zinc-900 font-bold text-lg leading-tight">{invoice.client_name || 'No Client'}</div>
               </div>
 
               <div className="flex justify-between items-end pt-4 border-t border-zinc-50">
                 <div className="space-y-1">
-                   <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Yield & Timestamp</div>
+                   <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Amount & Date</div>
                    <div className="flex items-baseline gap-3">
                       <span className="text-zinc-900 font-black text-2xl tracking-tighter">${parseFloat(invoice.total as string).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                       <span className="text-zinc-300 font-mono text-[10px] uppercase">{formatSafeDate(invoice.date as string)}</span>
@@ -126,12 +126,12 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
         <table className="w-full text-left text-sm border-collapse">
           <thead>
             <tr className="border-b border-zinc-100 bg-zinc-50/50">
-              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] w-48">Serial ID</th>
-              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Counterparty</th>
-              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Timestamp</th>
-              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Yield</th>
+              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] w-48">Invoice #</th>
+              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Client</th>
+              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Date</th>
+              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Amount</th>
               <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] text-center">Status</th>
-              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] text-right">Ops</th>
+              <th className="px-8 py-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-50">
@@ -141,7 +141,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                   <div className="w-24 h-24 bg-zinc-50 rounded-full border border-zinc-100 flex items-center justify-center animate-pulse">
                      <FileText className="w-10 h-10 opacity-20" />
                   </div>
-                  <span className="font-black text-[10px] tracking-[0.3em] uppercase">Null Transaction State</span>
+                  <span className="font-black text-[10px] tracking-[0.3em] uppercase">No Invoices Found</span>
                 </td>
               </tr>
             ) : (
@@ -153,7 +153,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                        <div className="w-10 h-10 rounded-2xl bg-zinc-900 text-white flex items-center justify-center font-black text-[10px] uppercase shadow-lg shadow-zinc-900/10">
                           {invoice.client_name?.charAt(0) || '?'}
                        </div>
-                       <span className="text-zinc-900 font-bold uppercase tracking-tight">{invoice.client_name || 'Anonymous node'}</span>
+                       <span className="text-zinc-900 font-bold uppercase tracking-tight">{invoice.client_name || 'No client'}</span>
                     </div>
                   </td>
                   <td className="px-8 py-7 text-zinc-400 font-mono text-[10px] uppercase tracking-widest">
@@ -176,21 +176,21 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                       <button
                         onClick={() => navigate('invoice-view', { id: invoice.id })}
                         className="p-3 text-zinc-400 hover:text-zinc-900 bg-white hover:bg-zinc-50 rounded-xl transition-all border border-zinc-200 shadow-sm"
-                        title="View Protocol State"
+                        title="View Invoice"
                       >
                         <Eye className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => navigate('invoice-edit', { id: invoice.id })}
                         className="p-3 text-zinc-400 hover:text-zinc-900 bg-white hover:bg-zinc-50 rounded-xl transition-all border border-zinc-200 shadow-sm"
-                        title="Modify Transaction"
+                        title="Edit Invoice"
                       >
                         <Edit2 className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => confirmDelete(invoice.id)}
                         className="p-3 text-zinc-400 hover:text-red-600 bg-white hover:bg-red-50 rounded-xl transition-all border border-zinc-200 shadow-sm"
-                        title="Purge From Ledger"
+                        title="Delete Invoice"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -212,9 +212,9 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                 <AlertTriangle className="w-12 h-12 text-red-500 transition-transform group-hover:scale-110" />
               </div>
               <div className="space-y-4">
-                <h3 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Purge Ledger</h3>
+                <h3 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Delete Invoice</h3>
                 <p className="text-zinc-500 text-sm leading-relaxed px-4">
-                  Confirmed: Purging serial <span className="text-red-600 font-bold font-mono">{invoiceToDelete?.slice(0,8)}</span> from the hardware node. This is a final cryptographic deletion.
+                  Are you sure you want to delete invoice <span className="text-red-600 font-bold font-mono">{invoices.find(i => i.id === invoiceToDelete)?.invoice_number}</span>? This action cannot be undone.
                 </p>
               </div>
             </div>
@@ -232,7 +232,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                 }}
                 className="w-full py-4 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px] transition-colors"
               >
-                Abort Protocol
+                Cancel
               </button>
             </div>
           </div>

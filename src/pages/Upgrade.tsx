@@ -68,12 +68,12 @@ export default function Upgrade({ navigate }: { navigate: (route: string) => voi
 
         <ul className="space-y-4 mb-10">
           {[
-            "Advanced Fiscal Analytics & Intelligence",
+            "Advanced Business Analytics",
             "Secured Local Data Backups & Exports",
             "Custom Organization Branding & Logos",
-            "Unlimited Sovereign Identity Registry",
+            "Unlimited Client List",
             "Removal of 'Free Tier' Footer Branding",
-            "Priority Access to Protocol Updates"
+            "Priority Support & Updates"
           ].map((feature, i) => (
             <li key={i} className="flex gap-3 items-center">
               <Check className="w-5 h-5 text-emerald-500 shrink-0" />

@@ -144,7 +144,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
             <h1 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase">
               {invoiceId ? 'Edit Invoice' : 'New Invoice'}
             </h1>
-            <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mt-1">Sovereign Ledger Entry: Protocol v1.0</p>
+            <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mt-1">Invoice Details & Preferences</p>
           </div>
         </div>
       </div>
@@ -160,7 +160,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
             <div className="space-y-6">
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
-                  <User size={12} className="text-zinc-300" /> Counterparty
+                  <User size={12} className="text-zinc-300" /> Client
                 </label>
                 <div className="relative">
                   <select
@@ -184,7 +184,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
 
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
-                  <Receipt size={12} className="text-zinc-300" /> Serial Number
+                  <Receipt size={12} className="text-zinc-300" /> Invoice Number
                 </label>
                 <input
                   type="text"
@@ -198,7 +198,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
 
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
-                  <CreditCard size={12} className="text-zinc-300" /> PO Reference
+                  <CreditCard size={12} className="text-zinc-300" /> P.O. Number
                 </label>
                 <input
                   type="text"
@@ -213,7 +213,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
             <div className="space-y-6">
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
-                  <Calendar size={12} className="text-zinc-300" /> Issue Timestamp
+                  <Calendar size={12} className="text-zinc-300" /> Invoice Date
                 </label>
                 <input
                   type="date"
@@ -226,7 +226,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
 
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
-                  <Calendar size={12} className="text-zinc-300" /> Settlement Due
+                  <Calendar size={12} className="text-zinc-300" /> Due Date
                 </label>
                 <input
                   type="date"
@@ -237,10 +237,10 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
               </div>
 
               <div className="p-5 bg-zinc-50 border border-zinc-200 rounded-2xl mt-4">
-                <p className="text-[10px] text-zinc-400 mb-2 font-mono uppercase tracking-[0.2em]">Node Persistence</p>
+                <p className="text-[10px] text-zinc-400 mb-2 font-mono uppercase tracking-[0.2em]">Storage Status</p>
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-zinc-900 animate-pulse"></div>
-                  <span className="text-sm text-zinc-900 font-black uppercase tracking-tight">Active Enclave</span>
+                  <span className="text-sm text-zinc-900 font-black uppercase tracking-tight">Offline First</span>
                 </div>
               </div>
             </div>
@@ -251,16 +251,16 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
         <div className="bg-white border border-zinc-200 rounded-[32px] overflow-hidden shadow-xl shadow-zinc-200/50">
           <div className="p-8 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
             <h2 className="text-xl font-black text-zinc-900 flex items-center gap-3 uppercase tracking-tight">
-              <Receipt size={22} className="text-zinc-400" /> Transaction Lines
+              <Receipt size={22} className="text-zinc-400" /> Invoice Items
             </h2>
           </div>
           
           <div className="p-8 space-y-6">
             <div className="hidden md:grid grid-cols-12 gap-6 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] pb-4 border-b border-zinc-100">
-              <div className="col-span-6">Description / Service Detail</div>
-              <div className="col-span-2 text-right">Units</div>
-              <div className="col-span-2 text-right">Rate</div>
-              <div className="col-span-2 text-right px-4">Yield</div>
+              <div className="col-span-6">Description / Service</div>
+              <div className="col-span-2 text-right">Qty</div>
+              <div className="col-span-2 text-right">Price</div>
+              <div className="col-span-2 text-right px-4">Amount</div>
             </div>
             
             <div className="space-y-6">
@@ -278,7 +278,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
                   </div>
                   <div className="grid grid-cols-2 md:contents gap-6 w-full">
                     <div className="md:col-span-2">
-                      <label className="block md:hidden text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Units</label>
+                      <label className="block md:hidden text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Qty</label>
                       <input
                         type="number"
                         min="1"
@@ -289,7 +289,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block md:hidden text-[100px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Rate</label>
+                      <label className="block md:hidden text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Price</label>
                       <input
                         type="number"
                         min="0"
@@ -323,13 +323,13 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
               <div className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center">
                  <Plus size={12} />
               </div> 
-              Add Protocol Line
+              Add Line Item
             </button>
           </div>
 
           <div className="p-8 bg-zinc-50 border-t border-zinc-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
             <div className="w-full md:w-auto space-y-2">
-              <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Additional Disclosures</label>
+              <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Notes & Terms</label>
               <textarea
                 rows={3}
                 value={formData.notes}
@@ -341,7 +341,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
 
             <div className="w-full md:w-96 space-y-4">
               <div className="flex justify-between items-center text-sm">
-                <span className="font-bold uppercase tracking-[0.1em] text-zinc-400 text-[10px]">Net Yield</span>
+                <span className="font-bold uppercase tracking-[0.1em] text-zinc-400 text-[10px]">Subtotal</span>
                 <span className="font-mono font-bold text-zinc-600">${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
               </div>
               
@@ -385,14 +385,14 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
             onClick={() => navigate('invoices')}
             className="px-10 py-4 bg-white border border-zinc-200 text-zinc-400 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:text-zinc-900 hover:border-zinc-900 transition-all shadow-sm"
           >
-            Abort
+            Cancel
           </button>
           <button
             type="submit"
             className="flex items-center justify-center gap-3 px-12 py-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 active:scale-[0.98] transition-all shadow-2xl shadow-zinc-900/20"
           >
             <Save size={16} />
-            Commit Ledger Entry
+            Save Invoice
           </button>
         </div>
       </form>
