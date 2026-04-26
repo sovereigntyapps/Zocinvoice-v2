@@ -6,6 +6,43 @@
 
 export const PRF_SALT = new TextEncoder().encode('sovereigntyapps.vault.v1.salt_for_prf_derivation');
 
+export async function createVerificationToken(keyBytes: Uint8Array): Promise<string> {
+  // If keyBytes is empty (e.g. initial createVault), just return a dummy, but we shouldn't pass empty keys here
+  if (keyBytes.length === 0) return "";
+  const key = await crypto.subtle.importKey(
+    'raw', keyBytes, { name: 'AES-GCM' }, false, ['encrypt']
+  );
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const data = new TextEncoder().encode("sovereign-auth-token");
+  const encrypted = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv }, key, data
+  );
+  
+  const ivBase64 = bufferToBase64url(iv);
+  const encBase64 = bufferToBase64url(encrypted);
+  return `${ivBase64}.${encBase64}`;
+}
+
+export async function verifyKey(keyBytes: Uint8Array, token: string): Promise<boolean> {
+  if (!token) return true; // If no token exists, allow for backwards compatibility (first run)
+  try {
+    const key = await crypto.subtle.importKey(
+      'raw', keyBytes, { name: 'AES-GCM' }, false, ['decrypt']
+    );
+    const [ivBase64, encBase64] = token.split('.');
+    const iv = base64urlToBuffer(ivBase64);
+    const encrypted = base64urlToBuffer(encBase64);
+    const decryptedBytes = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv }, key, encrypted
+    );
+    const decryptedStr = new TextDecoder().decode(decryptedBytes);
+    return decryptedStr === "sovereign-auth-token";
+  } catch (e) {
+    return false;
+  }
+}
+
+
 export class WebAuthnVaultError extends Error {
   constructor(message: string) {
     super(message);

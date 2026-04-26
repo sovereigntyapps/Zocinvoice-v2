@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../db';
-import { Plus, Eye, Edit2, Trash2, AlertTriangle, Crown, FileText, Search, Filter, ArrowRight, Calendar, DollarSign, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Plus, Eye, Edit2, Trash2, AlertTriangle, Crown, FileText, Search, Filter, ArrowRight, Calendar, DollarSign, Clock, CheckCircle2, AlertCircle, Copy } from 'lucide-react';
 import { format } from 'date-fns';
 import { isAppUnlocked } from '../lib/license';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Invoices({ navigate }: { navigate: (route: string, params?: any) => void }) {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [invoiceToDelete, setInvoiceToDelete] = useState<string | null>(null);
   const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const loadInvoices = async () => {
     const res = await db.query(`
@@ -39,6 +42,41 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
     }
   };
 
+  const handleDuplicate = async (invoiceId: string) => {
+    if (invoices.length >= 5 && !isUnlocked) {
+      if (confirm('You have reached the limit of 5 invoices on the free plan. Upgrade to Pro?')) {
+         navigate('upgrade');
+      }
+      return;
+    }
+    
+    // Fetch the original invoice and items
+    const invRes = await db.query('SELECT * FROM invoices WHERE id = $1', [invoiceId]);
+    if (invRes.rows.length === 0) return;
+    const inv: any = invRes.rows[0];
+    
+    const itemsRes = await db.query('SELECT * FROM invoice_items WHERE invoice_id = $1', [invoiceId]);
+    const originalItems = itemsRes.rows;
+    
+    const newId = uuidv4();
+    const newInvoiceNumber = `INV-${Math.floor(1000 + Math.random() * 9000)}-COPY`;
+    
+    await db.query(
+      `INSERT INTO invoices (id, client_id, invoice_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes, po_number, paid_amount) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+      [newId, inv.client_id, newInvoiceNumber, inv.date, inv.due_date, 'unpaid', inv.subtotal, inv.tax_name, inv.tax_rate, inv.tax_amount, inv.total, inv.notes, inv.po_number, 0]
+    );
+
+    for (const item of originalItems) {
+      await db.query(
+        'INSERT INTO invoice_items (id, invoice_id, description, quantity, unit_price, amount) VALUES ($1, $2, $3, $4, $5, $6)',
+        [uuidv4(), newId, item.description, item.quantity, item.unit_price, item.amount]
+      );
+    }
+    
+    loadInvoices();
+  };
+
   const handleCreate = () => {
     if (invoices.length >= 5 && !isUnlocked) {
       if (confirm('You have reached the limit of 5 invoices on the free plan. Upgrade to Pro?')) {
@@ -59,6 +97,13 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
     }
   };
 
+  const filteredInvoices = invoices.filter(invoice => {
+    const matchesSearch = invoice.invoice_number?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          invoice.client_name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <div className="space-y-12 max-w-6xl mx-auto pb-24">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
@@ -74,7 +119,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                  <div 
                    className={`h-full ${invoices.length >= 5 ? 'bg-red-500' : 'bg-zinc-900'}`} 
                    style={{ width: `${Math.min((invoices.length / 5) * 100, 100)}%` }} 
-                 />
+                   />
                </div>
                <button 
                  onClick={() => navigate('upgrade')}
@@ -93,17 +138,47 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
         </div>
       </div>
 
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-zinc-400" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search by invoice # or client name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 bg-white border border-zinc-200 rounded-2xl text-zinc-900 font-medium focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all shadow-sm"
+          />
+        </div>
+        <div className="relative w-full sm:w-48 shrink-0">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full appearance-none pl-4 pr-10 py-3 bg-white border border-zinc-200 rounded-2xl text-zinc-900 font-medium focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all shadow-sm"
+          >
+            <option value="all">All Statuses</option>
+            <option value="paid">Paid</option>
+            <option value="partial">Partial</option>
+            <option value="unpaid">Unpaid</option>
+          </select>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-zinc-400">
+            <Filter className="h-4 w-4" />
+          </div>
+        </div>
+      </div>
+
       {/* Mobile Cards View */}
       <div className="block lg:hidden space-y-6">
-        {invoices.length === 0 ? (
+        {filteredInvoices.length === 0 ? (
           <div className="bg-white border border-zinc-200 p-16 text-center text-zinc-400 rounded-[32px] shadow-xl shadow-zinc-100 flex flex-col items-center gap-6">
             <div className="w-20 h-20 bg-zinc-50 border border-zinc-100 rounded-full flex items-center justify-center">
               <AlertTriangle className="w-10 h-10 opacity-20" />
             </div>
-            <p className="text-sm font-black uppercase tracking-[0.2em]">No invoices recorded yet</p>
+            <p className="text-sm font-black uppercase tracking-[0.2em]">No invoices found</p>
           </div>
         ) : (
-          invoices.map(invoice => (
+          filteredInvoices.map(invoice => (
             <div key={invoice.id} className="bg-white p-8 rounded-[32px] border border-zinc-200 shadow-xl shadow-zinc-200/40 space-y-6 group active:scale-[0.98] transition-all relative overflow-hidden">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
@@ -134,11 +209,14 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                       <span className="text-zinc-300 font-mono text-[10px] uppercase">{formatSafeDate(invoice.date as string)}</span>
                    </div>
                 </div>
-                <div className="flex gap-3">
-                    <button onClick={() => navigate('invoice-view', { id: invoice.id })} className="p-4 text-zinc-400 hover:text-zinc-900 bg-zinc-50 hover:bg-zinc-100 rounded-2xl transition-all border border-zinc-200 shadow-sm">
+                <div className="flex gap-2">
+                    <button onClick={() => navigate('invoice-view', { id: invoice.id })} className="p-3 text-zinc-400 hover:text-zinc-900 bg-zinc-50 hover:bg-zinc-100 rounded-2xl transition-all border border-zinc-200 shadow-sm" title="View">
                       <Eye className="w-5 h-5" />
                     </button>
-                    <button onClick={() => navigate('invoice-edit', { id: invoice.id })} className="p-4 text-zinc-400 hover:text-zinc-900 bg-zinc-50 hover:bg-zinc-100 rounded-2xl transition-all border border-zinc-200 shadow-sm">
+                    <button onClick={() => handleDuplicate(invoice.id)} className="p-3 text-zinc-400 hover:text-blue-600 bg-zinc-50 hover:bg-blue-50 rounded-2xl transition-all border border-zinc-200 shadow-sm" title="Duplicate">
+                      <Copy className="w-5 h-5" />
+                    </button>
+                    <button onClick={() => navigate('invoice-edit', { id: invoice.id })} className="p-3 text-zinc-400 hover:text-zinc-900 bg-zinc-50 hover:bg-zinc-100 rounded-2xl transition-all border border-zinc-200 shadow-sm" title="Edit">
                       <Edit2 className="w-5 h-5" />
                     </button>
                 </div>
@@ -162,7 +240,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-50">
-            {invoices.length === 0 ? (
+            {filteredInvoices.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-8 py-32 text-center text-zinc-400 flex flex-col items-center gap-6">
                   <div className="w-24 h-24 bg-zinc-50 rounded-full border border-zinc-100 flex items-center justify-center animate-pulse">
@@ -172,7 +250,7 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                 </td>
               </tr>
             ) : (
-              invoices.map(invoice => (
+              filteredInvoices.map(invoice => (
                 <tr key={invoice.id} className="hover:bg-zinc-50/50 transition-colors group/row">
                   <td className="px-8 py-7 font-black text-zinc-900 tracking-tight font-mono">{invoice.invoice_number}</td>
                   <td className="px-8 py-7">
@@ -215,6 +293,13 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                         title="View Invoice"
                       >
                         <Eye className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDuplicate(invoice.id)}
+                        className="p-3 text-zinc-400 hover:text-blue-600 bg-white hover:bg-blue-50 rounded-xl transition-all border border-zinc-200 shadow-sm"
+                        title="Duplicate Invoice"
+                      >
+                        <Copy className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => navigate('invoice-edit', { id: invoice.id })}

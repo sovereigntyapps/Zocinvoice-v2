@@ -12,46 +12,43 @@ export default function Privacy({ navigate }: { navigate: (route: string) => voi
           <ArrowLeft className="w-4 h-4" /> Returns to Source
         </button>
         
-        <h1 className="text-6xl font-black mb-12 text-zinc-900 tracking-tighter uppercase leading-none">Privacy Policy</h1>
+        <h1 className="text-4xl font-black mb-12 text-zinc-900 tracking-tighter uppercase leading-none">Privacy Policy</h1>
         
-        <div className="max-w-none space-y-10 text-zinc-500 leading-relaxed italic">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] not-italic text-zinc-400">Last Updated: April 25, 2026</p>
+        <div className="space-y-10 text-zinc-600 leading-relaxed">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-400">Last Updated: April 25, 2026</p>
           
           <section>
-            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">1. Our Privacy Promise</h2>
+            <h2 className="text-xl font-bold text-zinc-900 mb-4 tracking-tight">1. Information Collection</h2>
             <p>
-              This application is built with a local-first architecture. This means <strong className="text-zinc-900 not-italic uppercase font-bold">we do not operate servers, we do not have a central database, and we are physically incapable of accessing your data.</strong>
-            </p>
-            <p className="mt-4">
-              Your usage data, files, and calculations are stored locally on your device.
+              This application is designed as a "local-first" platform. This means that all data you enter, including client information, invoices, and settings, is stored entirely locally on your device within your browser's persistent storage. We do not collect, transmit, or store this data on our servers.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">2. Zero Analytics</h2>
+            <h2 className="text-xl font-bold text-zinc-900 mb-4 tracking-tight">2. Use of Information</h2>
             <p>
-              Your browser environment is a sanctuary. We do not inject tracking pixels, product analytics cookies, or biometric logging algorithms. We do not observe your dynamics.
-            </p>
-          </section>
-
-          <section className="bg-zinc-50 p-6 rounded-2xl border border-zinc-100">
-            <h2 className="text-lg font-bold text-zinc-900 mb-3">3. Data Persistence & Backup</h2>
-            <p className="text-sm leading-relaxed text-zinc-600">
-              Your data belongs strictly to your machine. Clearing your browser's private storage securely wipes all local data forever. <strong>If you intend to use this application for any duration, you must export manual data backups regularly.</strong> We cannot recover data that we do not possess.
+              Because your personal and business data does not leave your device, we do not use your information for analytics, marketing, or any other external purpose. The application only processes data locally to provide you with the core functionality of generating and managing invoices.
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-zinc-900 mb-3">4. Liability Limitation</h2>
-            <p className="text-sm leading-relaxed text-zinc-600">
-              By using this application, you acknowledge that Sovereignty Apps and its affiliates are <strong>not liable for any data loss, financial impact, or damages</strong>—direct or indirect—now or in the future. The local-first nature of this software places all operational responsibility on the user.
+            <h2 className="text-xl font-bold text-zinc-900 mb-4 tracking-tight">3. Data Security and Backup</h2>
+            <p>
+              Since data is stored locally, the security of your data is dependent on the security of your device. You are responsible for protecting your device from unauthorized access. Similarly, if your browser storage is cleared, or if you use the application in a private browsing mode, your data may be permanently lost. We strongly recommend routinely exporting your data or maintaining separate backups.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-4">5. Contact</h2>
+            <h2 className="text-xl font-bold text-zinc-900 mb-4 tracking-tight">4. Third-Party Services</h2>
             <p>
-              For inquiries regarding our privacy practices, contact: <span className="text-zinc-900 font-bold border-b border-zinc-200">sovereigntyapps@gmail.com</span>.
+              We may use third-party services (such as Stripe) solely for the purpose of processing payments for premium feature unlocks. These services have their own privacy policies regarding the data they collect during the checkout process.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-zinc-900 mb-4 tracking-tight">5. Contact Us</h2>
+            <p>
+              If you have any questions or concerns about this policy or our privacy practices, please contact us at: <span className="font-medium">sovereigntyapps@gmail.com</span>.
             </p>
           </section>
         </div>

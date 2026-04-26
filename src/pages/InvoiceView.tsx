@@ -6,18 +6,21 @@ import {
   Printer,
   CheckCircle,
   Circle,
+  Share2,
+  Copy,
 } from "lucide-react";
 import { format } from "date-fns";
 import { isAppUnlocked } from "../lib/license";
 import { useReactToPrint } from "react-to-print";
 import domtoimage from "dom-to-image";
 import jsPDF from "jspdf";
+import { v4 as uuidv4 } from "uuid";
 
 export default function InvoiceView({
   navigate,
   invoiceId,
 }: {
-  navigate: (route: string) => void;
+  navigate: (route: string, params?: any) => void;
   invoiceId: string;
 }) {
   const [invoice, setInvoice] = useState<any>(null);
@@ -148,6 +151,42 @@ export default function InvoiceView({
       [newStatus, newPaidAmount, invoiceId],
     );
     setInvoice({ ...invoice, status: newStatus, paid_amount: newPaidAmount });
+  };
+
+  const handleDuplicate = async () => {
+    const invRes = await db.query('SELECT COUNT(*) as count FROM invoices');
+    if (invRes.rows[0].count >= 5 && !isUnlocked) {
+      if (confirm('You have reached the limit of 5 invoices on the free plan. Upgrade to Pro?')) {
+        navigate('upgrade');
+      }
+      return;
+    }
+
+    const newId = uuidv4();
+    const newInvoiceNumber = `INV-${Math.floor(1000 + Math.random() * 9000)}-COPY`;
+    
+    await db.query(
+      `INSERT INTO invoices (id, client_id, invoice_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes, po_number, paid_amount) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+      [newId, invoice.client_id, newInvoiceNumber, invoice.date, invoice.due_date, 'unpaid', invoice.subtotal, invoice.tax_name, invoice.tax_rate, invoice.tax_amount, invoice.total, invoice.notes, invoice.po_number, 0]
+    );
+
+    for (const item of items) {
+      await db.query(
+        'INSERT INTO invoice_items (id, invoice_id, description, quantity, unit_price, amount) VALUES ($1, $2, $3, $4, $5, $6)',
+        [uuidv4(), newId, item.description, item.quantity, item.unit_price, item.amount]
+      );
+    }
+    
+    navigate('invoice-edit', { id: newId });
+  };
+
+  const handleShare = async () => {
+    const subject = encodeURIComponent(`Invoice ${invoice.invoice_number} from ${companySettings.company_name || 'Sovereign Apps'}`);
+    const body = encodeURIComponent(
+      `Hi ${client.name},\n\nPlease find the details for invoice ${invoice.invoice_number} attached. The total amount is $${parseFloat(invoice.total).toLocaleString(undefined, { minimumFractionDigits: 2 })}.\n\nThank you for your business.`
+    );
+    window.location.href = `mailto:${client.email || ''}?subject=${subject}&body=${body}`;
   };
 
   if (!invoice || !client)
@@ -512,6 +551,31 @@ export default function InvoiceView({
               >
                 <Download className="w-5 h-5 opacity-40" />
                 <span className="text-sm">Generate PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="h-px bg-zinc-800/50"></div>
+
+          <div>
+            <h3 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">
+              Quick Actions
+            </h3>
+            <div className="space-y-3">
+              <button
+                onClick={handleShare}
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-2xl font-bold hover:text-white hover:border-zinc-700 transition-all active:scale-[0.98]"
+              >
+                <Share2 className="w-5 h-5 opacity-40" />
+                <span className="text-sm">Send Email Link</span>
+              </button>
+
+              <button
+                onClick={handleDuplicate}
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-2xl font-bold hover:text-white hover:border-zinc-700 transition-all active:scale-[0.98]"
+              >
+                <Copy className="w-5 h-5 opacity-40" />
+                <span className="text-sm">Duplicate Invoice</span>
               </button>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Fingerprint, Lock, ShieldCheck, AlertTriangle, KeyRound, ShieldHalf, LayoutDashboard } from 'lucide-react';
-import { createVault, unlockVault, isGhostVaultSupported, WebAuthnVaultError, deriveKeyFromPassphrase } from '../vault';
+import { createVault, unlockVault, isGhostVaultSupported, WebAuthnVaultError, deriveKeyFromPassphrase, createVerificationToken, verifyKey } from '../vault';
 
 interface VaultGateProps {
   children: React.ReactNode;
@@ -42,6 +42,10 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
       setVaultMode('hard');
       
       const { derivedKey } = await unlockVault(credentialId);
+      
+      const token = await createVerificationToken(derivedKey);
+      localStorage.setItem('WA_VAULT_VERIFY', token);
+      
       onUnlocked(derivedKey);
       setUnlocked(true);
     } catch (err: any) {
@@ -67,6 +71,9 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
       setError(null);
       
       const derivedKey = await deriveKeyFromPassphrase(passphrase);
+      
+      const token = await createVerificationToken(derivedKey);
+      localStorage.setItem('WA_VAULT_VERIFY', token);
       
       // For hybrid, we don't have a credentialId, we just store that we use hybrid mode
       localStorage.setItem('WA_VAULT_MODE', 'hybrid');
@@ -95,6 +102,13 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
         if (!savedCredId) throw new Error("Vault not found.");
 
         const { derivedKey } = await unlockVault(savedCredId);
+        
+        const token = localStorage.getItem('WA_VAULT_VERIFY');
+        if (token) {
+          const isValid = await verifyKey(derivedKey, token);
+          if (!isValid) throw new Error("Security verification failed. Invalid biometrics.");
+        }
+        
         onUnlocked(derivedKey);
         setUnlocked(true);
       } else {
@@ -103,6 +117,16 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
           return;
         }
         const derivedKey = await deriveKeyFromPassphrase(passphrase);
+        
+        const token = localStorage.getItem('WA_VAULT_VERIFY');
+        if (token) {
+          const isValid = await verifyKey(derivedKey, token);
+          if (!isValid) {
+            setError("Incorrect passphrase.");
+            return;
+          }
+        }
+        
         onUnlocked(derivedKey);
         setUnlocked(true);
       }
@@ -119,6 +143,7 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
       localStorage.removeItem('WA_VAULT_CRED_ID');
       localStorage.removeItem('WA_VAULT_MODE');
       localStorage.removeItem('WA_VAULT_HYBRID_INIT');
+      localStorage.removeItem('WA_VAULT_VERIFY');
       setHasVault(false);
       setVaultMode('hard');
       setError(null);
@@ -163,18 +188,20 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
               : "Standard Security: Protect your data with a master passphrase."}
           </p>
 
-          {supported === false && vaultMode === 'hard' && (
-            <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-5 rounded-[24px] mb-8 flex flex-col items-start text-left w-full gap-3">
+          {supported === false && vaultMode === 'hard' && !hasVault && (
+            <div className="bg-zinc-50 border border-zinc-200 text-zinc-600 text-xs p-5 rounded-[24px] mb-8 flex flex-col items-start text-left w-full gap-3">
               <div className="flex items-center">
-                <AlertTriangle size={18} className="mr-2 flex-shrink-0" />
-                <span className="font-black uppercase tracking-tight">Hardware Missing</span>
+                <AlertTriangle size={18} className="mr-2 flex-shrink-0 text-amber-500" />
+                <span className="font-black text-zinc-900 uppercase tracking-tight">Biometrics Unavailable</span>
               </div>
-              <p className="italic">Your device does not support WebAuthn PRF. Use the Hybrid Fallback mode for hardware-agnostic security.</p>
+              <p className="text-zinc-500 leading-relaxed font-medium">
+                Your device does not support WebAuthn hardware keys. You are still fully secured by our cryptographic password derivation (PBKDF2).
+              </p>
               <button 
                 onClick={() => { setVaultMode('hybrid'); setError(null); }}
-                className="text-zinc-900 font-black uppercase tracking-widest text-[10px] underline underline-offset-4"
+                className="text-zinc-900 font-black uppercase tracking-widest text-[10px] underline underline-offset-4 mt-1"
               >
-                Switch to Hybrid mode
+                Use Password Mode
               </button>
             </div>
           )}
@@ -182,15 +209,15 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
           {showHybridOption && !hasVault && vaultMode === 'hard' && (
              <div className="bg-zinc-50 border border-zinc-200 text-zinc-600 text-xs p-5 rounded-[24px] mb-8 flex flex-col items-start text-left w-full gap-3">
                 <div className="flex items-center">
-                  <Fingerprint size={18} className="mr-2 flex-shrink-0" />
-                  <span className="font-black uppercase tracking-tight">Init Failed</span>
+                  <Fingerprint size={18} className="mr-2 flex-shrink-0 text-amber-500" />
+                  <span className="font-black text-zinc-900 uppercase tracking-tight">Init Failed</span>
                 </div>
-                <p className="italic text-zinc-500">Hardware security is not available here. Use the backup password option instead.</p>
+                <p className="font-medium text-zinc-500 leading-relaxed">Hardware security is not available. Rest assured, you are still fully secured by our cryptographic password derivation.</p>
                 <button 
                   onClick={() => { setVaultMode('hybrid'); setError(null); }}
-                  className="text-zinc-900 font-black uppercase tracking-widest text-[10px] underline underline-offset-4"
+                  className="text-zinc-900 font-black uppercase tracking-widest text-[10px] underline underline-offset-4 mt-1"
                 >
-                  Use Hybrid Fallback
+                  Use Password Mode
                 </button>
              </div>
           )}
@@ -265,8 +292,9 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
                 </button>
               ) : (
                 <form onSubmit={handleCreateHybridVault} className="space-y-6">
-                   <div className="text-left text-zinc-400 text-[10px] font-black uppercase tracking-widest px-2 mb-2 leading-relaxed opacity-60">
-                      Standard security mode creates your key using a locally saved password.
+                   <div className="text-left text-zinc-500 text-[11px] font-medium px-2 mb-2 leading-relaxed bg-zinc-100 p-4 rounded-2xl border border-zinc-200">
+                      <strong className="text-zinc-900 font-bold block mb-1">Hardware Setup Skipped</strong>
+                      You are still fully secured by our offline cryptographic key derivation process. Choose a strong master passphrase.
                    </div>
                    <div className="space-y-2 text-left">
                     <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Set Master Passphrase</label>

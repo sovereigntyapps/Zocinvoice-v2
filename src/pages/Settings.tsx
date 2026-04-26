@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../db';
-import { Download, Upload, AlertCircle, HardDrive, Building2, Image as ImageIcon, Percent, Save, Crown, Trash2 } from 'lucide-react';
+import { Download, Upload, AlertCircle, HardDrive, Building2, Image as ImageIcon, Percent, Save, Crown, Trash2, ShieldCheck, FolderSync, Network, Copy, CheckCircle2 } from 'lucide-react';
 import { isAppUnlocked } from '../lib/license';
+import { useAutoBackup } from '../hooks/useAutoBackup';
+import { useMeshSync } from '../hooks/useMeshSync';
 
 export default function Settings({ navigate }: { navigate: (route: string) => void }) {
   const [taxName, setTaxName] = useState('Tax');
@@ -13,7 +15,63 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info', message: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
+  const [targetPeerId, setTargetPeerId] = useState('');
+  const [copied, setCopied] = useState(false);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { isAutoBackupEnabled, enableAutoBackup, disableAutoBackup, triggerBackup, backupStatus, lastBackupTime } = useAutoBackup();
+  
+  const handleMeshImport = async (data: any) => {
+    try {
+      if (!data || data.version !== 1) throw new Error('Invalid version');
+      setIsLoading(true);
+      setStatus({ type: 'info', message: 'Importing data via Mesh...' });
+       
+      await db.exec('BEGIN');
+      try {
+        await db.query('DELETE FROM invoice_items');
+        await db.query('DELETE FROM invoices');
+        await db.query('DELETE FROM clients');
+        await db.query('DELETE FROM settings');
+        
+        for (const s of data.data.settings || []) {
+          await db.query('INSERT INTO settings (key, value) VALUES ($1, $2)', [s.key, s.value]);
+        }
+        
+        for (const c of data.data.clients || []) {
+          await db.query('INSERT INTO clients (id, name, email, company, created_at) VALUES ($1, $2, $3, $4, $5)', 
+            [c.id, c.name, c.email, c.company, c.created_at]);
+        }
+        
+        for (const i of data.data.invoices || []) {
+          await db.query(`
+            INSERT INTO invoices (id, client_id, invoice_number, po_number, date, due_date, status, subtotal, tax_name, tax_rate, tax_amount, total, notes, created_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+          `, [i.id, i.client_id, i.invoice_number, i.po_number, i.date, i.due_date, i.status, i.subtotal, i.tax_name, i.tax_rate, i.tax_amount, i.total, i.notes, i.created_at]);
+        }
+        
+        for (const item of data.data.invoice_items || []) {
+          await db.query(`
+            INSERT INTO invoice_items (id, invoice_id, description, quantity, unit_price, amount)
+            VALUES ($1, $2, $3, $4, $5, $6)
+          `, [item.id, item.invoice_id, item.description, item.quantity, item.unit_price, item.amount]);
+        }
+        
+        await db.exec('COMMIT');
+        setStatus({ type: 'success', message: 'Mesh Data Sync Complete! Refreshing...' });
+        setTimeout(() => window.location.reload(), 1500);
+      } catch (innerError) {
+        await db.exec('ROLLBACK');
+        throw innerError;
+      }
+    } catch (e) {
+      console.error(e);
+      setStatus({ type: 'error', message: 'Mesh Sync Failed.' });
+      setIsLoading(false);
+    }
+  };
+
+  const { initPeer, peerId, status: meshStatus, connectToPeer, sendToAll, connections } = useMeshSync(handleMeshImport);
 
   useEffect(() => {
     isAppUnlocked().then(setIsUnlocked).catch(() => setIsUnlocked(false));
@@ -64,6 +122,24 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
     setTimeout(() => setStatus(null), 3000);
   };
 
+  const getExportDataPayload = async () => {
+    const clients = await db.query('SELECT * FROM clients');
+    const invoices = await db.query('SELECT * FROM invoices');
+    const items = await db.query('SELECT * FROM invoice_items');
+    const settings = await db.query('SELECT * FROM settings');
+    
+    return {
+      version: 1,
+      timestamp: new Date().toISOString(),
+      data: {
+        clients: clients.rows,
+        invoices: invoices.rows,
+        invoice_items: items.rows,
+        settings: settings.rows
+      }
+    };
+  };
+
   const handleExportData = async () => {
     if (!isUnlocked) {
       navigate('upgrade');
@@ -74,21 +150,7 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
       setIsLoading(true);
       setStatus({ type: 'info', message: 'Preparing export...' });
       
-      const clients = await db.query('SELECT * FROM clients');
-      const invoices = await db.query('SELECT * FROM invoices');
-      const items = await db.query('SELECT * FROM invoice_items');
-      const settings = await db.query('SELECT * FROM settings');
-      
-      const exportData = {
-        version: 1,
-        timestamp: new Date().toISOString(),
-        data: {
-          clients: clients.rows,
-          invoices: invoices.rows,
-          invoice_items: items.rows,
-          settings: settings.rows
-        }
-      };
+      const exportData = await getExportDataPayload();
       
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -107,6 +169,15 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
       setStatus({ type: 'error', message: 'Failed to export data.' });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleTestBackup = async () => {
+    try {
+      const exportData = await getExportDataPayload();
+      await triggerBackup(exportData);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -393,6 +464,124 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
            <p className="text-xs text-zinc-500 leading-relaxed">
              <strong>Warning:</strong> Importing data will overwrite all existing local records. Please ensure you have a backup of your current data before proceeding.
            </p>
+        </div>
+        
+        <div className="mt-8 pt-6 border-t border-zinc-100 flex flex-col gap-4">
+          <div className="flex items-center gap-3 mb-2">
+            <FolderSync className="w-5 h-5 text-zinc-400" />
+            <div>
+              <h3 className="text-sm font-bold text-zinc-900">Continuous Local Backup</h3>
+              <p className="text-xs text-zinc-500">Automatically syncs a live copy of your database to a folder on your device.</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            {isAutoBackupEnabled ? (
+              <>
+                <div className="flex-1 w-full bg-emerald-50 border border-emerald-100 rounded-lg p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3 text-emerald-700">
+                    <ShieldCheck className="w-5 h-5" />
+                    <div className="text-xs font-medium">
+                      Continuous Backup Active
+                      {lastBackupTime && <span className="block text-[10px] opacity-70">Last backed up: {new Date(lastBackupTime).toLocaleTimeString()}</span>}
+                    </div>
+                  </div>
+                  <button onClick={disableAutoBackup} className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider hover:text-emerald-900 underline underline-offset-2">Disconnect</button>
+                </div>
+                <button
+                  onClick={handleTestBackup}
+                  className="px-6 py-3 bg-white border border-zinc-200 text-zinc-700 rounded-lg font-bold text-sm shadow-sm hover:bg-zinc-50 transition-all shrink-0 w-full sm:w-auto"
+                >
+                  {backupStatus === 'backing_up' ? 'Syncing...' : 'Force Sync Now'}
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={enableAutoBackup}
+                className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-bold text-sm transition-all shadow-sm ${isUnlocked ? 'bg-zinc-900 text-white hover:bg-black' : 'bg-amber-50 text-amber-700 border border-amber-100 hover:bg-amber-100'}`}
+              >
+                {isUnlocked ? <FolderSync className="w-4 h-4" /> : <Crown className="w-4 h-4" />}
+                Select Backup Folder
+              </button>
+            )}
+          </div>
+        </div>
+        
+        {/* Device Mesh Sync Section */}
+        <div className="mt-8 pt-6 border-t border-zinc-100 flex flex-col gap-4">
+          <div className="flex items-center gap-3 mb-2">
+            <Network className="w-5 h-5 text-indigo-500" />
+            <div>
+              <h3 className="text-sm font-bold text-zinc-900">Device Mesh Sync (P2P)</h3>
+              <p className="text-xs text-zinc-500">Securely sync data directly between your devices over a WebRTC peer-to-peer connection.</p>
+            </div>
+          </div>
+          
+          {meshStatus === 'disconnected' && (
+            <button
+               onClick={initPeer}
+               className="w-full sm:w-auto px-6 py-3 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg font-bold text-sm hover:bg-indigo-100 transition-all shadow-sm"
+            >
+               Enable Secure Mesh Sync
+            </button>
+          )}
+
+          {meshStatus === 'connecting' && (
+            <div className="text-sm font-medium animate-pulse text-indigo-600">Connecting to sovereign signaling server...</div>
+          )}
+          
+          {(meshStatus === 'ready' || meshStatus === 'error') && (
+            <div className="space-y-4">
+              <div className="p-4 bg-indigo-50 border border-indigo-100 text-indigo-900 rounded-xl space-y-2">
+                 <label className="text-xs font-bold uppercase tracking-widest text-indigo-400">Your Device Identity</label>
+                 <div className="flex items-center gap-2">
+                    <code className="text-sm font-black tracking-wider bg-white px-3 py-1.5 rounded-lg border border-indigo-100 shadow-sm grow text-center select-all">{peerId}</code>
+                    <button 
+                       onClick={() => { navigator.clipboard.writeText(peerId); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                       className="p-2 bg-white rounded-lg border border-indigo-100 hover:bg-indigo-50 text-indigo-600"
+                    >
+                       {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                 </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                 <input 
+                   type="text"
+                   value={targetPeerId}
+                   onChange={e => setTargetPeerId(e.target.value)}
+                   placeholder="Enter Remote Device ID"
+                   className="flex-1 bg-white border border-zinc-200 rounded-lg px-4 py-3 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-mono text-sm"
+                 />
+                 <button
+                   onClick={() => connectToPeer(targetPeerId)}
+                   disabled={!targetPeerId}
+                   className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 transition-all text-sm"
+                 >
+                   Connect to Target
+                 </button>
+              </div>
+
+              {connections.length > 0 && (
+                <div className="p-4 border border-zinc-200 rounded-xl space-y-4">
+                  <div className="flex items-center justify-between">
+                     <span className="text-sm font-bold text-emerald-600 flex items-center gap-2"><Network className="w-4 h-4" /> Connected to {connections.length} device(s)</span>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      const payload = await getExportDataPayload();
+                      sendToAll(payload);
+                      setStatus({ type: 'success', message: 'Data pushed to mesh devices!' });
+                      setTimeout(() => setStatus(null), 3000);
+                    }}
+                    className="w-full py-3 bg-zinc-900 text-white rounded-lg font-bold hover:bg-black transition-all shadow-xl"
+                  >
+                    Push Database to Mesh Devices (Overwrite)
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
