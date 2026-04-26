@@ -36,11 +36,6 @@ export default function Landing({ navigate }: LandingProps) {
 
       <main className="max-w-7xl mx-auto px-6 py-20 lg:py-32">
         <div className="flex flex-col items-center text-center mb-24">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900 text-xs font-medium tracking-wide mb-8">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            Sovereign Web Protocol Standard • v1.0
-          </div>
-
           <h1 className="text-5xl md:text-7xl lg:text-[100px] leading-[0.9] tracking-tighter font-semibold mb-8 text-white max-w-4xl">
             Invoices that belong <br />
             <span className="text-zinc-500">strictly to you.</span>
@@ -102,6 +97,13 @@ export default function Landing({ navigate }: LandingProps) {
                 sub-milliseconds because there is no server to wait for.
               </p>
             </div>
+          </div>
+        </div>
+
+        <div className="mt-12 flex justify-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900 text-[10px] font-bold uppercase tracking-widest mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            Sovereign Web Protocol Standard • v1.0
           </div>
         </div>
       </main>
