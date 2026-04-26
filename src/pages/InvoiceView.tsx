@@ -3,7 +3,6 @@ import { db } from "../db";
 import {
   ArrowLeft,
   Download,
-  Printer,
   CheckCircle,
   Circle,
   Share2,
@@ -11,7 +10,6 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { isAppUnlocked } from "../lib/license";
-import { useReactToPrint } from "react-to-print";
 import domtoimage from "dom-to-image";
 import jsPDF from "jspdf";
 import { v4 as uuidv4 } from "uuid";
@@ -97,24 +95,6 @@ export default function InvoiceView({
       clearTimeout(timeoutId);
     };
   }, [invoice, client, items]);
-
-  const handlePrint = useReactToPrint({
-    contentRef: invoiceRef,
-    documentTitle: `Invoice_${invoice?.invoice_number}`,
-    pageStyle: `
-      @page {
-        size: auto;
-        margin: 0;
-      }
-      @media print {
-        body {
-          background: white !important;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
-      }
-    `,
-  });
 
   const handleExportPDF = async () => {
     if (!invoiceRef.current) return;
@@ -503,44 +483,17 @@ export default function InvoiceView({
         <div className="bg-white border border-zinc-200 p-8 rounded-[40px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-8 space-y-8">
           <div className="space-y-4">
             <button
-              onClick={() => handlePrint()}
+              onClick={handleExportPDF}
               className="w-full flex items-center justify-between px-6 py-5 bg-zinc-900 text-white rounded-2xl font-black transition-all active:scale-[0.97] shadow-xl shadow-zinc-900/10 hover:bg-black group"
             >
               <div className="flex items-center gap-4">
                 <div className="p-2 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
-                  <Printer className="w-5 h-5" />
-                </div>
-                <span className="text-sm tracking-tight uppercase">Print Invoice</span>
-              </div>
-              <ArrowLeft className="w-4 h-4 rotate-180 opacity-40 group-hover:opacity-100 transition-all" />
-            </button>
-
-            <button
-              onClick={handleExportPDF}
-              className="w-full flex items-center justify-between px-6 py-5 bg-white border border-zinc-200 text-zinc-900 rounded-2xl font-black transition-all active:scale-[0.97] hover:border-zinc-900 group"
-            >
-              <div className="flex items-center gap-4">
-                <div className="p-2 bg-zinc-50 rounded-xl group-hover:bg-zinc-100 transition-colors">
-                  <Download className="w-5 h-5 opacity-40 group-hover:opacity-100" />
+                  <Download className="w-5 h-5" />
                 </div>
                 <span className="text-sm tracking-tight uppercase">Download PDF</span>
               </div>
-              <ArrowLeft className="w-4 h-4 rotate-180 opacity-20 group-hover:opacity-100 transition-all" />
+              <ArrowLeft className="w-4 h-4 rotate-180 opacity-40 group-hover:opacity-100 transition-all" />
             </button>
-          </div>
-
-          <div className="pt-6 border-t border-zinc-100">
-            <div className="flex items-center gap-4 p-5 rounded-3xl bg-zinc-50/80 border border-zinc-100/50">
-              <div className="relative">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                <div className="absolute inset-0 w-2 h-2 rounded-full bg-emerald-500 animate-ping opacity-20" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-zinc-900 uppercase tracking-widest leading-none">
-                  Security Active
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
