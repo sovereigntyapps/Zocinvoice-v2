@@ -182,7 +182,6 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
             <div key={invoice.id} className="bg-white p-8 rounded-[32px] border border-zinc-200 shadow-xl shadow-zinc-200/40 space-y-6 group active:scale-[0.98] transition-all relative overflow-hidden">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
-                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Invoice #</div>
                   <div className="font-black text-zinc-900 tracking-tight text-xl">{invoice.invoice_number}</div>
                 </div>
                 <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${
@@ -213,11 +212,11 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                     <button onClick={() => navigate('invoice-view', { id: invoice.id })} className="p-3 text-zinc-400 hover:text-zinc-900 bg-zinc-50 hover:bg-zinc-100 rounded-2xl transition-all border border-zinc-200 shadow-sm" title="View">
                       <Eye className="w-5 h-5" />
                     </button>
-                    <button onClick={() => handleDuplicate(invoice.id)} className="p-3 text-zinc-400 hover:text-blue-600 bg-zinc-50 hover:bg-blue-50 rounded-2xl transition-all border border-zinc-200 shadow-sm" title="Duplicate">
-                      <Copy className="w-5 h-5" />
-                    </button>
                     <button onClick={() => navigate('invoice-edit', { id: invoice.id })} className="p-3 text-zinc-400 hover:text-zinc-900 bg-zinc-50 hover:bg-zinc-100 rounded-2xl transition-all border border-zinc-200 shadow-sm" title="Edit">
                       <Edit2 className="w-5 h-5" />
+                    </button>
+                    <button onClick={() => confirmDelete(invoice.id)} className="p-3 text-zinc-400 hover:text-red-600 bg-zinc-50 hover:bg-red-50 rounded-2xl transition-all border border-zinc-200 shadow-sm" title="Delete">
+                      <Trash2 className="w-5 h-5" />
                     </button>
                 </div>
               </div>
@@ -293,13 +292,6 @@ export default function Invoices({ navigate }: { navigate: (route: string, param
                         title="View Invoice"
                       >
                         <Eye className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDuplicate(invoice.id)}
-                        className="p-3 text-zinc-400 hover:text-blue-600 bg-white hover:bg-blue-50 rounded-xl transition-all border border-zinc-200 shadow-sm"
-                        title="Duplicate Invoice"
-                      >
-                        <Copy className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => navigate('invoice-edit', { id: invoice.id })}

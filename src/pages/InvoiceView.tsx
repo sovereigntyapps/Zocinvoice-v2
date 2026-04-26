@@ -100,13 +100,6 @@ export default function InvoiceView({
 
   const handlePrint = useReactToPrint({
     contentRef: invoiceRef,
-    documentTitle: `Invoice_${invoice?.invoice_number}`,
-    pageStyle: `
-      @page { size: auto; margin: 0mm; }
-      @media print {
-        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      }
-    `,
   });
 
   const handleExportPDF = async () => {
@@ -206,14 +199,7 @@ export default function InvoiceView({
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div>
-              <h1 className="text-2xl font-black text-zinc-900 tracking-tighter uppercase leading-none">
-                Invoice {invoice.invoice_number}
-              </h1>
-              <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mt-1.5 italic">
-                Sovereign Node v1.0
-              </p>
-            </div>
+            <h1 className="text-xl font-bold text-zinc-900 tracking-tight">Invoice Details</h1>
           </div>
           <span
             className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${
@@ -259,17 +245,9 @@ export default function InvoiceView({
               )}
               <div className="flex justify-between items-start mb-20 relative z-10">
                 <div>
-                  <h2 className="text-4xl font-extrabold text-zinc-900 tracking-tighter mb-2">
-                    INVOICE
+                  <h2 className="text-4xl font-black text-zinc-900 tracking-tighter uppercase">
+                    {invoice.invoice_number}
                   </h2>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                      Invoice Number
-                    </span>
-                    <p className="text-zinc-600 font-bold">
-                      #{invoice.invoice_number}
-                    </p>
-                  </div>
                 </div>
                 <div className="text-right">
                   {companySettings.company_logo && isUnlocked ? (
@@ -505,7 +483,7 @@ export default function InvoiceView({
           <div>
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] ml-1">
-                Status Architecture
+                Payment Status
               </h3>
               <div className={`w-2 h-2 rounded-full ${invoice.status === 'paid' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'}`} />
             </div>
@@ -528,7 +506,7 @@ export default function InvoiceView({
                     )}
                   </div>
                   <span className="text-sm font-black tracking-tight uppercase">
-                    {invoice.status === 'paid' ? 'Settled In Full' : 'Mark as Paid'}
+                    {invoice.status === 'paid' ? 'Settled' : 'Mark as Paid'}
                   </span>
                 </div>
                 {invoice.status !== 'paid' && (
@@ -540,11 +518,11 @@ export default function InvoiceView({
 
           <div className="space-y-6">
             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] ml-1">
-              Distribution
+              Export
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <button
-                onClick={() => handlePrint()}
+                onClick={handlePrint}
                 className="flex flex-col items-center justify-center gap-3 p-6 bg-white border border-zinc-100 text-zinc-600 rounded-3xl font-bold hover:text-zinc-900 hover:border-zinc-900 hover:shadow-lg transition-all active:scale-95 group"
               >
                 <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center group-hover:bg-zinc-100 transition-colors">
@@ -567,7 +545,7 @@ export default function InvoiceView({
 
           <div className="space-y-4 pt-6 border-t border-zinc-100">
             <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] ml-1">
-              Protocol
+              Actions
             </h3>
             <div className="space-y-2">
               <button
@@ -577,7 +555,7 @@ export default function InvoiceView({
                 <div className="p-2 bg-zinc-50 rounded-xl group-hover:bg-zinc-100 transition-colors">
                   <Share2 className="w-4 h-4" />
                 </div>
-                Generate Share Link
+                Email Invoice
               </button>
 
               <button
@@ -587,23 +565,20 @@ export default function InvoiceView({
                 <div className="p-2 bg-zinc-50 rounded-xl group-hover:bg-zinc-100 transition-colors">
                   <Copy className="w-4 h-4" />
                 </div>
-                Clone Blueprint
+                Duplicate Invoice
               </button>
             </div>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-6">
             <div className="flex items-center gap-4 p-5 rounded-3xl bg-zinc-50/80 border border-zinc-100/50">
               <div className="relative">
                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
                 <div className="absolute inset-0 w-2 h-2 rounded-full bg-emerald-500 animate-ping opacity-20" />
               </div>
               <div>
-                <p className="text-[10px] font-black text-zinc-900 uppercase tracking-widest leading-none mb-1">
-                  Local Node 0x1
-                </p>
-                <p className="text-[9px] font-medium text-zinc-400 uppercase tracking-tighter">
-                  Encrypted & Persistent
+                <p className="text-[10px] font-black text-zinc-900 uppercase tracking-widest leading-none">
+                  Security Active
                 </p>
               </div>
             </div>

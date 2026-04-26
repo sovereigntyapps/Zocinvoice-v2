@@ -87,9 +87,7 @@ export default function InvoiceForm({ navigate, invoiceId }: { navigate: (route:
   };
 
   const removeItem = (id: string) => {
-    if (items.length > 1) {
-      setItems(items.filter(item => item.id !== id));
-    }
+    setItems(items.filter(item => item.id !== id));
   };
 
   const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
