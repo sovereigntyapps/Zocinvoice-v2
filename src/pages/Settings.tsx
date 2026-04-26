@@ -12,6 +12,10 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
   const [companyEmail, setCompanyEmail] = useState('');
   const [companyAddress, setCompanyAddress] = useState('');
   const [companyLogo, setCompanyLogo] = useState('');
+  const [vaultEnabledSetting, setVaultEnabledSetting] = useState<boolean>(() => {
+    const saved = localStorage.getItem('SOVEREIGN_VAULT_ENABLED');
+    return saved === null ? true : saved === 'true';
+  });
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'info', message: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
@@ -118,6 +122,9 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['company_email', companyEmail]);
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['company_address', companyAddress]);
     await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', ['company_logo', companyLogo]);
+    
+    localStorage.setItem('SOVEREIGN_VAULT_ENABLED', vaultEnabledSetting.toString());
+    
     setStatus({ type: 'success', message: 'Settings saved successfully' });
     setTimeout(() => setStatus(null), 3000);
   };
@@ -423,6 +430,43 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Security Preferences */}
+      <div className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-zinc-100">
+          <ShieldCheck className="w-5 h-5 text-zinc-400" />
+          <h2 className="text-lg font-bold text-zinc-900">Security Preferences</h2>
+        </div>
+
+        <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-xl border border-zinc-100 group">
+          <div className="space-y-0.5">
+            <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+               Vault Protection Gate
+               <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-widest ${vaultEnabledSetting ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-200 text-zinc-600'}`}>
+                 {vaultEnabledSetting ? 'Enabled' : 'Disabled'}
+               </span>
+            </h3>
+            <p className="text-xs text-zinc-500">Require biometric or passphrase unlock on every application launch.</p>
+          </div>
+          <button
+            onClick={() => setVaultEnabledSetting(!vaultEnabledSetting)}
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${vaultEnabledSetting ? 'bg-zinc-900' : 'bg-zinc-200'}`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${vaultEnabledSetting ? 'translate-x-5' : 'translate-x-0'}`}
+            />
+          </button>
+        </div>
+        
+        {!vaultEnabledSetting && (
+          <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3 italic">
+            <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+            <p className="text-[11px] text-amber-700 leading-relaxed">
+              <strong>Note:</strong> Disabling the vault simplifies access but removes the hardware-derived local encryption layer. Your data remains stored in your browser's IndexedDB.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Persistence */}

@@ -202,26 +202,26 @@ export default function InvoiceView({
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate("invoices")}
-              className="p-3 text-zinc-500 hover:text-white bg-zinc-900/50 hover:bg-zinc-800 rounded-xl transition-all border border-zinc-800/50"
+              className="p-3 text-zinc-500 hover:text-zinc-900 bg-white border border-zinc-100 rounded-xl transition-all shadow-sm"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight uppercase">
+              <h1 className="text-2xl font-black text-zinc-900 tracking-tighter uppercase leading-none">
                 Invoice {invoice.invoice_number}
               </h1>
-              <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">
-                Details and Export
+              <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mt-1.5 italic">
+                Sovereign Node v1.0
               </p>
             </div>
           </div>
           <span
-            className={`px-4 py-1.5 rounded-xl text-[10px] font-mono uppercase tracking-widest border transition-all ${
+            className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border transition-all ${
               invoice.status === "paid"
-                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                ? "bg-emerald-50 text-emerald-600 border-emerald-100"
                 : invoice.status === "partial"
-                  ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                  : "bg-zinc-800/50 text-zinc-500 border-zinc-700"
+                  ? "bg-amber-50 text-amber-600 border-amber-100"
+                  : "bg-zinc-50 text-zinc-400 border-zinc-200"
             }`}
           >
             {invoice.status}
@@ -230,7 +230,7 @@ export default function InvoiceView({
 
         <div
           ref={containerRef}
-          className="bg-zinc-950/50 backdrop-blur-xl rounded-3xl border border-zinc-800/50 flex justify-center overflow-hidden print:bg-transparent print:border-none print:shadow-none print:rounded-none shadow-2xl"
+          className="bg-zinc-100/30 rounded-[48px] border border-zinc-200/50 flex justify-center overflow-hidden print:bg-transparent print:border-none print:shadow-none print:rounded-none"
           style={{
             paddingTop: "3rem",
             paddingBottom: "3rem",
@@ -501,95 +501,94 @@ export default function InvoiceView({
 
       {/* Right side: Actions Sidebar */}
       <div className="w-full lg:w-80 shrink-0 space-y-6 print:hidden">
-        <div className="bg-zinc-900/40 backdrop-blur-xl p-8 rounded-3xl border border-zinc-800/50 shadow-2xl sticky top-8 space-y-8">
+        <div className="bg-zinc-50 border border-zinc-200/60 p-6 rounded-[32px] shadow-sm sticky top-8 space-y-8">
           <div>
-            <h3 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">
-              Payment Actions
+            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4 ml-1">
+              Actions
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3">
               <button
                 onClick={handleMarkAsPaid}
-                className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all active:scale-[0.98] shadow-lg ${
+                className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl font-bold transition-all active:scale-[0.98] border ${
                   invoice.status === "paid"
-                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
-                    : "bg-zinc-950 text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-700"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                    : "bg-white text-zinc-900 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 shadow-sm"
                 }`}
               >
-                {invoice.status === "paid" ? (
-                  <>
-                    <CheckCircle className="w-5 h-5" />
-                    Fully Paid
-                  </>
-                ) : (
-                  <>
-                    <Circle className="w-5 h-5 opacity-40" />
-                    Mark as Paid
-                  </>
+                <div className="flex items-center gap-3">
+                  {invoice.status === "paid" ? (
+                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                  ) : (
+                    <Circle className="w-5 h-5 text-zinc-300" />
+                  )}
+                  <span className="text-sm">Mark as Paid</span>
+                </div>
+                {invoice.status === "paid" && (
+                   <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter">Done</span>
                 )}
               </button>
             </div>
           </div>
 
-          <div className="h-px bg-zinc-800/50"></div>
-
-          <div>
-            <h3 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">
-              Export Invoice
+          <div className="space-y-4">
+            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">
+              Export options
             </h3>
-            <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => handlePrint()}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-zinc-950 border border-zinc-800 text-zinc-400 rounded-2xl font-bold hover:text-white hover:border-zinc-700 transition-all active:scale-[0.98] shadow-lg"
+                className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-zinc-200 text-zinc-600 rounded-2xl font-bold hover:text-zinc-900 hover:border-zinc-900 transition-all active:scale-95 group"
               >
-                <Printer className="w-5 h-5 opacity-40" />
-                <span className="text-sm">Native Print</span>
+                <div className="w-10 h-10 rounded-xl bg-zinc-50 flex items-center justify-center group-hover:bg-zinc-100 transition-colors">
+                  <Printer className="w-5 h-5 opacity-60" />
+                </div>
+                <span className="text-[10px] uppercase tracking-widest">Print</span>
               </button>
 
               <button
                 onClick={handleExportPDF}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white text-zinc-950 rounded-2xl font-bold hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl shadow-white/5"
+                className="flex flex-col items-center justify-center gap-2 p-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-black transition-all active:scale-95 group shadow-xl shadow-zinc-900/10"
               >
-                <Download className="w-5 h-5 opacity-40" />
-                <span className="text-sm">Generate PDF</span>
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                  <Download className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] uppercase tracking-widest">PDF</span>
               </button>
             </div>
           </div>
 
-          <div className="h-px bg-zinc-800/50"></div>
-
-          <div>
-            <h3 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">
-              Quick Actions
+          <div className="space-y-4 pt-2 border-t border-zinc-200/50">
+            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">
+              Management
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2">
               <button
                 onClick={handleShare}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-2xl font-bold hover:text-white hover:border-zinc-700 transition-all active:scale-[0.98]"
+                className="w-full flex items-center gap-3 p-3 bg-white border border-zinc-200 text-zinc-600 rounded-xl font-bold text-xs hover:text-zinc-900 hover:bg-zinc-50 transition-all"
               >
-                <Share2 className="w-5 h-5 opacity-40" />
-                <span className="text-sm">Send Email Link</span>
+                <div className="p-1.5 bg-zinc-100 rounded-lg">
+                  <Share2 className="w-3.5 h-3.5" />
+                </div>
+                Send via Email
               </button>
 
               <button
                 onClick={handleDuplicate}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-2xl font-bold hover:text-white hover:border-zinc-700 transition-all active:scale-[0.98]"
+                className="w-full flex items-center gap-3 p-3 bg-white border border-zinc-200 text-zinc-600 rounded-xl font-bold text-xs hover:text-zinc-900 hover:bg-zinc-50 transition-all"
               >
-                <Copy className="w-5 h-5 opacity-40" />
-                <span className="text-sm">Duplicate Invoice</span>
+                <div className="p-1.5 bg-zinc-100 rounded-lg">
+                  <Copy className="w-3.5 h-3.5" />
+                </div>
+                Duplicate Entry
               </button>
             </div>
           </div>
 
-          <div className="pt-4">
-            <div className="p-4 bg-zinc-950/50 rounded-2xl border border-zinc-800/30">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[8px] font-mono text-emerald-500 uppercase tracking-widest">
-                  Secure Backup
-                </span>
-              </div>
-              <p className="text-[9px] text-zinc-600 font-mono leading-relaxed uppercase tracking-widest">
-                Your data is stored securely and privately on this device.
+          <div className="pt-2 border-t border-zinc-200/50">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-zinc-100/50">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.1em]">
+                Local Node Persistence Active
               </p>
             </div>
           </div>

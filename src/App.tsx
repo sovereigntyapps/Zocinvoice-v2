@@ -29,6 +29,18 @@ export default function App() {
   const [currentRoute, setCurrentRoute] = useState('landing');
   const [routeParams, setRouteParams] = useState<any>({});
   const [masterKey, setMasterKey] = useState<Uint8Array | null>(null);
+  const [vaultEnabled, setVaultEnabled] = useState<boolean>(() => {
+    // Default to true for security, but allow override
+    const saved = localStorage.getItem('SOVEREIGN_VAULT_ENABLED');
+    return saved === null ? true : saved === 'true';
+  });
+
+  useEffect(() => {
+    if (!vaultEnabled) {
+      // If vault is disabled, auto-init DB with a dummy key or no key
+      handleUnlocked(new Uint8Array(32)); 
+    }
+  }, [vaultEnabled]);
 
   useEffect(() => {
     // Check for Stripe callback
@@ -103,45 +115,51 @@ export default function App() {
     return <Terms navigate={navigate} />;
   }
 
-  return (
-    <VaultGate onUnlocked={handleUnlocked}>
-      {isDbReady ? (
-        <Layout currentRoute={currentRoute} navigate={navigate}>
-          {(() => {
-            switch (currentRoute) {
-              case 'dashboard': return <Dashboard navigate={navigate} />;
-              case 'clients': return <Clients navigate={navigate} />;
-              case 'invoices': return <Invoices navigate={navigate} />;
-              case 'reports': return <Reports navigate={navigate} />;
-              case 'invoice-new': return <InvoiceForm navigate={navigate} />;
-              case 'invoice-edit': return <InvoiceForm navigate={navigate} invoiceId={routeParams.id} />;
-              case 'invoice-view': return <InvoiceView navigate={navigate} invoiceId={routeParams.id} />;
-              case 'settings': return <Settings navigate={navigate} />;
-              case 'upgrade': return <Upgrade navigate={navigate} />;
-              default: return <Dashboard navigate={navigate} />;
-            }
-          })()}
-        </Layout>
+  const mainContent = isDbReady ? (
+    <Layout currentRoute={currentRoute} navigate={navigate}>
+      {(() => {
+        switch (currentRoute) {
+          case 'dashboard': return <Dashboard navigate={navigate} />;
+          case 'clients': return <Clients navigate={navigate} />;
+          case 'invoices': return <Invoices navigate={navigate} />;
+          case 'reports': return <Reports navigate={navigate} />;
+          case 'invoice-new': return <InvoiceForm navigate={navigate} />;
+          case 'invoice-edit': return <InvoiceForm navigate={navigate} invoiceId={routeParams.id} />;
+          case 'invoice-view': return <InvoiceView navigate={navigate} invoiceId={routeParams.id} />;
+          case 'settings': return <Settings navigate={navigate} />;
+          case 'upgrade': return <Upgrade navigate={navigate} />;
+          default: return <Dashboard navigate={navigate} />;
+        }
+      })()}
+    </Layout>
+  ) : (
+    <div className="flex flex-col h-screen items-center justify-center bg-zinc-50 px-4 text-center">
+      {dbError ? (
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg font-mono text-sm max-w-lg">
+          Database initialization failed: {dbError}
+          <br />
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-100/50 hover:bg-red-100 text-red-700 rounded transition-colors"
+          >
+            Retry
+          </button>
+        </div>
       ) : (
-        <div className="flex flex-col h-screen items-center justify-center bg-zinc-50 px-4 text-center">
-          {dbError ? (
-            <div className="bg-red-50 text-red-600 p-4 rounded-lg font-mono text-sm max-w-lg">
-              Database initialization failed: {dbError}
-              <br />
-              <button 
-                onClick={() => window.location.reload()}
-                className="mt-4 px-4 py-2 bg-red-100/50 hover:bg-red-100 text-red-700 rounded transition-colors"
-              >
-                Retry
-              </button>
-            </div>
-          ) : (
-            <div className="text-zinc-400 font-mono text-sm uppercase tracking-widest animate-pulse">
-              Starting your space...
-            </div>
-          )}
+        <div className="text-zinc-400 font-mono text-sm uppercase tracking-widest animate-pulse">
+          Starting your space...
         </div>
       )}
+    </div>
+  );
+
+  if (!vaultEnabled) {
+    return mainContent;
+  }
+
+  return (
+    <VaultGate onUnlocked={handleUnlocked}>
+      {mainContent}
     </VaultGate>
   );
 }
