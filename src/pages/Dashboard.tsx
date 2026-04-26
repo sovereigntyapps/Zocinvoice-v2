@@ -113,42 +113,45 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
       </div>
       
       {!isUnlocked && isUnlocked !== null && (
-        <div className="bg-zinc-50 border border-zinc-200 rounded-[32px] p-8 mt-12">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-            <div className="space-y-2">
+        <div className="bg-gradient-to-br from-zinc-950 to-zinc-900 rounded-[32px] p-8 mt-12 relative overflow-hidden shadow-2xl shadow-zinc-900/20 text-white">
+          <div className="absolute top-0 right-0 p-12 opacity-[0.05] pointer-events-none transition-transform duration-700 hover:scale-110">
+            <Users size={160} />
+          </div>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <span className="px-3 py-1 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest rounded-full">Free Plan</span>
-                <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Expand your business potential</h3>
+                <span className="px-3 py-1 bg-white/10 text-zinc-300 border border-white/10 text-[10px] font-black uppercase tracking-widest rounded-full">Free Plan Active</span>
               </div>
-              <p className="text-zinc-500 text-sm max-w-xl">
-                You're currently using the free tier. Unlock unlimited invoices, unlimited clients, and professional custom branding.
+              <h3 className="text-2xl font-bold tracking-tight">Expand your business potential</h3>
+              <p className="text-zinc-400 text-sm max-w-xl">
+                Ready to grow? Upgrade to pro to unlock unlimited invoices, unlimited clients, and professional custom branding.
               </p>
             </div>
             
-            <div className="flex gap-6">
-               <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Invoices</p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 h-2 bg-zinc-200 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${stats.totalInvoices >= 5 ? 'bg-red-500' : 'bg-zinc-900'}`} 
-                        style={{ width: `${Math.min((stats.totalInvoices / 5) * 100, 100)}%` }} 
-                      />
-                    </div>
-                    <span className="text-xs font-bold text-zinc-600">{stats.totalInvoices}/5</span>
+            <div className="flex flex-col sm:flex-row gap-8 bg-zinc-950/50 p-6 rounded-[24px] border border-white/5">
+               <div className="space-y-2">
+                  <div className="flex justify-between items-end">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Invoices</p>
+                    <span className="text-xs font-bold text-zinc-300">{stats.totalInvoices} / 5</span>
+                  </div>
+                  <div className="w-32 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full ${stats.totalInvoices >= 5 ? 'bg-red-500' : 'bg-emerald-500'}`} 
+                      style={{ width: `${Math.min((stats.totalInvoices / 5) * 100, 100)}%` }} 
+                    />
                   </div>
                </div>
                
-               <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Clients</p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 h-2 bg-zinc-200 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${stats.totalClients >= 1 ? 'bg-red-500' : 'bg-zinc-900'}`} 
-                        style={{ width: `${Math.min((stats.totalClients / 1) * 100, 100)}%` }} 
-                      />
-                    </div>
-                    <span className="text-xs font-bold text-zinc-600">{stats.totalClients}/1</span>
+               <div className="space-y-2">
+                  <div className="flex justify-between items-end">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Clients</p>
+                    <span className="text-xs font-bold text-zinc-300">{stats.totalClients} / 1</span>
+                  </div>
+                  <div className="w-32 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full ${stats.totalClients >= 1 ? 'bg-red-500' : 'bg-emerald-500'}`} 
+                      style={{ width: `${Math.min((stats.totalClients / 1) * 100, 100)}%` }} 
+                    />
                   </div>
                </div>
             </div>

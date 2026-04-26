@@ -11,8 +11,8 @@ export default function Upgrade({ navigate }: { navigate: (route: string) => voi
 
   const handle1ClickPayment = async () => {
     // SWA Pattern: Redirect to Stripe Payment Link
-    // The developer must set the success URL in Stripe Dashboard to the app's URL + ?unlocked=true&session_id={CHECKOUT_SESSION_ID}
-    window.location.href = 'https://buy.stripe.com/14A3co9GGeWa1bofBi2Ji00';
+    // Add ?unlocked=true&session_id={CHECKOUT_SESSION_ID} to your success URL in Stripe
+    window.location.href = 'https://buy.stripe.com/14A3co9GGeWa1bofBi2Ji00'; // Replace this with your actual Stripe Payment Link
   };
 
   if (isUnlocked === null) {

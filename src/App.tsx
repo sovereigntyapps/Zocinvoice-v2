@@ -112,11 +112,7 @@ export default function App() {
               case 'dashboard': return <Dashboard navigate={navigate} />;
               case 'clients': return <Clients navigate={navigate} />;
               case 'invoices': return <Invoices navigate={navigate} />;
-              case 'reports': return (
-                <ProGuard navigate={navigate} title="Business Reports" description="Advanced revenue analytics and growth tracking are available for Pro users.">
-                   <Reports navigate={navigate} />
-                </ProGuard>
-              );
+              case 'reports': return <Reports navigate={navigate} />;
               case 'invoice-new': return <InvoiceForm navigate={navigate} />;
               case 'invoice-edit': return <InvoiceForm navigate={navigate} invoiceId={routeParams.id} />;
               case 'invoice-view': return <InvoiceView navigate={navigate} invoiceId={routeParams.id} />;
