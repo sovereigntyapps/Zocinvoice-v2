@@ -478,99 +478,37 @@ export default function InvoiceView({
       </div>
 
       {/* Right side: Actions Sidebar */}
-      <div className="w-full lg:w-96 shrink-0 space-y-6 print:hidden">
-        <div className="bg-white border border-zinc-200 p-8 rounded-[40px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-8 space-y-10">
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] ml-1">
-                Payment Status
-              </h3>
-              <div className={`w-2 h-2 rounded-full ${invoice.status === 'paid' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-400'}`} />
-            </div>
-            
-            <div className="space-y-4">
-              <button
-                onClick={handleMarkAsPaid}
-                className={`w-full group relative flex items-center justify-between px-6 py-5 rounded-2xl font-bold transition-all active:scale-[0.97] border ${
-                  invoice.status === "paid"
-                    ? "bg-emerald-50/50 text-emerald-800 border-emerald-100"
-                    : "bg-zinc-900 text-white border-zinc-800 hover:bg-black shadow-xl shadow-zinc-900/10"
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`p-2 rounded-xl transition-colors ${invoice.status === 'paid' ? 'bg-emerald-100 text-emerald-600' : 'bg-white/10 text-white'}`}>
-                    {invoice.status === "paid" ? (
-                      <CheckCircle className="w-5 h-5" />
-                    ) : (
-                      <Circle className="w-5 h-5" />
-                    )}
-                  </div>
-                  <span className="text-sm font-black tracking-tight uppercase">
-                    {invoice.status === 'paid' ? 'Settled' : 'Mark as Paid'}
-                  </span>
+      <div className="w-full lg:w-80 shrink-0 space-y-6 print:hidden">
+        <div className="bg-white border border-zinc-200 p-8 rounded-[40px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-8 space-y-8">
+          <div className="space-y-4">
+            <button
+              onClick={() => handlePrint()}
+              className="w-full flex items-center justify-between px-6 py-5 bg-zinc-900 text-white rounded-2xl font-black transition-all active:scale-[0.97] shadow-xl shadow-zinc-900/10 hover:bg-black group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-white/10 rounded-xl group-hover:bg-white/20 transition-colors">
+                  <Printer className="w-5 h-5" />
                 </div>
-                {invoice.status !== 'paid' && (
-                  <ArrowLeft className="w-4 h-4 rotate-180 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
-                )}
-              </button>
-            </div>
-          </div>
+                <span className="text-sm tracking-tight uppercase">Print Invoice</span>
+              </div>
+              <ArrowLeft className="w-4 h-4 rotate-180 opacity-40 group-hover:opacity-100 transition-all" />
+            </button>
 
-          <div className="space-y-6">
-            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] ml-1">
-              Export
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={handlePrint}
-                className="flex flex-col items-center justify-center gap-3 p-6 bg-white border border-zinc-100 text-zinc-600 rounded-3xl font-bold hover:text-zinc-900 hover:border-zinc-900 hover:shadow-lg transition-all active:scale-95 group"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center group-hover:bg-zinc-100 transition-colors">
-                  <Printer className="w-6 h-6 opacity-40 group-hover:opacity-100" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest italic">Print</span>
-              </button>
-
-              <button
-                onClick={handleExportPDF}
-                className="flex flex-col items-center justify-center gap-3 p-6 bg-zinc-50 border border-transparent text-zinc-600 rounded-3xl font-bold hover:text-zinc-900 hover:bg-white hover:border-zinc-900 hover:shadow-lg transition-all active:scale-95 group"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm">
-                  <Download className="w-6 h-6 opacity-40 group-hover:opacity-100" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest italic">PDF</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-4 pt-6 border-t border-zinc-100">
-            <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] ml-1">
-              Actions
-            </h3>
-            <div className="space-y-2">
-              <button
-                onClick={handleShare}
-                className="w-full flex items-center gap-4 p-4 bg-white border border-zinc-100 text-zinc-600 rounded-2xl font-bold text-[11px] uppercase tracking-wider hover:text-zinc-900 hover:border-zinc-300 transition-all group"
-              >
+            <button
+              onClick={handleExportPDF}
+              className="w-full flex items-center justify-between px-6 py-5 bg-white border border-zinc-200 text-zinc-900 rounded-2xl font-black transition-all active:scale-[0.97] hover:border-zinc-900 group"
+            >
+              <div className="flex items-center gap-4">
                 <div className="p-2 bg-zinc-50 rounded-xl group-hover:bg-zinc-100 transition-colors">
-                  <Share2 className="w-4 h-4" />
+                  <Download className="w-5 h-5 opacity-40 group-hover:opacity-100" />
                 </div>
-                Email Invoice
-              </button>
-
-              <button
-                onClick={handleDuplicate}
-                className="w-full flex items-center gap-4 p-4 bg-white border border-zinc-100 text-zinc-600 rounded-2xl font-bold text-[11px] uppercase tracking-wider hover:text-zinc-900 hover:border-zinc-300 transition-all group"
-              >
-                <div className="p-2 bg-zinc-50 rounded-xl group-hover:bg-zinc-100 transition-colors">
-                  <Copy className="w-4 h-4" />
-                </div>
-                Duplicate Invoice
-              </button>
-            </div>
+                <span className="text-sm tracking-tight uppercase">Download PDF</span>
+              </div>
+              <ArrowLeft className="w-4 h-4 rotate-180 opacity-20 group-hover:opacity-100 transition-all" />
+            </button>
           </div>
 
-          <div className="pt-6">
+          <div className="pt-6 border-t border-zinc-100">
             <div className="flex items-center gap-4 p-5 rounded-3xl bg-zinc-50/80 border border-zinc-100/50">
               <div className="relative">
                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
