@@ -100,9 +100,9 @@ export default function Landing({ navigate }: LandingProps) {
           </div>
         </div>
 
-        <div className="mt-12 flex justify-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900 text-[10px] font-bold uppercase tracking-widest mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <div className="flex justify-center -mt-16 mb-32 relative z-10">
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 backdrop-blur-sm text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.4)]"></span>
             Sovereign Web Protocol Standard • v1.0
           </div>
         </div>

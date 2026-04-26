@@ -104,7 +104,7 @@ export default function InvoiceView({
     pageStyle: `
       @page {
         size: auto;
-        margin: 15mm;
+        margin: 0;
       }
       @media print {
         body {
@@ -238,21 +238,27 @@ export default function InvoiceView({
           }}
         >
           <div
-            className="shadow-2xl print:shadow-none print:!w-full print:!scale-100 print:!transform-none"
-            style={{
-              transform: `scale(${scale})`,
-              transformOrigin: "top center",
-              width: "800px",
-              maxWidth: "100%",
-            }}
+            className="shadow-2xl print:shadow-none print:w-full"
+            style={
+              window.matchMedia("print").matches
+                ? {
+                    width: "100%",
+                  }
+                : {
+                    transform: `scale(${scale})`,
+                    transformOrigin: "top center",
+                    width: "800px",
+                    maxWidth: "100%",
+                  }
+            }
           >
             {/* The actual invoice template to be exported */}
             <div
               ref={invoiceRef}
-              className="bg-white p-10 sm:p-16 mx-auto flex flex-col relative overflow-hidden w-[800px] min-h-[1131px] print:w-full print:min-h-0 print:p-0 print:shadow-none origin-top-left"
+              className="bg-white p-10 sm:p-16 mx-auto flex flex-col relative w-[800px] min-h-[1131px] print:w-full print:min-h-0 print:p-12 print:shadow-none print:overflow-visible overflow-hidden origin-top-left"
             >
               {invoice.status === "paid" && (
-                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 pointer-events-none opacity-[0.03] z-0">
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 pointer-events-none opacity-[0.03] z-0 print:hidden">
                   <div className="border-[16px] border-zinc-900 text-zinc-900 text-[180px] font-black uppercase tracking-[0.2em] p-12 rounded-[60px]">
                     PAID
                   </div>
@@ -481,8 +487,8 @@ export default function InvoiceView({
               )}
 
               {!isUnlocked && isUnlocked !== null && (
-                <div className="mt-auto pt-12 border-t border-zinc-50 text-center space-y-1 opacity-40 grayscale group">
-                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                <div className="mt-auto pt-12 border-t border-zinc-50 text-center space-y-1 opacity-40 grayscale group print:opacity-100 print:grayscale-0 print:border-zinc-200">
+                  <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] print:text-zinc-500">
                     Sovereign Invoice
                   </p>
                 </div>
