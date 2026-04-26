@@ -3,8 +3,7 @@ import { db } from '../db';
 import { ArrowLeft, Download, Printer, CheckCircle, Circle } from 'lucide-react';
 import { format } from 'date-fns';
 import { isAppUnlocked } from '../lib/license';
-import domtoimage from 'dom-to-image';
-import jsPDF from 'jspdf';
+import { useReactToPrint } from 'react-to-print';
 
 export default function InvoiceView({ navigate, invoiceId }: { navigate: (route: string) => void, invoiceId: string }) {
   const [invoice, setInvoice] = useState<any>(null);
@@ -70,34 +69,16 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
     };
   }, [invoice, client, items]);
 
-  const handleExportPDF = async () => {
-    if (!invoiceRef.current) return;
-    
-    try {
-      // Use dom-to-image instead of html2canvas to avoid oklch parsing issues
-      const dataUrl = await domtoimage.toPng(invoiceRef.current, { 
-        bgcolor: '#ffffff',
-        width: 800,
-        height: invoiceRef.current.offsetHeight || 1131,
-        style: {
-          transform: 'scale(1)',
-          transformOrigin: 'top left'
-        }
-      });
-      
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [800, invoiceRef.current.offsetHeight || 1131]
-      });
-      
-      pdf.addImage(dataUrl, 'PNG', 0, 0, 800, invoiceRef.current.offsetHeight || 1131);
-      pdf.save(`Invoice_${invoice?.invoice_number}.pdf`);
-    } catch (error) {
-      console.error('Failed to generate PDF:', error);
-      alert('Failed to generate PDF');
-    }
-  };
+  const handlePrint = useReactToPrint({
+    contentRef: invoiceRef,
+    documentTitle: `Invoice_${invoice?.invoice_number}`,
+    pageStyle: `
+      @page { size: auto; margin: 0mm; }
+      @media print {
+        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      }
+    `
+  });
 
   const handleMarkAsPaid = async () => {
     const isPaid = invoice.status === 'paid';
@@ -113,8 +94,8 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
   return (
     <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto">
       {/* Left side: Invoice Content */}
-      <div className="flex-1 min-w-0 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex-1 min-w-0 space-y-6 print:m-0 print:p-0 print:space-y-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => navigate('invoices')} 
@@ -140,7 +121,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
 
         <div 
           ref={containerRef}
-          className="bg-zinc-950/50 backdrop-blur-xl rounded-3xl border border-zinc-800/50 flex justify-center overflow-hidden print:bg-transparent print:p-0 print:h-auto print:block shadow-2xl"
+          className="bg-zinc-950/50 backdrop-blur-xl rounded-3xl border border-zinc-800/50 flex justify-center overflow-hidden print:bg-transparent print:border-none print:shadow-none print:rounded-none shadow-2xl"
           style={{ 
             paddingTop: '3rem',
             paddingBottom: '3rem',
@@ -148,7 +129,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
           }}
         >
           <div 
-            className="print:transform-none print:w-full shadow-2xl"
+            className="shadow-2xl print:shadow-none print:w-full print:scale-100"
             style={{ 
               transform: `scale(${scale})`, 
               transformOrigin: 'top center',
@@ -158,8 +139,7 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
             {/* The actual invoice template to be exported */}
             <div 
               ref={invoiceRef} 
-              className="bg-white p-16 mx-auto shadow-sm print:shadow-none print:w-full print:min-h-0 flex flex-col relative overflow-hidden"
-              style={{ width: '800px', minHeight: '1131px' }}
+              className="bg-white p-10 sm:p-16 mx-auto flex flex-col relative overflow-hidden w-[800px] min-h-[1131px] print:w-full print:min-h-0 print:p-12 print:shadow-none origin-top-left"
             >
               {invoice.status === 'paid' && (
                 <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 pointer-events-none opacity-[0.03] z-0">
@@ -332,19 +312,11 @@ export default function InvoiceView({ navigate, invoiceId }: { navigate: (route:
              <h3 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">Export Invoice</h3>
              <div className="space-y-3">
                 <button
-                  onClick={() => window.print()}
-                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-zinc-950 border border-zinc-800 text-zinc-400 rounded-2xl font-bold hover:text-white hover:border-zinc-700 transition-all active:scale-[0.98] shadow-lg"
-                >
-                  <Printer className="w-5 h-5 opacity-40" /> 
-                  <span className="text-sm">Print Invoice</span>
-                </button>
-                
-                <button
-                  onClick={handleExportPDF}
+                  onClick={() => handlePrint()}
                   className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white text-zinc-950 rounded-2xl font-bold hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl shadow-white/5"
                 >
-                  <Download className="w-5 h-5 opacity-40" /> 
-                  <span className="text-sm">Download PDF</span>
+                  <Printer className="w-5 h-5 opacity-60" /> 
+                  <span className="text-sm">Print / Save PDF</span>
                 </button>
              </div>
           </div>
