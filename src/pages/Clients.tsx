@@ -84,12 +84,31 @@ export default function Clients({ navigate }: { navigate: (route: string) => voi
           <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Clients</h1>
           <p className="text-zinc-500 text-sm mt-1">Manage your customer registry</p>
         </div>
-        <button
-          onClick={handleCreate}
-          className="flex items-center justify-center gap-3 px-10 py-4 bg-zinc-950 text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-zinc-800 active:scale-95 transition-all shadow-2xl shadow-zinc-900/20"
-        >
-          <Plus className="w-5 h-5" /> New Client
-        </button>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+           {!isUnlocked && isUnlocked !== null && (
+             <div className="flex items-center gap-3 px-6 py-3 bg-zinc-50 border border-zinc-200 rounded-2xl">
+               <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Clients: {clients.length}/1</span>
+               <div className="w-16 h-1 bg-zinc-200 rounded-full overflow-hidden">
+                 <div 
+                   className={`h-full ${clients.length >= 1 ? 'bg-red-500' : 'bg-zinc-900'}`} 
+                   style={{ width: `${Math.min((clients.length / 1) * 100, 100)}%` }} 
+                 />
+               </div>
+               <button 
+                 onClick={() => navigate('upgrade')}
+                 className="text-[10px] font-black text-amber-600 uppercase tracking-widest hover:text-amber-700 ml-2"
+               >
+                 Upgrade
+               </button>
+             </div>
+           )}
+           <button
+             onClick={handleCreate}
+             className="flex items-center justify-center gap-3 px-10 py-4 bg-zinc-950 text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-zinc-800 active:scale-95 transition-all shadow-2xl shadow-zinc-900/20"
+           >
+             <Plus className="w-5 h-5" /> New Client
+           </button>
+        </div>
       </div>
 
       {isFormOpen && (

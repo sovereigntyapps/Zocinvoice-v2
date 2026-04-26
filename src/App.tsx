@@ -21,6 +21,7 @@ import Terms from './pages/Terms';
 import Upgrade from './pages/Upgrade';
 
 import VaultGate from './lib/components/VaultGate';
+import ProGuard from './lib/components/ProGuard';
 
 export default function App() {
   const [isDbReady, setIsDbReady] = useState(false);
@@ -58,9 +59,24 @@ export default function App() {
   }, []);
 
   const navigate = (route: string, params: any = {}) => {
-    setCurrentRoute(route);
-    setRouteParams(params);
-    window.scrollTo(0, 0);
+    // Tactile feedback
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try { navigator.vibrate(5); } catch (e) {}
+    }
+
+    // Fluid UI transitions
+    if (typeof document !== 'undefined' && 'startViewTransition' in document) {
+      // @ts-ignore - View Transitions API is still experimental in some TS environments
+      document.startViewTransition(() => {
+        setCurrentRoute(route);
+        setRouteParams(params);
+        window.scrollTo(0, 0);
+      });
+    } else {
+      setCurrentRoute(route);
+      setRouteParams(params);
+      window.scrollTo(0, 0);
+    }
   };
 
   const handleUnlocked = (key: Uint8Array) => {
@@ -90,7 +106,11 @@ export default function App() {
               case 'dashboard': return <Dashboard navigate={navigate} />;
               case 'clients': return <Clients navigate={navigate} />;
               case 'invoices': return <Invoices navigate={navigate} />;
-              case 'reports': return <Reports navigate={navigate} />;
+              case 'reports': return (
+                <ProGuard navigate={navigate} title="Business Reports" description="Advanced revenue analytics and growth tracking are available for Pro users.">
+                   <Reports navigate={navigate} />
+                </ProGuard>
+              );
               case 'invoice-new': return <InvoiceForm navigate={navigate} />;
               case 'invoice-edit': return <InvoiceForm navigate={navigate} invoiceId={routeParams.id} />;
               case 'invoice-view': return <InvoiceView navigate={navigate} invoiceId={routeParams.id} />;
@@ -102,7 +122,7 @@ export default function App() {
         </Layout>
       ) : (
         <div className="flex h-screen items-center justify-center bg-zinc-50 text-zinc-400 font-mono text-sm uppercase tracking-widest animate-pulse">
-          Initializing Data Enclave...
+          Starting your space...
         </div>
       )}
     </VaultGate>

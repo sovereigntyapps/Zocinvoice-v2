@@ -1,8 +1,15 @@
-import React from 'react';
-import { LayoutDashboard, Users, FileText, Settings, BarChart3 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { LayoutDashboard, Users, FileText, Settings, BarChart3, Crown } from 'lucide-react';
 import { clsx } from 'clsx';
+import { isAppUnlocked } from '../license';
 
 export default function BottomNav({ currentRoute, navigate, className = '' }: any) {
+  const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    isAppUnlocked().then(setIsUnlocked).catch(() => setIsUnlocked(false));
+  }, []);
+
   const navItems = [
     { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
     { id: 'invoices', label: 'Invoices', icon: FileText },
@@ -29,6 +36,19 @@ export default function BottomNav({ currentRoute, navigate, className = '' }: an
           </button>
         );
       })}
+      
+      {!isUnlocked && isUnlocked !== null && (
+        <button
+          onClick={() => navigate('upgrade')}
+          className={clsx(
+            'flex flex-col items-center p-2 rounded-lg text-xs font-black transition-colors min-w-[64px]',
+            currentRoute === 'upgrade' ? 'text-amber-400' : 'text-amber-500/80 hover:text-amber-400'
+          )}
+        >
+          <Crown className={clsx('w-6 h-6 mb-1', currentRoute === 'upgrade' ? 'text-amber-400 fill-amber-400' : 'text-amber-500/80')} />
+          Pro
+        </button>
+      )}
     </nav>
   );
 }

@@ -127,16 +127,16 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
     }
   };
 
-  // If successfully unlocked, render the inner application (Data Enclave)
+  // If successfully unlocked, render the application
   if (unlocked) {
     return <>{children}</>;
   }
 
-  // Render the Security Enclave interface
+  // Render the Security interface
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-50 text-zinc-900 font-sans p-6 select-none">
       <div className="max-w-md w-full bg-white border border-zinc-200 rounded-[48px] p-12 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] relative overflow-hidden">
-        {/* Subtle grid background for the technical "Ghost" feel */}
+        {/* Subtle grid background */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none opacity-50"></div>
         
         <div className="text-center relative z-10 flex flex-col items-center">
@@ -185,7 +185,7 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
                   <Fingerprint size={18} className="mr-2 flex-shrink-0" />
                   <span className="font-black uppercase tracking-tight">Init Failed</span>
                 </div>
-                <p className="italic text-zinc-500">WebAuthn PRF is not available in this cluster. Transition to a passphrase-based Hybrid Enclave for local security.</p>
+                <p className="italic text-zinc-500">Hardware security is not available here. Use the backup password option instead.</p>
                 <button 
                   onClick={() => { setVaultMode('hybrid'); setError(null); }}
                   className="text-zinc-900 font-black uppercase tracking-widest text-[10px] underline underline-offset-4"
@@ -266,7 +266,7 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
               ) : (
                 <form onSubmit={handleCreateHybridVault} className="space-y-6">
                    <div className="text-left text-zinc-400 text-[10px] font-black uppercase tracking-widest px-2 mb-2 leading-relaxed opacity-60">
-                      Hybrid mode derives local keys via 600,000 PBKDF2 cycles.
+                      Standard security mode creates your key using a locally saved password.
                    </div>
                    <div className="space-y-2 text-left">
                     <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Set Master Passphrase</label>
@@ -306,7 +306,7 @@ export default function VaultGate({ children, onUnlocked }: VaultGateProps) {
           )}
 
           <div className="mt-12 pt-8 border-t border-zinc-50 w-full text-center">
-            <span className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">Local First • Sovereign Hub</span>
+            <span className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">Local First • Private App</span>
           </div>
         </div>
       </div>

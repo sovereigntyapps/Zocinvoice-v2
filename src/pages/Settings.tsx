@@ -194,6 +194,34 @@ export default function Settings({ navigate }: { navigate: (route: string) => vo
         </button>
       </div>
 
+      {!isUnlocked && isUnlocked !== null && (
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 p-8 rounded-[32px] shadow-sm relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 text-amber-500 opacity-5 pointer-events-none group-hover:scale-110 transition-transform">
+            <Crown size={120} />
+          </div>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 mb-2">
+                 <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white">
+                   <Crown className="w-4 h-4" />
+                 </div>
+                 <span className="text-amber-900 font-black uppercase tracking-widest text-[10px]">Premium Feature</span>
+              </div>
+              <h2 className="text-2xl font-black text-zinc-900 tracking-tighter">Go Pro for full control</h2>
+              <p className="text-zinc-600 text-sm max-w-md">
+                Unlock custom organization branding, unlimited data export/backups, and remove limits on invoices and clients.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('upgrade')}
+              className="px-8 py-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 transition-all shadow-xl shadow-zinc-900/20 active:scale-95"
+            >
+              Get Pro Version
+            </button>
+          </div>
+        </div>
+      )}
+
       {status && status.message && (
         <div className={`p-4 rounded-xl flex items-start gap-3 border ${
           status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 

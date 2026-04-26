@@ -4,6 +4,7 @@ import { isAppUnlocked } from '../lib/license';
 import { LayoutDashboard, DollarSign, FileText, Users, Clock } from 'lucide-react';
 
 export default function Dashboard({ navigate }: { navigate: (route: string) => void }) {
+  const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
   const [stats, setStats] = useState({
     totalInvoices: 0,
     totalClients: 0,
@@ -14,6 +15,9 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
   useEffect(() => {
     async function loadStats() {
       try {
+        const unlocked = await isAppUnlocked();
+        setIsUnlocked(unlocked);
+
         const invoicesRes = await db.query('SELECT COUNT(*) as count, SUM(total) as revenue, SUM(paid_amount) as paid FROM invoices');
         const clientsRes = await db.query('SELECT COUNT(*) as count FROM clients');
         
@@ -41,6 +45,15 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
           <p className="text-zinc-500 text-sm mt-1">Overview of your business</p>
         </div>
         <div className="flex gap-4">
+           {!isUnlocked && isUnlocked !== null && (
+             <button
+               onClick={() => navigate('upgrade')}
+               className="px-6 py-4 bg-amber-50 text-amber-900 border border-amber-100 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-amber-100 transition-all active:scale-95 flex items-center gap-2"
+             >
+               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+               Upgrade to Pro
+             </button>
+           )}
            <button
             onClick={() => navigate('invoice-new')}
             className="px-10 py-4 bg-zinc-950 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 transition-all shadow-2xl shadow-zinc-900/20 active:scale-95"
@@ -98,6 +111,50 @@ export default function Dashboard({ navigate }: { navigate: (route: string) => v
         </div>
         
       </div>
+      
+      {!isUnlocked && isUnlocked !== null && (
+        <div className="bg-zinc-50 border border-zinc-200 rounded-[32px] p-8 mt-12">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest rounded-full">Free Plan</span>
+                <h3 className="text-xl font-bold text-zinc-900 tracking-tight">Expand your business potential</h3>
+              </div>
+              <p className="text-zinc-500 text-sm max-w-xl">
+                You're currently using the free tier. Unlock unlimited invoices, unlimited clients, and professional custom branding.
+              </p>
+            </div>
+            
+            <div className="flex gap-6">
+               <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Invoices</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-zinc-200 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full ${stats.totalInvoices >= 5 ? 'bg-red-500' : 'bg-zinc-900'}`} 
+                        style={{ width: `${Math.min((stats.totalInvoices / 5) * 100, 100)}%` }} 
+                      />
+                    </div>
+                    <span className="text-xs font-bold text-zinc-600">{stats.totalInvoices}/5</span>
+                  </div>
+               </div>
+               
+               <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Clients</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-zinc-200 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full ${stats.totalClients >= 1 ? 'bg-red-500' : 'bg-zinc-900'}`} 
+                        style={{ width: `${Math.min((stats.totalClients / 1) * 100, 100)}%` }} 
+                      />
+                    </div>
+                    <span className="text-xs font-bold text-zinc-600">{stats.totalClients}/1</span>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

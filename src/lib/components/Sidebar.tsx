@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Users, FileText, Settings, BarChart3, Crown } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { isAppUnlocked } from '../license';
 
 interface SidebarProps {
   currentRoute: string;
@@ -10,13 +11,18 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ currentRoute, navigate, className = '' }: SidebarProps) {
+  const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    isAppUnlocked().then(setIsUnlocked).catch(() => setIsUnlocked(false));
+  }, []);
+
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'invoices', label: 'Invoices', icon: FileText },
     { id: 'clients', label: 'Clients', icon: Users },
     { id: 'reports', label: 'Reports', icon: BarChart3 },
     { id: 'settings', label: 'Settings', icon: Settings },
-    { id: 'upgrade', label: 'Upgrade', icon: Crown },
   ];
 
   return (
@@ -50,6 +56,23 @@ export default function Sidebar({ currentRoute, navigate, className = '' }: Side
             </button>
           );
         })}
+
+        {!isUnlocked && isUnlocked !== null && (
+          <button
+            onClick={() => navigate('upgrade')}
+            className={twMerge(
+              clsx(
+                'w-full mt-4 flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all border border-amber-100',
+                currentRoute === 'upgrade'
+                  ? 'bg-amber-100 text-amber-900 shadow-sm'
+                  : 'bg-amber-50 text-amber-600 hover:bg-amber-100'
+              )
+            )}
+          >
+            <Crown className="w-4 h-4 text-amber-500 fill-amber-500" />
+            Get Pro Version
+          </button>
+        )}
       </nav>
       <div className="p-6 border-t border-zinc-100 text-[10px] text-zinc-400 text-center font-mono uppercase tracking-[0.2em]">
         Node v1.0 • Sovereign

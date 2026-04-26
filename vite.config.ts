@@ -1,8 +1,12 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import {defineConfig, loadEnv} from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
@@ -12,17 +16,18 @@ export default defineConfig(({mode}) => {
       react(), 
       tailwindcss(),
       VitePWA({
-        registerType: 'autoUpdate',
+        registerType: 'prompt', // Sovereign Web Protocol: Offline bootloader with non-blocking update strategy
         includeAssets: ['icon.svg'],
         workbox: {
-          maximumFileSizeToCacheInBytes: 15 * 1024 * 1024 // 15MB to allow pglite wasm
+          maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // 15MB to allow pglite wasm
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
         },
         manifest: {
           name: 'Sovereignty Invoices',
-          short_name: 'Invoices',
-          description: 'Free, private, local-first invoicing app.',
-          theme_color: '#0a0a0a',
-          background_color: '#f5f5f4',
+          short_name: 'SovInvoice',
+          description: 'Local-first Sovereign Invoicing',
+          theme_color: '#09090b',
+          background_color: '#ffffff',
           display: 'standalone',
           icons: [
             {

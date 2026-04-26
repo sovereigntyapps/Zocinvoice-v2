@@ -1,5 +1,5 @@
 /**
- * The Vault: Hardware-Rooted Identity & Security Enclave
+ * The Vault: Hardware-Rooted Identity & Security
  * Utilizes WebAuthn PRF (Pseudo-Random Function) Extension to derive
  * a secure, deterministic symmetric key from biometric hardware (FaceID/TouchID).
  */
@@ -103,7 +103,7 @@ export async function createVault(): Promise<{ derivedKey: Uint8Array, credentia
 
   const createOptions: PublicKeyCredentialCreationOptions = {
     rp: {
-      name: "Sovereign App (Ghost Vault)",
+      name: "Sovereign App",
       id: window.location.hostname
     },
     user: {
